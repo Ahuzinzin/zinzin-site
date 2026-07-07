@@ -1,0 +1,8 @@
+# Clean URLs — serve .html files without extension
+/bakery-bonanza     /bakery-bonanza.html    200
+/crystal-plinko     /crystal-plinko.html    200
+/altitude-x         /altitude-x.html        200
+
+# Trailing slash normalisation for game folders
+/saga_of_valhalla   /saga_of_valhalla/      301
+/quack_rush_crash   /quack_rush_crash/      301

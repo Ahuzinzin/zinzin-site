@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Crystal Plinko — ZinZin Studio</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{
+  width:100%;height:100%;
+  background:#0f1520;
+  font-family:'DM Sans',sans-serif;
+  color:#fff; overflow:hidden;
+  user-select:none;
+}
+
+/* ── SHELL ── */
+#shell{
+  display:grid;
+  grid-template-rows:48px 1fr 180px;
+  grid-template-columns:1fr 340px;
+  width:100vw; height:100vh;
+  max-width:1400px; margin:0 auto;
+}
+
+/* ── TOP BAR ── */
+#topbar{
+  grid-column:1/3; grid-row:1;
+  background:#0a0f1c;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 20px;
+}
+.tb-left{ display:flex; flex-direction:column; }
+.tb-player{ font-size:11px; color:rgba(255,255,255,.4); }
+.tb-balance{ font-size:14px; font-weight:700; }
+.tb-balance span{ color:#f5a623; }
+.tb-logo{
+  font-family:'Syne',sans-serif; font-size:18px; font-weight:800;
+  letter-spacing:1px;
+  background:linear-gradient(90deg,#e91e8c,#f5a623);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.tb-badge{
+  font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+  color:rgba(255,255,255,.35); background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1); border-radius:4px; padding:4px 10px;
+}
+
+/* ── CANVAS AREA ── */
+#canvas-wrap{
+  grid-column:1; grid-row:2;
+  position:relative; overflow:hidden;
+  background:#10152a;
+}
+#plinko-canvas{ display:block; }
+
+/* Demo badge */
+#demo-badge{
+  position:absolute; top:10px; right:10px;
+  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2);
+  color:rgba(255,255,255,.7); font-size:10px; font-weight:700;
+  letter-spacing:2px; text-transform:uppercase;
+  padding:4px 12px; border-radius:4px; pointer-events:none;
+}
+
+/* ── RIGHT PANEL ── */
+#panel{
+  grid-column:2; grid-row:2/4;
+  background:#0d1220;
+  border-left:1px solid rgba(255,255,255,.07);
+  display:flex; flex-direction:column;
+  padding:16px;
+  overflow-y:auto;
+  gap:14px;
+}
+#panel::-webkit-scrollbar{width:3px;}
+#panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);}
+
+/* Manual / Auto tabs */
+.mode-tabs{
+  display:grid; grid-template-columns:1fr 1fr;
+  background:rgba(255,255,255,.05);
+  border-radius:8px; padding:3px; gap:3px;
+}
+.mode-tab{
+  padding:8px; text-align:center; border-radius:6px;
+  font-size:13px; font-weight:600; color:rgba(255,255,255,.45);
+  cursor:pointer; transition:all .2s; border:none; background:transparent;
+  font-family:inherit;
+}
+.mode-tab.on{
+  background:#1c2540; color:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+
+/* Bet Amount */
+.p-label{
+  font-size:11px; font-weight:700; letter-spacing:1.5px;
+  text-transform:uppercase; color:rgba(255,255,255,.35);
+  margin-bottom:6px;
+}
+.bet-wrap{
+  display:flex; align-items:center; gap:6px;
+}
+.bet-step-btn{
+  width:36px; height:36px; border-radius:7px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.12);
+  color:#fff; font-size:18px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-family:inherit; transition:all .15s; flex-shrink:0;
+}
+.bet-step-btn:hover{ background:rgba(233,30,140,.25); border-color:rgba(233,30,140,.4); }
+
+.bet-input-box{
+  flex:1; background:#0a0f1c; border:1px solid rgba(255,255,255,.12);
+  border-radius:7px; padding:6px 10px; text-align:center;
+}
+.bet-sub-label{ font-size:10px; color:rgba(255,255,255,.3); margin-bottom:1px; }
+.bet-value{
+  font-family:'Syne',sans-serif; font-size:20px; font-weight:700; color:#fff;
+}
+.bet-presets{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:5px; margin-top:6px;
+}
+.bet-preset{
+  padding:6px 0; background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:6px; font-size:11px; font-weight:700;
+  color:rgba(255,255,255,.5); cursor:pointer; text-align:center;
+  transition:all .15s; font-family:inherit;
+}
+.bet-preset:hover{ background:rgba(233,30,140,.15); color:#fff; border-color:rgba(233,30,140,.3); }
+
+/* Rows selector */
+.row-btns{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:5px;
+}
+.row-btn{
+  padding:8px; border-radius:7px;
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.45); font-size:12px; font-weight:700;
+  cursor:pointer; text-align:center; transition:all .2s; font-family:inherit;
+}
+.row-btn.on{
+  background:#1c2540; color:#fff;
+  border-color:rgba(255,255,255,.25);
+}
+
+/* Volatility */
+.vol-btns{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:5px;
+}
+.vol-btn{
+  padding:8px; border-radius:7px;
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.45); font-size:12px; font-weight:700;
+  cursor:pointer; text-align:center; transition:all .2s; font-family:inherit;
+}
+.vol-btn.on{
+  background:#c0392b; color:#fff; border-color:#e74c3c;
+  box-shadow:0 0 12px rgba(231,76,60,.25);
+}
+.vol-btn.on.low-v { background:#27ae60; border-color:#2ecc71; box-shadow:0 0 12px rgba(46,204,113,.25); }
+.vol-btn.on.mid-v { background:#d4890a; border-color:#f5a623; box-shadow:0 0 12px rgba(245,166,35,.25); }
+
+/* BET BUTTON */
+#bet-btn{
+  width:100%; padding:16px;
+  background:linear-gradient(135deg,#27ae60,#1e8449);
+  border:none; border-radius:10px;
+  font-family:'Syne',sans-serif; font-size:16px; font-weight:800;
+  color:#fff; cursor:pointer; letter-spacing:.5px;
+  box-shadow:0 4px 20px rgba(39,174,96,.3);
+  transition:all .2s;
+}
+#bet-btn:hover{ background:linear-gradient(135deg,#2ecc71,#27ae60); transform:translateY(-1px); box-shadow:0 6px 28px rgba(39,174,96,.4); }
+#bet-btn:active{ transform:translateY(0); }
+#bet-btn:disabled{ opacity:.4; cursor:not-allowed; transform:none; }
+
+/* Auto rows */
+.auto-row{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:8px;
+}
+.auto-label{ font-size:12px; color:rgba(255,255,255,.4); }
+.auto-input{
+  background:#0a0f1c; border:1px solid rgba(255,255,255,.12);
+  border-radius:6px; color:#fff; font-family:inherit;
+  font-size:13px; font-weight:700; padding:5px 10px; width:70px;
+  text-align:center; outline:none;
+}
+
+/* ── BOTTOM: BET HISTORY TABLE ── */
+#history-wrap{
+  grid-column:1; grid-row:3;
+  background:#0a0f1c;
+  border-top:1px solid rgba(255,255,255,.07);
+  display:flex; flex-direction:column;
+}
+.hist-tabs{
+  display:flex; border-bottom:1px solid rgba(255,255,255,.07);
+  padding:0 16px;
+}
+.hist-tab{
+  padding:10px 16px; font-size:12px; font-weight:700;
+  color:rgba(255,255,255,.35); cursor:pointer;
+  border-bottom:2px solid transparent;
+  transition:all .2s; font-family:inherit; background:none; border-top:none; border-left:none; border-right:none;
+}
+.hist-tab.on{ color:#fff; border-bottom-color:#f5a623; }
+#hist-table-wrap{ flex:1; overflow-y:auto; }
+#hist-table-wrap::-webkit-scrollbar{width:3px;}
+#hist-table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);}
+
+table{
+  width:100%; border-collapse:collapse;
+  font-size:12px;
+}
+thead th{
+  padding:8px 16px; text-align:left;
+  color:rgba(255,255,255,.3); font-weight:600;
+  letter-spacing:.5px; white-space:nowrap;
+}
+tbody tr{
+  border-top:1px solid rgba(255,255,255,.04);
+  transition:background .15s;
+}
+tbody tr:hover{ background:rgba(255,255,255,.03); }
+tbody td{ padding:8px 16px; color:rgba(255,255,255,.65); }
+tbody td.win-val{ color:#f5a623; font-weight:700; }
+tbody td.loss-val{ color:rgba(255,255,255,.3); }
+tbody td.mult-hi{ color:#e91e8c; font-weight:700; }
+tbody td.mult-lo{ color:rgba(255,255,255,.3); }
+
+/* ── WIN FLASH OVERLAY ── */
+#win-flash{
+  position:fixed; top:50%; left:35%;
+  transform:translate(-50%,-50%);
+  pointer-events:none; z-index:100;
+  opacity:0; transition:opacity .3s;
+  text-align:center;
+}
+#win-flash.show{ opacity:1; }
+#wf-mult{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(32px,5vw,60px);
+  font-weight:800; color:#f5a623;
+  text-shadow:0 0 30px rgba(245,166,35,.7);
+}
+#wf-win{
+  font-family:'Syne',sans-serif;
+  font-size:clamp(22px,3.5vw,42px);
+  font-weight:700; color:#fff;
+  text-shadow:0 0 20px rgba(255,255,255,.4);
+}
+
+/* Particles canvas */
+#pfx{
+  position:fixed; inset:0; pointer-events:none; z-index:90;
+}
+
+/* Toast */
+#toast{
+  position:fixed; top:60px; left:40%;
+  transform:translateX(-50%) translateY(-8px);
+  background:#e91e8c; color:#fff;
+  padding:8px 20px; border-radius:20px;
+  font-size:12px; font-weight:700; letter-spacing:.5px;
+  opacity:0; transition:all .25s; pointer-events:none; z-index:200; white-space:nowrap;
+}
+#toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  #shell{
+    grid-template-columns:1fr;
+    grid-template-rows:48px 1fr auto auto;
+  }
+  #panel{ grid-column:1; grid-row:3; grid-template-columns:repeat(2,1fr); display:grid; max-height:300px; }
+  #history-wrap{ grid-column:1; grid-row:4; }
+}
+</style>
+</head>
+<body>
+
+<div id="shell">
+
+  <!-- TOP BAR -->
+  <div id="topbar">
+    <div class="tb-left">
+      <span class="tb-player">Player Demo</span>
+      <span class="tb-balance">Balance: <span id="bal-display">1,000.00</span></span>
+    </div>
+    <div class="tb-logo">CRYSTAL PLINKO</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="tb-badge">RTP 96%</span>
+      <span class="tb-badge">Max 999×</span>
+    </div>
+  </div>
+
+  <!-- CANVAS -->
+  <div id="canvas-wrap">
+    <canvas id="plinko-canvas"></canvas>
+    <div id="demo-badge">DEMO</div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div id="panel">
+
+    <!-- Manual / Auto -->
+    <div class="mode-tabs">
+      <button class="mode-tab on" onclick="setMode('manual',this)">Manual</button>
+      <button class="mode-tab"   onclick="setMode('auto',this)">Auto</button>
+    </div>
+
+    <!-- Bet Amount -->
+    <div>
+      <div class="p-label">Bet Amount (0.1 – 100)</div>
+      <div class="bet-wrap">
+        <button class="bet-step-btn" onclick="stepBet(-1)">−</button>
+        <div class="bet-input-box">
+          <div class="bet-sub-label">BET</div>
+          <div class="bet-value" id="bet-display">1.00</div>
+        </div>
+        <button class="bet-step-btn" onclick="stepBet(1)">+</button>
+      </div>
+      <div class="bet-presets">
+        <button class="bet-preset" onclick="setBetPreset('min')">Min</button>
+        <button class="bet-preset" onclick="setBetPreset('half')">½</button>
+        <button class="bet-preset" onclick="setBetPreset('double')">2×</button>
+        <button class="bet-preset" onclick="setBetPreset('max')">Max</button>
+      </div>
+    </div>
+
+    <!-- Rows -->
+    <div>
+      <div class="p-label">Rows</div>
+      <div class="row-btns">
+        <button class="row-btn"    onclick="setRows(12,this)">Row 12</button>
+        <button class="row-btn"    onclick="setRows(14,this)">Row 14</button>
+        <button class="row-btn on" onclick="setRows(16,this)">Row 16</button>
+      </div>
+    </div>
+
+    <!-- Volatility -->
+    <div>
+      <div class="p-label">Volatility</div>
+      <div class="vol-btns">
+        <button class="vol-btn low-v" onclick="setVol('low',this)">Low</button>
+        <button class="vol-btn mid-v" onclick="setVol('med',this)">Medium</button>
+        <button class="vol-btn on"   onclick="setVol('high',this)">High</button>
+      </div>
+    </div>
+
+    <!-- Auto options (hidden by default) -->
+    <div id="auto-opts" style="display:none">
+      <div class="p-label">Number of Bets</div>
+      <div class="auto-row">
+        <span class="auto-label">Rounds</span>
+        <input class="auto-input" id="auto-rounds" value="10" type="number" min="1" max="1000">
+      </div>
+    </div>
+
+    <!-- BET BUTTON -->
+    <button id="bet-btn" onclick="dropBall()">BET 1.00</button>
+
+    <!-- Spacer -->
+    <div style="flex:1"></div>
+
+    <!-- RTP info -->
+    <div style="font-size:11px;color:rgba(255,255,255,.2);line-height:1.6;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">
+      Provably Fair · ZinZin Studio<br>
+      Min 0.10 · Max 100 · RTP 96%
+    </div>
+  </div>
+
+  <!-- HISTORY TABLE -->
+  <div id="history-wrap">
+    <div class="hist-tabs">
+      <button class="hist-tab on">This Game</button>
+      <button class="hist-tab">Bet History</button>
+    </div>
+    <div id="hist-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Game</th>
+            <th>#Player</th>
+            <th>Time</th>
+            <th>Bet</th>
+            <th>Multiplier</th>
+            <th>Win</th>
+          </tr>
+        </thead>
+        <tbody id="hist-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- WIN FLASH -->
+<div id="win-flash">
+  <div id="wf-mult"></div>
+  <div id="wf-win"></div>
+</div>
+
+<!-- PARTICLES -->
+<canvas id="pfx"></canvas>
+<div id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════════
+//  CRYSTAL PLINKO — Senior PixiJS Implementation
+//  ZinZin Studio · RTP 96% · 12/14/16 rows · 3 volatility
+//  Real physics: gravity + bounce + left-right deflection
+// ════════════════════════════════════════════════════════
+
+// ── CONFIG ──────────────────────────────────────────────
+const CFG = {
+  GRAVITY:     0.28,
+  BOUNCE:      0.42,   // energy retention on peg hit
+  BALL_R:      7,
+  PEG_R:       4.5,
+  MIN_BET:     0.10,
+  MAX_BET:     100,
+  BALL_SPEED:  3.5,    // initial drop speed
+};
+
+// ── MULTIPLIER TABLES ────────────────────────────────────
+// [row16, low/med/high] — indexed by bucket (left→right, symmetric)
+// Row 16 → 17 buckets
+const MULT_TABLES = {
+  16: {
+    low:  [2,1.5,1,0.5,0.5,0.5,0.3,0.2,0.2,0.2,0.3,0.5,0.5,0.5,1,1.5,2],
+    med:  [4,2,1.5,1,0.5,0.3,0.2,0.2,0.2,0.2,0.2,0.3,0.5,1,1.5,2,4],
+    high: [999,120,25,9,4,1.9,0.2,0.2,0.2,0.2,0.2,1.9,4,9,25,120,999],
+  },
+  14: {
+    low:  [3,1.5,1,0.5,0.5,0.3,0.2,0.2,0.3,0.5,0.5,1,1.5,3],
+    med:  [5,2,1.5,1,0.5,0.2,0.2,0.2,0.5,1,1.5,2,5,10],
+    high: [540,50,15,5,2,1,0.2,0.2,1,2,5,15,50,540],
+  },
+  12: {
+    low:  [3,2,1.5,1,0.5,0.3,0.3,0.5,1,1.5,2,3],
+    med:  [8,3,2,1.5,1,0.5,0.5,1,1.5,2,3,8],
+    high: [110,20,5,2,1.5,0.2,0.2,1.5,2,5,20,110],
+  },
+};
+
+// ── BUCKET COLORS (based on multiplier) ──────────────────
+function multColor(m) {
+  if (m >= 100) return { bg:0xe91e8c, text:0xffffff };
+  if (m >= 10)  return { bg:0xff6b00, text:0xffffff };
+  if (m >= 2)   return { bg:0xf5a623, text:0x000000 };
+  if (m >= 1)   return { bg:0x2ecc71, text:0x000000 };
+  return               { bg:0x3498db, text:0xffffff };
+}
+
+// ── STATE ────────────────────────────────────────────────
+const State = {
+  balance:  1000.00,
+  bet:      1.00,
+  rows:     16,
+  vol:      'high',
+  mode:     'manual',
+  balls:    [],        // active ball objects
+  pegs:     [],        // [{x,y,r}]
+  buckets:  [],        // bucket positions & mults
+  roundId:  1,
+  history:  [],
+  autoRunning: false,
+  autoLeft:    0,
+};
+
+// ── PIXI SETUP ───────────────────────────────────────────
+const wrap  = document.getElementById('canvas-wrap');
+let CW = wrap.offsetWidth  || 700;
+let CH = wrap.offsetHeight || 500;
+
+const app = new PIXI.Application({
+  view: document.getElementById('plinko-canvas'),
+  width: CW, height: CH,
+  backgroundColor: 0x10152a,
+  antialias: true,
+  resolution: window.devicePixelRatio || 1,
+  autoDensity: true,
+});
+
+// Layers
+const lBG      = new PIXI.Container();
+const lPegs    = new PIXI.Container();
+const lBuckets = new PIXI.Container();
+const lBalls   = new PIXI.Container();
+const lFX      = new PIXI.Container();
+app.stage.addChild(lBG, lPegs, lBuckets, lBalls, lFX);
+
+// ── LAYOUT ───────────────────────────────────────────────
+let ROWS, PEG_COLS, GRID_TOP, GRID_BOT, PEG_SPACING_X, PEG_SPACING_Y;
+
+function computeLayout() {
+  CW = wrap.offsetWidth  || 700;
+  CH = wrap.offsetHeight || 500;
+  app.renderer.resize(CW, CH);
+
+  ROWS          = State.rows;
+  GRID_TOP      = 60;
+  GRID_BOT      = CH - 55;
+  PEG_SPACING_Y = (GRID_BOT - GRID_TOP) / (ROWS + 1);
+  PEG_SPACING_X = (CW * 0.78) / (ROWS + 1);
+}
+
+// ── BUILD SCENE ──────────────────────────────────────────
+function buildScene() {
+  computeLayout();
+  lBG.removeChildren();
+  lPegs.removeChildren();
+  lBuckets.removeChildren();
+  State.pegs    = [];
+  State.buckets = [];
+
+  drawBackground();
+  buildPegs();
+  buildBuckets();
+}
+
+// ── BACKGROUND ───────────────────────────────────────────
+function drawBackground() {
+  const g = new PIXI.Graphics();
+
+  // Deep space gradient
+  g.beginFill(0x0b0f1e); g.drawRect(0,0,CW,CH); g.endFill();
+
+  // Nebula glow
+  for (let i = 6; i >= 0; i--) {
+    g.beginFill(0x2a0a5e, 0.025 * (7-i));
+    g.drawEllipse(CW*0.5, CH*0.45, CW*0.7*(i/6), CH*0.6*(i/6));
+    g.endFill();
+  }
+  for (let i = 5; i >= 0; i--) {
+    g.beginFill(0x0a2a5e, 0.02 * (6-i));
+    g.drawEllipse(CW*0.25, CH*0.3, CW*0.4*(i/5), CH*0.4*(i/5));
+    g.endFill();
+  }
+
+  // Stars
+  for (let i = 0; i < 80; i++) {
+    const alpha = 0.1 + Math.random()*0.5;
+    const r     = 0.3 + Math.random()*1.2;
+    g.beginFill(0xffffff, alpha);
+    g.drawCircle(Math.random()*CW, Math.random()*CH*0.7, r);
+    g.endFill();
+  }
+
+  // Planets
+  drawPlanet(g, CW*0.08, CH*0.65, 42, 0xc0392b, 0.85);
+  drawPlanet(g, CW*0.88, CH*0.55, 58, 0x8e44ad, 0.7);
+  drawPlanet(g, CW*0.78, CH*0.15, 28, 0x2980b9, 0.6);
+
+  // Light cone from top
+  const cone = new PIXI.Graphics();
+  cone.beginFill(0xffffff, 0.018);
+  cone.moveTo(CW/2, 0);
+  cone.lineTo(CW/2 - CW*0.42, GRID_BOT);
+  cone.lineTo(CW/2 + CW*0.42, GRID_BOT);
+  cone.closePath(); cone.endFill();
+
+  lBG.addChild(g, cone);
+
+  // UFO at top
+  drawUFO();
+}
+
+function drawPlanet(g, x, y, r, color, alpha) {
+  // Shadow
+  g.beginFill(0x000000, 0.3);
+  g.drawCircle(x+4, y+4, r);
+  g.endFill();
+  // Body
+  g.beginFill(color, alpha);
+  g.drawCircle(x, y, r);
+  g.endFill();
+  // Ring
+  g.lineStyle(3, color, 0.4);
+  g.drawEllipse(x, y, r*1.7, r*0.45);
+  g.lineStyle(0);
+  // Highlight
+  g.beginFill(0xffffff, 0.15);
+  g.drawEllipse(x - r*0.25, y - r*0.3, r*0.55, r*0.28);
+  g.endFill();
+}
+
+function drawUFO() {
+  const g = new PIXI.Graphics();
+  const ux = CW / 2, uy = 26;
+  // Glow
+  for (let i = 4; i >= 0; i--) {
+    g.beginFill(0x44ccff, 0.03*(5-i));
+    g.drawEllipse(ux, uy+8, 60+i*10, 14+i*4);
+    g.endFill();
+  }
+  // Dome
+  g.beginFill(0x7fb3d3, 0.8);
+  g.drawEllipse(ux, uy-4, 36, 20);
+  g.endFill();
+  // Body
+  g.beginFill(0xb8c6d1, 0.9);
+  g.drawEllipse(ux, uy+5, 60, 14);
+  g.endFill();
+  // Bottom glow stripe
+  g.beginFill(0xf5a623, 0.9);
+  g.drawEllipse(ux, uy+10, 42, 5);
+  g.endFill();
+  // Windows
+  [-16,0,16].forEach(dx => {
+    g.beginFill(0x44ccff, 0.7);
+    g.drawCircle(ux+dx, uy+5, 4);
+    g.endFill();
+  });
+  lBG.addChild(g);
+
+  // UFO beam (pulsing)
+  const beam = new PIXI.Graphics();
+  beam.beginFill(0xffffff, 0.025);
+  beam.moveTo(ux - 8, uy+14);
+  beam.lineTo(ux - CW*0.42, GRID_BOT);
+  beam.lineTo(ux + CW*0.42, GRID_BOT);
+  beam.lineTo(ux + 8, uy+14);
+  beam.closePath(); beam.endFill();
+  lBG.addChild(beam);
+
+  // Pulse beam alpha
+  let bt = 0;
+  app.ticker.add(() => {
+    bt += 0.04;
+    beam.alpha = 0.6 + 0.4 * Math.sin(bt);
+  });
+}
+
+// ── PEGS ─────────────────────────────────────────────────
+function buildPegs() {
+  const g = new PIXI.Graphics();
+  State.pegs = [];
+
+  for (let row = 0; row < ROWS; row++) {
+    const colsInRow = row + 3; // row 0 → 3 pegs, grows by 1
+    const rowPegs   = Math.min(colsInRow, ROWS + 1);
+    const rowWidth  = (rowPegs - 1) * PEG_SPACING_X;
+    const startX    = CW/2 - rowWidth/2;
+    const y         = GRID_TOP + (row + 1) * PEG_SPACING_Y;
+
+    for (let col = 0; col < rowPegs; col++) {
+      const x = startX + col * PEG_SPACING_X;
+      State.pegs.push({ x, y, r: CFG.PEG_R });
+
+      // Outer glow
+      for (let gi = 3; gi >= 0; gi--) {
+        g.beginFill(0xffffff, 0.04 * (4-gi));
+        g.drawCircle(x, y, CFG.PEG_R + gi*2);
+        g.endFill();
+      }
+      // White peg
+      g.beginFill(0xffffff, 0.95);
+      g.drawCircle(x, y, CFG.PEG_R);
+      g.endFill();
+      // Highlight
+      g.beginFill(0xffffff, 0.6);
+      g.drawCircle(x - 1, y - 1, 1.5);
+      g.endFill();
+    }
+  }
+  lPegs.addChild(g);
+}
+
+// ── BUCKETS ──────────────────────────────────────────────
+function buildBuckets() {
+  const mults = MULT_TABLES[State.rows][State.vol];
+  const count = mults.length;
+  const totalW = CW * 0.84;
+  const bucketW = totalW / count;
+  const startX  = (CW - totalW) / 2;
+  const by      = CH - 48;
+
+  State.buckets = [];
+  const g = new PIXI.Graphics();
+
+  mults.forEach((m, i) => {
+    const bx  = startX + i * bucketW;
+    const cx  = bx + bucketW/2;
+    const col = multColor(m);
+
+    // Bucket bg
+    g.beginFill(col.bg, 0.9);
+    g.lineStyle(1, 0x000000, 0.3);
+    g.drawRoundedRect(bx + 1, by, bucketW - 2, 36, 4);
+    g.endFill();
+    g.lineStyle(0);
+
+    // Top edge highlight
+    g.beginFill(0xffffff, 0.15);
+    g.drawRoundedRect(bx + 1, by, bucketW - 2, 6, 4);
+    g.endFill();
+
+    const label = new PIXI.Text(m >= 1 ? (Number.isInteger(m) ? m+'X' : m+'X') : m+'X', {
+      fontFamily:'Syne', fontSize: bucketW > 28 ? 9 : 7,
+      fontWeight:'800', fill:col.text,
+      align:'center',
+    });
+    label.anchor.set(0.5, 0.5);
+    label.x = cx; label.y = by + 18;
+    lBuckets.addChild(label);
+
+    State.buckets.push({ x:bx, cx, y:by, w:bucketW, mult:m, gfx:null });
+  });
+
+  lBuckets.addChild(g);
+}
+
+// ── BALL PHYSICS ─────────────────────────────────────────
+class Ball {
+  constructor(bet) {
+    this.x    = CW/2 + (Math.random()-0.5)*8;
+    this.y    = GRID_TOP - 10;
+    this.vx   = (Math.random()-0.5)*0.5;
+    this.vy   = CFG.BALL_SPEED;
+    this.bet  = bet;
+    this.r    = CFG.BALL_R;
+    this.done = false;
+    this.trail = [];
+    this.color = [0xe91e8c,0x44ccff,0xf5a623,0x2ecc71,0xa855f7][Math.floor(Math.random()*5)];
+    this.gfx  = new PIXI.Graphics();
+    lBalls.addChild(this.gfx);
+  }
+
+  update() {
+    if (this.done) return;
+
+    this.vy += CFG.GRAVITY;
+
+    // Clamp horizontal speed
+    this.vx = Math.max(-3.5, Math.min(3.5, this.vx));
+
+    this.x += this.vx;
+    this.y += this.vy;
+
+    // Wall bounce
+    const leftBound  = State.buckets[0]?.x   + this.r || this.r;
+    const rightBound = State.buckets[State.buckets.length-1]?.x + State.buckets[State.buckets.length-1]?.w - this.r || CW - this.r;
+    if (this.x < leftBound)  { this.x = leftBound;  this.vx = Math.abs(this.vx) * 0.6; }
+    if (this.x > rightBound) { this.x = rightBound; this.vx = -Math.abs(this.vx) * 0.6; }
+
+    // Peg collision
+    for (const peg of State.pegs) {
+      const dx = this.x - peg.x;
+      const dy = this.y - peg.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      const minDist = this.r + peg.r;
+      if (dist < minDist && dist > 0.01) {
+        // Push out
+        const nx = dx/dist, ny = dy/dist;
+        this.x = peg.x + nx * (minDist + 0.5);
+        this.y = peg.y + ny * (minDist + 0.5);
+
+        // Reflect velocity
+        const dot = this.vx*nx + this.vy*ny;
+        this.vx = (this.vx - 2*dot*nx) * CFG.BOUNCE;
+        this.vy = (this.vy - 2*dot*ny) * CFG.BOUNCE;
+
+        // Add slight random jitter (Plinko's left-right randomness)
+        this.vx += (Math.random()-0.5)*1.2;
+
+        // Ensure ball moves downward after bounce
+        if (this.vy < 1) this.vy = 1;
+
+        // Flash peg
+        flashPeg(peg);
+        break;
+      }
+    }
+
+    // Check bucket landing
+    const bucketY = CH - 48;
+    if (this.y >= bucketY - this.r) {
+      this.y = bucketY - this.r;
+      this.done = true;
+      this.landInBucket();
+    }
+
+    // Trail
+    this.trail.push({x:this.x, y:this.y});
+    if (this.trail.length > 12) this.trail.shift();
+
+    this.draw();
+  }
+
+  draw() {
+    this.gfx.clear();
+    // Trail
+    this.trail.forEach((p,i) => {
+      const alpha = (i / this.trail.length) * 0.3;
+      const size  = this.r * (i / this.trail.length) * 0.7;
+      this.gfx.beginFill(this.color, alpha);
+      this.gfx.drawCircle(p.x, p.y, size);
+      this.gfx.endFill();
+    });
+
+    // Outer glow
+    for (let gi = 3; gi >= 0; gi--) {
+      this.gfx.beginFill(this.color, 0.05*(4-gi));
+      this.gfx.drawCircle(this.x, this.y, this.r + gi*2.5);
+      this.gfx.endFill();
+    }
+    // Ball
+    this.gfx.beginFill(this.color, 1);
+    this.gfx.drawCircle(this.x, this.y, this.r);
+    this.gfx.endFill();
+    // Shine
+    this.gfx.beginFill(0xffffff, 0.55);
+    this.gfx.drawCircle(this.x - this.r*0.3, this.y - this.r*0.32, this.r*0.38);
+    this.gfx.endFill();
+  }
+
+  landInBucket() {
+    // Find which bucket
+    let bIdx = 0;
+    for (let i = 0; i < State.buckets.length; i++) {
+      const b = State.buckets[i];
+      if (this.x >= b.x && this.x < b.x + b.w) { bIdx = i; break; }
+    }
+    const bucket = State.buckets[bIdx];
+    const mult   = bucket ? bucket.mult : 0.2;
+    const win    = parseFloat((this.bet * mult).toFixed(2));
+
+    // Credit wallet
+    State.balance = parseFloat((State.balance + win).toFixed(2));
+    updateBalUI();
+
+    // Flash bucket
+    flashBucket(bIdx, bucket);
+
+    // Show win
+    showWinFlash(mult, win);
+
+    // Log history
+    addHistory(this.bet, mult, win);
+
+    // Particles on big win
+    if (mult >= 10) spawnParticles(this.x, this.y);
+
+    // Clean up
+    setTimeout(() => {
+      lBalls.removeChild(this.gfx);
+      this.gfx.destroy();
+    }, 300);
+
+    // Enable button if no more balls
+    setTimeout(() => {
+      State.balls = State.balls.filter(b => b !== this);
+      if (State.balls.length === 0) {
+        document.getElementById('bet-btn').disabled = false;
+        if (State.autoRunning && State.autoLeft > 0) {
+          State.autoLeft--;
+          setTimeout(dropBall, 600);
+        } else if (State.autoRunning) {
+          State.autoRunning = false;
+          document.getElementById('bet-btn').textContent = `BET ${State.bet.toFixed(2)}`;
+        }
+      }
+    }, 100);
+  }
+
+  destroy() {
+    if (this.gfx.parent) lBalls.removeChild(this.gfx);
+    this.gfx.destroy();
+  }
+}
+
+// ── PEG FLASH ────────────────────────────────────────────
+const pegFlashes = new Map();
+function flashPeg(peg) {
+  pegFlashes.set(peg, { alpha:1, time:0 });
+}
+
+// ── BUCKET FLASH ─────────────────────────────────────────
+const bucketFlashGfx = new PIXI.Graphics();
+lFX.addChild(bucketFlashGfx);
+
+function flashBucket(idx, bucket) {
+  if (!bucket) return;
+  bucketFlashGfx.clear();
+  const col = multColor(bucket.mult);
+  for (let i = 4; i >= 0; i--) {
+    bucketFlashGfx.beginFill(col.bg, 0.08*(5-i));
+    bucketFlashGfx.drawRoundedRect(
+      bucket.x - i*3, bucket.y - i*4,
+      bucket.w + i*6, 36 + i*8, 6
+    );
+    bucketFlashGfx.endFill();
+  }
+  bucketFlashGfx.beginFill(col.bg, 0.5);
+  bucketFlashGfx.drawRoundedRect(bucket.x+1, bucket.y, bucket.w-2, 36, 4);
+  bucketFlashGfx.endFill();
+  setTimeout(() => bucketFlashGfx.clear(), 700);
+}
+
+// ── WIN FLASH ────────────────────────────────────────────
+let wfTimer = null;
+function showWinFlash(mult, win) {
+  document.getElementById('wf-mult').textContent = mult + '×';
+  document.getElementById('wf-win').textContent  = '+ $' + win.toFixed(2);
+  document.getElementById('win-flash').classList.add('show');
+  clearTimeout(wfTimer);
+  wfTimer = setTimeout(() => document.getElementById('win-flash').classList.remove('show'), 2000);
+}
+
+// ── DROP BALL ────────────────────────────────────────────
+function dropBall() {
+  if (State.balance < State.bet && !State.autoRunning) {
+    toast('Insufficient balance!'); return;
+  }
+  State.balance = parseFloat((State.balance - State.bet).toFixed(2));
+  updateBalUI();
+
+  const ball = new Ball(State.bet);
+  State.balls.push(ball);
+  State.roundId++;
+  document.getElementById('bet-btn').disabled = true;
+}
+
+// ── TICKER ───────────────────────────────────────────────
+const pegFlashGfx = new PIXI.Graphics();
+lFX.addChild(pegFlashGfx);
+
+app.ticker.add(() => {
+  // Update balls
+  State.balls.forEach(b => b.update());
+
+  // Peg flashes
+  pegFlashGfx.clear();
+  pegFlashes.forEach((data, peg) => {
+    data.time += 0.15;
+    const a = Math.max(0, 1 - data.time * 0.5);
+    if (a <= 0) { pegFlashes.delete(peg); return; }
+    for (let gi = 3; gi >= 0; gi--) {
+      pegFlashGfx.beginFill(0xffffff, a * 0.15 * (4-gi));
+      pegFlashGfx.drawCircle(peg.x, peg.y, CFG.PEG_R + gi*3 + data.time*2);
+      pegFlashGfx.endFill();
+    }
+    pegFlashGfx.beginFill(0xffffff, a*0.8);
+    pegFlashGfx.drawCircle(peg.x, peg.y, CFG.PEG_R + 2);
+    pegFlashGfx.endFill();
+  });
+});
+
+// ── HISTORY ──────────────────────────────────────────────
+function addHistory(bet, mult, win) {
+  State.history.unshift({ bet, mult, win, time:'just now', id: State.roundId });
+  if (State.history.length > 30) State.history.pop();
+  renderHistory();
+}
+
+function renderHistory() {
+  const tbody = document.getElementById('hist-body');
+  tbody.innerHTML = State.history.map(h => {
+    const isWin   = h.win > h.bet;
+    const multHi  = h.mult >= 10;
+    return `<tr>
+      <td>Crystal Plinko</td>
+      <td>${1200000 + Math.floor(Math.random()*9999)}</td>
+      <td>${h.time}</td>
+      <td>${h.bet.toFixed(2)}</td>
+      <td class="${multHi ? 'mult-hi' : 'mult-lo'}">${h.mult}×</td>
+      <td class="${isWin ? 'win-val' : 'loss-val'}">${h.win.toFixed(2)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── CONTROLS ─────────────────────────────────────────────
+const BET_STEPS = [0.1,0.2,0.5,1,2,5,10,20,50,100];
+let betStepIdx = 3;
+
+function stepBet(dir) {
+  betStepIdx = Math.max(0, Math.min(BET_STEPS.length-1, betStepIdx+dir));
+  State.bet  = BET_STEPS[betStepIdx];
+  updateBetUI();
+}
+
+function setBetPreset(p) {
+  if (p==='min')    { State.bet=CFG.MIN_BET; betStepIdx=0; }
+  if (p==='half')   { State.bet=Math.max(CFG.MIN_BET, +(State.bet/2).toFixed(2)); }
+  if (p==='double') { State.bet=Math.min(CFG.MAX_BET, +(State.bet*2).toFixed(2)); }
+  if (p==='max')    { State.bet=CFG.MAX_BET; betStepIdx=BET_STEPS.length-1; }
+  updateBetUI();
+}
+
+function updateBetUI() {
+  document.getElementById('bet-display').textContent = State.bet.toFixed(2);
+  document.getElementById('bet-btn').textContent     = `BET ${State.bet.toFixed(2)}`;
+}
+
+function updateBalUI() {
+  document.getElementById('bal-display').textContent =
+    State.balance.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function setRows(r, btn) {
+  State.rows = r;
+  document.querySelectorAll('.row-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  buildScene();
+}
+
+function setVol(v, btn) {
+  State.vol = v;
+  document.querySelectorAll('.vol-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  // Color
+  if (v==='low') btn.classList.add('low-v');
+  else if (v==='med') btn.classList.add('mid-v');
+  buildScene();
+}
+
+function setMode(m, btn) {
+  State.mode = m;
+  document.querySelectorAll('.mode-tab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('auto-opts').style.display = m==='auto' ? 'block' : 'none';
+  if (m==='auto') {
+    document.getElementById('bet-btn').textContent = 'START AUTO';
+    document.getElementById('bet-btn').onclick = startAuto;
+  } else {
+    document.getElementById('bet-btn').textContent = `BET ${State.bet.toFixed(2)}`;
+    document.getElementById('bet-btn').onclick = dropBall;
+  }
+}
+
+function startAuto() {
+  const rounds = parseInt(document.getElementById('auto-rounds').value) || 10;
+  State.autoRunning = true;
+  State.autoLeft    = rounds - 1;
+  dropBall();
+}
+
+// ── PARTICLES ────────────────────────────────────────────
+const pfx    = document.getElementById('pfx');
+pfx.width    = window.innerWidth;
+pfx.height   = window.innerHeight;
+const pfxCtx = pfx.getContext('2d');
+let particles = [];
+
+function spawnParticles(x, y) {
+  const rect = document.getElementById('canvas-wrap').getBoundingClientRect();
+  const px = rect.left + x * (rect.width / CW);
+  const py = rect.top  + y * (rect.height / CH);
+  for (let i = 0; i < 50; i++) {
+    const angle = Math.random()*Math.PI*2;
+    const speed = 2 + Math.random()*7;
+    particles.push({
+      x:px, y:py,
+      vx:Math.cos(angle)*speed, vy:Math.sin(angle)*speed-3,
+      life:1, decay:0.018+Math.random()*0.015,
+      size:3+Math.random()*7,
+      color:['#f5a623','#e91e8c','#44ccff','#2ecc71','#fff'][Math.floor(Math.random()*5)],
+    });
+  }
+  animParticles();
+}
+
+function animParticles() {
+  pfxCtx.clearRect(0,0,pfx.width,pfx.height);
+  particles = particles.filter(p=>p.life>0);
+  particles.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy; p.vy+=0.2;
+    p.life-=p.decay;
+    pfxCtx.save();
+    pfxCtx.globalAlpha=p.life;
+    pfxCtx.fillStyle=p.color;
+    pfxCtx.beginPath();
+    pfxCtx.arc(p.x,p.y,p.size/2,0,Math.PI*2);
+    pfxCtx.fill();
+    pfxCtx.restore();
+  });
+  if(particles.length>0) requestAnimationFrame(animParticles);
+  else pfxCtx.clearRect(0,0,pfx.width,pfx.height);
+}
+
+// ── TOAST ─────────────────────────────────────────────────
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent=msg; el.className='show';
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>el.className='',2800);
+}
+
+// ── RESIZE ───────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  pfx.width  = window.innerWidth;
+  pfx.height = window.innerHeight;
+  buildScene();
+});
+
+// ── KEYBOARD ─────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.code==='Space') { e.preventDefault(); dropBall(); }
+});
+
+// ── INIT ─────────────────────────────────────────────────
+buildScene();
+updateBetUI();
+updateBalUI();
+// Click-to-drop on canvas
+document.getElementById('plinko-canvas').addEventListener('click', () => {
+  if (!document.getElementById('bet-btn').disabled) dropBall();
+});
+
+console.log(`
+╔══════════════════════════════════════════════════════╗
+║  CRYSTAL PLINKO — ZinZin Studio                      ║
+║  Engine: PixiJS 7  ·  Rows: 12/14/16                 ║
+║  Volatility: Low/Med/High  ·  Max: 999×              ║
+║  RTP: 96%  ·  Physics: Gravity + Peg Collision       ║
+║  Seamless Wallet: /api/v1/plinko                     ║
+╚══════════════════════════════════════════════════════╝
+`);
+</script>
+</body>
+</html>

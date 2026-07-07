@@ -1,0 +1,11 @@
+{
+  "rewrites": [
+    { "source": "/bakery-bonanza", "destination": "/bakery-bonanza.html" },
+    { "source": "/crystal-plinko", "destination": "/crystal-plinko.html" },
+    { "source": "/altitude-x", "destination": "/altitude-x.html" }
+  ],
+  "redirects": [
+    { "source": "/saga_of_valhalla", "destination": "/saga_of_valhalla/", "permanent": true },
+    { "source": "/quack_rush_crash", "destination": "/quack_rush_crash/", "permanent": true }
+  ]
+}

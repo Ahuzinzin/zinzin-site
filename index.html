@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ZinZin Studios — iGaming Games</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="preload" href="banner-poster.jpg" as="image" fetchpriority="high">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06060e;
+  --s1:#0c0c1a;
+  --s2:#131325;
+  --s3:#1a1a30;
+  --border:rgba(255,255,255,.07);
+  --text:#e4e4f4;
+  --muted:#60608a;
+  --gold:#ffcf00;
+  --gold-l:#ffe033;
+  --purple:#7048d0;
+  --red:#e03040;
+  --nav-h:72px;
+  --radius:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;font-size:16px;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+
+
+/* ── PARTNERS ── */
+#partners{background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.partners-inner{max-width:1200px;margin:0 auto;padding:80px clamp(20px,4vw,80px)}
+.partners-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:56px;flex-wrap:wrap;gap:20px}
+.partners-head h2{font-family:'Barlow',sans-serif;font-size:clamp(24px,3.5vw,44px);
+                  font-weight:800;text-transform:uppercase;letter-spacing:-1px;max-width:600px;line-height:1.1}
+.partners-head h2 span{color:var(--gold)}
+.partners-logos{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;background:var(--border)}
+.partner-logo{background:var(--s2);display:flex;align-items:center;justify-content:center;
+              padding:32px 20px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;
+              letter-spacing:1px;text-transform:uppercase;color:var(--muted);
+              transition:all .2s;cursor:default}
+.partner-logo:hover{background:var(--s3);color:var(--text)}
+@media(max-width:860px){.partners-logos{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:500px){.partners-logos{grid-template-columns:repeat(2,1fr)}}
+
+/* ── CONTACT ── */
+#contact{background:var(--bg);border-top:1px solid var(--border)}
+.contact-inner{max-width:1100px;margin:0 auto;text-align:center;padding:0 clamp(20px,4vw,64px)}
+.contact-inner h2{font-family:'Barlow',sans-serif;font-size:clamp(32px,5vw,64px);
+                  font-weight:800;text-transform:uppercase;letter-spacing:-2px;margin-bottom:14px;line-height:1.0}
+.contact-inner>p{color:var(--muted);font-size:16px;line-height:1.7;margin-bottom:48px;max-width:560px;margin-left:auto;margin-right:auto}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;text-align:left;align-items:start}
+.cf-form{background:var(--s2);border:1px solid var(--border);border-radius:16px;padding:36px}
+.cf-form h3{font-family:'Barlow',sans-serif;font-size:18px;font-weight:700;margin-bottom:28px}
+.cf-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.cf-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.cf-field label{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
+.cf-field input,.cf-field textarea,.cf-field select{
+  background:var(--s1);border:1px solid var(--border);border-radius:8px;
+  padding:12px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;
+  outline:none;transition:border-color .2s;width:100%;resize:none}
+.cf-field input:focus,.cf-field textarea:focus,.cf-field select:focus{border-color:var(--gold)}
+.cf-field input::placeholder,.cf-field textarea::placeholder{color:var(--muted);opacity:.6}
+.cf-field select option{background:var(--s1)}
+.cf-check{display:flex;align-items:flex-start;gap:10px;margin-bottom:24px}
+.cf-check input{margin-top:3px;accent-color:var(--gold);flex-shrink:0}
+.cf-check label{font-size:12px;color:var(--muted);line-height:1.5}
+.cf-check a{color:var(--gold);text-decoration:none}
+.btn-submit{width:100%;padding:15px;border-radius:8px;background:var(--gold);color:#000;
+            font-family:'Barlow',sans-serif;font-size:14px;font-weight:700;
+            border:none;cursor:pointer;letter-spacing:.4px;transition:all .2s}
+.btn-submit:hover{background:var(--gold-l);transform:translateY(-1px)}
+.cf-side{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:40px 0}
+.cf-zz{font-size:96px;line-height:1;font-family:'Barlow',sans-serif;font-weight:800;
+        color:var(--gold);opacity:.12;position:absolute;pointer-events:none;user-select:none}
+.cf-side-inner{position:relative;text-align:center}
+.cf-badge-icon{width:80px;height:80px;border-radius:50%;background:var(--s2);
+               border:1px solid var(--border);display:flex;align-items:center;
+               justify-content:center;font-size:36px;margin:0 auto 20px}
+.cf-side-title{font-family:'Barlow',sans-serif;font-size:22px;font-weight:800;margin-bottom:10px}
+.cf-side-desc{color:var(--muted);font-size:14px;line-height:1.7;max-width:320px}
+.cf-perks{display:flex;flex-direction:column;gap:14px;margin-top:32px;width:100%}
+.cf-perk{display:flex;align-items:flex-start;gap:14px;padding:16px;
+         background:var(--s2);border:1px solid var(--border);border-radius:10px}
+.cf-perk-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.cf-perk-desc{font-size:12px;color:var(--muted)}
+@media(max-width:780px){
+  .contact-grid{grid-template-columns:1fr}
+  .cf-side{display:none}
+  .cf-row{grid-template-columns:1fr}
+}
+
+/* ── AGE GATE ── */
+#ag{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;
+    display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px)}
+.ag-box{background:var(--s2);border:1px solid var(--border);border-radius:20px;
+        max-width:520px;width:100%;padding:56px 40px;text-align:center}
+.ag-box img{height:48px;margin-bottom:32px;object-fit:contain}
+.ag-box h2{font-family:'Barlow',sans-serif;font-size:clamp(22px,4vw,36px);
+           font-weight:800;line-height:1.15;margin-bottom:10px}
+.ag-box p{color:var(--muted);font-size:14px;margin-bottom:36px;line-height:1.6}
+.ag-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.ag-yes{padding:14px 40px;border-radius:8px;background:var(--gold);color:#000;
+        font-family:'Barlow',sans-serif;font-size:14px;font-weight:700;
+        border:none;cursor:pointer;letter-spacing:.5px;transition:background .2s}
+.ag-yes:hover{background:var(--gold-l)}
+.ag-no{padding:14px 32px;border-radius:8px;background:transparent;color:var(--muted);
+       font-family:'Barlow',sans-serif;font-size:14px;font-weight:600;
+       border:1px solid var(--border);cursor:pointer;transition:all .2s}
+.ag-no:hover{border-color:var(--text);color:var(--text)}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:900;
+    display:flex;align-items:center;padding:0 clamp(20px,4vw,64px);
+    background:rgba(6,6,14,.85);backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border);transition:background .3s}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.nav-logo img{height:48px;object-fit:contain}
+.nav-links{display:flex;align-items:center;gap:36px;margin-left:auto}
+.nav-links a{color:rgba(255,255,255,.80);font-size:13px;font-weight:700;text-decoration:none;
+             letter-spacing:.5px;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:#fff}
+.nav-links a.active{color:#fff}
+.nav-contact-btn{margin-left:20px;padding:9px 22px;border-radius:4px;
+         background:transparent;color:#fff;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;
+         text-decoration:none;letter-spacing:1px;text-transform:uppercase;
+         border:1px solid rgba(255,255,255,.3);transition:all .2s;flex-shrink:0}
+.nav-contact-btn:hover{border-color:#fff;background:rgba(255,255,255,.06)}
+.nav-burger{display:none;flex-direction:column;gap:5px;cursor:pointer;margin-left:auto}
+.nav-burger span{display:block;width:24px;height:2px;background:var(--text);border-radius:2px;transition:all .3s}
+#mobile-menu{display:none;position:fixed;top:var(--nav-h);left:0;right:0;
+             background:var(--s1);border-bottom:1px solid var(--border);
+             padding:24px;flex-direction:column;gap:20px;z-index:899}
+#mobile-menu.open{display:flex}
+#mobile-menu a{color:var(--text);text-decoration:none;font-size:16px;font-weight:500}
+
+/* ── HERO ── */
+#hero{position:relative;height:100vh;min-height:560px;display:flex;align-items:flex-end;
+      justify-content:center;overflow:hidden;padding-bottom:clamp(80px,12vh,160px)}
+.hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero-overlay{position:absolute;inset:0;
+  background:linear-gradient(to bottom,rgba(6,6,14,.40) 0%,rgba(6,6,14,.20) 30%,rgba(6,6,14,.75) 70%,rgba(6,6,14,.96) 100%)}
+.hero-content{position:relative;z-index:2;text-align:center;padding:0 20px;max-width:860px}
+.hero-h1{font-family:'Barlow',sans-serif;font-size:clamp(40px,6.5vw,88px);
+         font-weight:800;line-height:.92;margin-bottom:36px;
+         text-transform:uppercase;color:#fff;letter-spacing:-2px}
+.hero-h1 .gold{color:var(--gold)}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-pri{padding:16px 40px;border-radius:3px;background:var(--gold);color:#000;
+         font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;
+         text-decoration:none;letter-spacing:1.5px;text-transform:uppercase;
+         transition:all .2s;border:none;cursor:pointer}
+.btn-pri:hover{background:var(--gold-l)}
+.btn-sec{padding:16px 40px;border-radius:3px;background:transparent;color:#fff;
+         font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;
+         text-decoration:none;letter-spacing:1.5px;text-transform:uppercase;
+         border:1px solid rgba(255,255,255,.5);transition:all .2s}
+.btn-sec:hover{border-color:#fff;background:rgba(255,255,255,.05)}
+.hero-scroll{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+             display:flex;flex-direction:column;align-items:center;gap:8px;opacity:.4;animation:bob 2s ease-in-out infinite}
+.hero-scroll span{font-size:10px;letter-spacing:2px;text-transform:uppercase}
+.hero-scroll svg{animation:bob 2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
+
+/* ── STATS ── */
+#stats{background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.stats-inner{max-width:1400px;margin:0 auto;padding:0 clamp(20px,4vw,80px);
+             display:flex;justify-content:center;gap:0}
+.stat-item{flex:1;max-width:280px;text-align:center;padding:40px 20px;
+           border-right:1px solid var(--border)}
+.stat-item:last-child{border-right:none}
+.stat-num{font-family:'Barlow',sans-serif;font-size:clamp(32px,4.5vw,52px);
+          font-weight:800;color:var(--gold);margin-bottom:6px}
+.stat-lbl{font-size:13px;color:var(--muted);letter-spacing:.5px}
+
+/* ── SECTION COMMON ── */
+.section{padding:100px clamp(20px,4vw,80px)}
+.sec-head{max-width:1400px;margin:0 auto 56px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:end}
+.sec-kicker{display:none}
+.sec-title{font-family:'Barlow',sans-serif;font-size:clamp(44px,6vw,80px);font-weight:800;line-height:.92;text-transform:uppercase;letter-spacing:-2px}
+.sec-title-bar{width:56px;height:4px;background:var(--gold);margin-top:18px}
+.sec-right{display:flex;flex-direction:column;justify-content:flex-end;gap:24px}
+.sec-muted{color:var(--muted);font-size:15px;max-width:480px;line-height:1.7}
+.filter-tabs{display:flex;gap:6px;flex-wrap:wrap}
+
+/* ── FILTER TABS ── */
+.cat-btn{padding:9px 22px;border-radius:3px;background:transparent;border:1px solid var(--border);
+         color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;
+         transition:all .2s;letter-spacing:.3px}
+.cat-btn:hover{border-color:rgba(200,150,56,.5);color:var(--text)}
+.cat-btn.active{background:var(--gold);border-color:var(--gold);color:#000;font-weight:700}
+
+/* ── GAME CARDS ── */
+#games{background:var(--bg)}
+.games-grid{max-width:1400px;margin:0 auto;
+            display:grid;gap:16px;
+            grid-template-columns:repeat(5,1fr)}
+.gc{cursor:pointer;border-radius:var(--radius);overflow:hidden;
+    background:#000;transition:transform .25s;position:relative}
+.gc:hover{transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.gc-img{position:relative;aspect-ratio:1000/1395;overflow:hidden}
+.gc-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease}
+.gc:hover .gc-img img{transform:scale(1.05)}
+.gc-ov{position:absolute;inset:0;background:rgba(0,0,0,.52);
+       display:flex;align-items:center;justify-content:center;
+       opacity:0;transition:opacity .25s}
+.gc:hover .gc-ov{opacity:1}
+.gc-play{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.92);
+         display:flex;align-items:center;justify-content:center}
+.gc-play svg{margin-left:3px}
+.gc-badge{position:absolute;top:12px;left:12px;
+          font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;
+          padding:4px 10px;border-radius:4px}
+.gc-badge.gold{background:var(--gold);color:#000}
+.gc-badge.purple{background:var(--purple);color:#fff}
+.gc-badge.red{background:var(--red);color:#fff}
+.gc-badge:not(.gold):not(.purple):not(.red){background:rgba(255,255,255,.14);color:#fff;backdrop-filter:blur(4px)}
+.gc-foot{position:absolute;bottom:0;left:0;right:0;padding:40px 14px 14px;
+         background:linear-gradient(transparent,rgba(0,0,0,.85));pointer-events:none}
+.gc-cat{display:block;font-size:9px;font-weight:700;letter-spacing:2px;
+        text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:3px}
+.gc-name{display:block;font-family:'Barlow',sans-serif;font-size:14px;font-weight:700;color:#fff}
+
+/* ── ABOUT ── */
+#about{background:var(--s1);border-top:1px solid var(--border)}
+.about-inner{max-width:1200px;margin:0 auto;
+             display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.about-text h2{font-family:'Barlow',sans-serif;font-size:clamp(56px,7.5vw,104px);
+               font-weight:800;line-height:.88;text-transform:uppercase;letter-spacing:-3px;margin-bottom:0}
+.about-text h2 .who{color:var(--gold);display:block}
+.about-text h2 .weare{color:#fff;display:block}
+.about-gold-bar{width:56px;height:4px;background:var(--gold);margin-top:22px}
+.about-body .lead{font-size:clamp(16px,1.5vw,19px);color:#fff;line-height:1.75;margin-bottom:24px;font-weight:400}
+.about-body .lead .studio-name{color:var(--gold);font-weight:600}
+.about-body .sub{color:rgba(228,228,244,.45);font-size:14px;line-height:1.85;margin-bottom:0}
+.btn-view-games{display:inline-flex;align-items:center;gap:10px;margin-top:36px;
+                padding:14px 28px;border:1.5px solid var(--gold);border-radius:3px;
+                background:transparent;color:var(--gold);font-family:'Barlow',sans-serif;
+                font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+                text-decoration:none;cursor:pointer;transition:all .2s}
+.btn-view-games:hover{background:var(--gold);color:#000}
+.about-imgs{display:none}
+@media(max-width:860px){.about-inner{grid-template-columns:1fr;gap:40px}}
+
+/* ── FOOTER ── */
+footer{position:relative;overflow:hidden;background:var(--s1);border-top:1px solid var(--border)}
+.ft-bg{position:absolute;inset:0;background:url('assets/footer_background.png') center/cover no-repeat;opacity:.18;pointer-events:none}
+.ft-char{position:absolute;right:0;bottom:0;height:85%;opacity:.9;pointer-events:none;
+         mask-image:linear-gradient(to right,transparent 0%,black 20%)}
+.ft-overlay{position:absolute;inset:0;background:url('footer_overlay.png') center bottom/cover no-repeat;opacity:.06;pointer-events:none}
+.ft-body{position:relative;z-index:2;max-width:1200px;margin:0 auto;
+         padding:64px clamp(20px,4vw,64px) 0;
+         display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px}
+.ft-brand img.ft-logo{height:44px;object-fit:contain;margin-bottom:20px;display:block}
+.ft-brand p{font-size:13px;color:var(--muted);line-height:1.8;max-width:280px}
+.ft-col h4{font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;
+           letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+.ft-col a{display:block;font-size:13px;color:rgba(228,228,244,.55);
+          text-decoration:none;margin-bottom:12px;transition:color .2s}
+.ft-col a:hover{color:var(--text)}
+.ft-social{display:flex;gap:12px;margin-top:4px}
+.ft-social a{width:38px;height:38px;border-radius:8px;border:1px solid var(--border);
+             display:flex;align-items:center;justify-content:center;
+             color:var(--muted);text-decoration:none;transition:all .2s}
+.ft-social a:hover{border-color:var(--gold);color:var(--gold)}
+.ft-badges{position:relative;z-index:2;max-width:1200px;margin:0 auto;
+           padding:40px clamp(20px,4vw,64px) 0;
+           border-top:1px solid var(--border);margin-top:48px;
+           display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.ft-badge{display:flex;align-items:center;gap:7px;padding:7px 14px;
+          border-radius:6px;border:1px solid var(--border);
+          font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.5px;white-space:nowrap}
+.ft-badge svg{flex-shrink:0;opacity:.7}
+.ft-bottom{position:relative;z-index:2;max-width:1200px;margin:0 auto;
+           padding:24px clamp(20px,4vw,64px) 40px;
+           display:flex;justify-content:space-between;align-items:center;
+           flex-wrap:wrap;gap:12px}
+.ft-copy{font-size:12px;color:var(--muted)}
+.ft-bottom-links{display:flex;gap:20px}
+.ft-bottom-links a{font-size:12px;color:var(--muted);text-decoration:none;transition:color .2s}
+.ft-bottom-links a:hover{color:var(--text)}
+.ft-disclaimer{position:relative;z-index:2;max-width:1200px;margin:0 auto;
+               padding:0 clamp(20px,4vw,64px) 36px;
+               font-size:11px;color:rgba(96,96,138,.6);line-height:1.7;border-top:1px solid var(--border);padding-top:20px}
+
+/* ── MODAL ── */
+#modalOverlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:950;
+              display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
+#modalOverlay.open{display:flex}
+.modal{background:var(--s2);border:1px solid var(--border);border-radius:16px;
+       width:100%;max-width:800px;max-height:90vh;overflow-y:auto;position:relative}
+.modal-close{position:absolute;top:16px;right:16px;width:36px;height:36px;
+             border-radius:50%;background:rgba(255,255,255,.08);border:none;
+             color:var(--text);font-size:18px;cursor:pointer;display:flex;
+             align-items:center;justify-content:center;transition:background .2s;z-index:2}
+.modal-close:hover{background:rgba(255,255,255,.16)}
+.modal-hero{aspect-ratio:16/7;overflow:hidden;border-radius:14px 14px 0 0;position:relative}
+.modal-hero img{width:100%;height:100%;object-fit:cover;display:block}
+.modal-hero-grad{position:absolute;bottom:0;left:0;right:0;height:60%;
+                 background:linear-gradient(transparent,var(--s2))}
+.modal-body{padding:28px 32px 36px}
+.modal-kicker{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+              color:var(--gold);margin-bottom:8px}
+.modal-title{font-family:'Barlow',sans-serif;font-size:clamp(22px,3vw,32px);
+             font-weight:800;margin-bottom:12px;line-height:1.1}
+.modal-desc{font-size:14px;color:rgba(228,228,244,.65);line-height:1.8;margin-bottom:28px}
+.modal-specs{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+             background:var(--border);border:1px solid var(--border);
+             border-radius:10px;overflow:hidden;margin-bottom:28px}
+.spec-item{background:var(--s1);padding:16px;text-align:center}
+.spec-val{font-family:'Barlow',sans-serif;font-size:16px;font-weight:700;
+          color:var(--gold);margin-bottom:4px}
+.spec-lbl{font-size:10px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
+.modal-features{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px}
+.feature-item{background:var(--s1);border:1px solid var(--border);border-radius:10px;
+              padding:16px;display:flex;gap:14px;align-items:flex-start}
+.feature-icon{font-size:22px;flex-shrink:0;margin-top:2px}
+.feature-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.feature-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.modal-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn-modal-primary{padding:14px 32px;border-radius:8px;background:var(--gold);color:#000;
+                   font-family:'Barlow',sans-serif;font-size:14px;font-weight:700;
+                   border:none;cursor:pointer;display:flex;align-items:center;gap:8px;
+                   transition:all .2s;text-decoration:none}
+.btn-modal-primary:hover{background:var(--gold-l);transform:translateY(-1px)}
+.btn-modal-sec{padding:14px 28px;border-radius:8px;background:transparent;color:var(--muted);
+               font-family:'Barlow',sans-serif;font-size:14px;font-weight:600;
+               border:1px solid var(--border);cursor:pointer;transition:all .2s}
+.btn-modal-sec:hover{border-color:var(--text);color:var(--text)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){.games-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:860px){
+  .games-grid{grid-template-columns:repeat(3,1fr)}
+  .sec-head{grid-template-columns:1fr;gap:24px}
+  .ft-body{grid-template-columns:1fr 1fr;gap:32px}
+  .ft-char{height:60%;opacity:.5}
+  .modal-specs{grid-template-columns:repeat(2,1fr)}
+  .modal-features{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .games-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .stat-item{padding:28px 12px}
+  .stats-inner{gap:0}
+  .ft-body{grid-template-columns:1fr}
+  .ft-char{display:none}
+  .nav-links{display:none}
+  .nav-burger{display:flex}
+  .nav-contact-btn{display:none}
+  .sec-head{flex-direction:column;align-items:flex-start}
+  .hero-scroll{display:none}
+  .ft-badges{gap:8px}
+  .modal-body{padding:20px}
+}
+@media(max-width:400px){.games-grid{grid-template-columns:1fr 1fr;gap:10px}}
+
+/* ════════════════════════════════════════════
+   ANIMATIONS & EFFECTS
+════════════════════════════════════════════ */
+
+/* ── Keyframes ── */
+@keyframes shimmer{0%{left:-100%}100%{left:150%}}
+@keyframes popIn{0%{transform:scale(1)}40%{transform:scale(1.18)}70%{transform:scale(.94)}100%{transform:scale(1)}}
+@keyframes letterBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes glitchShift{0%,100%{clip-path:inset(0 0 100% 0)}10%{clip-path:inset(20% 0 50% 0);transform:translate(-3px,0)}20%{clip-path:inset(60% 0 10% 0);transform:translate(3px,0)}30%{clip-path:inset(80% 0 0% 0);transform:translate(-2px,0)}40%,90%{clip-path:inset(0 0 100% 0);transform:none}}
+@keyframes underlineGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes cardFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-8px) rotate(.4deg)}}
+@keyframes badgePulse{0%,100%{transform:scale(1)}60%{transform:scale(1.25) rotate(-4deg)}}
+@keyframes spinOnce{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes btnRipple{0%{transform:scale(0);opacity:.35}100%{transform:scale(4);opacity:0}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}20%{transform:rotate(-8deg)}40%{transform:rotate(8deg)}60%{transform:rotate(-5deg)}80%{transform:rotate(5deg)}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,207,0,.5)}50%{box-shadow:0 0 22px 6px rgba(255,207,0,.22)}}
+
+/* ── Nav link hover: letter stagger + gold underline ── */
+.nav-links a{position:relative;overflow:visible}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:2px;
+  background:var(--gold);transform:scaleX(0);transform-origin:left;
+  transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.nav-links a:hover::after{transform:scaleX(1)}
+.nav-links a:hover{color:#fff;transform:none}
+
+/* ── Buttons: shimmer + bounce + ripple ── */
+.btn-pri,.btn-submit{position:relative;overflow:hidden;transition:transform .15s,box-shadow .2s}
+.btn-pri::before,.btn-submit::before{
+  content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);
+  transform:skewX(-20deg);transition:none}
+.btn-pri:hover::before,.btn-submit:hover::before{animation:shimmer .55s ease forwards}
+.btn-pri:hover{transform:translateY(-3px) scale(1.03);
+  box-shadow:0 8px 28px rgba(255,207,0,.35)}
+.btn-pri:active{transform:scale(.96)}
+.btn-sec{transition:transform .15s,box-shadow .2s,background .2s,border-color .2s}
+.btn-sec:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(255,255,255,.08)}
+
+/* ── Filter tabs: pop bounce ── */
+.cat-btn{position:relative;overflow:hidden;transition:all .2s cubic-bezier(.34,1.56,.64,1)}
+.cat-btn:hover:not(.active){transform:translateY(-3px) scale(1.06);
+  border-color:var(--gold);color:#fff;
+  box-shadow:0 6px 20px rgba(255,207,0,.15)}
+.cat-btn.active{animation:popIn .35s cubic-bezier(.34,1.56,.64,1)}
+
+/* ── Game cards: tilt + badge bounce ── */
+.gc{transition:transform .3s cubic-bezier(.34,1.3,.64,1),box-shadow .3s}
+.gc:hover .gc-badge{animation:badgePulse .4s ease}
+.gc-img img{transition:transform .5s cubic-bezier(.22,1,.36,1)}
+.gc:hover .gc-img img{transform:scale(1.07)}
+.gc-play{transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .2s}
+.gc:hover .gc-play{transform:scale(1.15)}
+
+/* ── Nav logo: wiggle on hover ── */
+.nav-logo:hover img{animation:wiggle .5s ease}
+
+/* ── Footer social: spin ── */
+.ft-social a{transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+.ft-social a:hover{transform:rotate(360deg) scale(1.15);
+  border-color:var(--gold);color:var(--gold)}
+
+/* ── VIEW GAMES btn: elastic ── */
+.btn-view-games{transition:all .25s cubic-bezier(.34,1.56,.64,1)}
+.btn-view-games:hover{transform:translateY(-3px) scale(1.04);
+  box-shadow:0 8px 24px rgba(255,207,0,.25)}
+
+/* ── Contact btn-submit glow ── */
+.btn-submit:hover{animation:glowPulse .8s ease infinite;transform:translateY(-2px)}
+
+/* ── Scroll reveal ── */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .6s ease,transform .6s cubic-bezier(.22,1,.36,1)}
+.reveal.visible{opacity:1;transform:none}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+
+/* ── Stat numbers: count-up highlight ── */
+.stat-num{transition:color .3s,transform .3s cubic-bezier(.34,1.56,.64,1)}
+.stat-item:hover .stat-num{transform:scale(1.12);color:var(--gold)}
+
+/* ── Section title bar: animate on reveal ── */
+.sec-title-bar,.about-gold-bar{transform-origin:left;transform:scaleX(0);
+  transition:transform .6s cubic-bezier(.22,1,.36,1) .3s}
+.visible .sec-title-bar,.visible .about-gold-bar{transform:scaleX(1)}
+
+/* ── Hero text entrance ── */
+.hero-h1{animation:slideUp .8s cubic-bezier(.22,1,.36,1) .2s both}
+.hero-btns{animation:slideUp .8s cubic-bezier(.22,1,.36,1) .45s both}
+
+@media(max-width:768px){
+  .gc{transition:transform .2s}
+}
+}
+
+</style>
+</head>
+<body>
+
+<!-- AGE GATE -->
+<div id="ag">
+  <div class="ag-box">
+    <img src="logo/zinzin_studios_logo.png" alt="ZinZin Studios">
+    <h2>You must be 18 or older to enter this site</h2>
+    <p>This website contains information about gambling products and services. Please confirm your age to continue.</p>
+    <div class="ag-btns">
+      <button class="ag-yes" id="age-yes">I am 18 or older</button>
+      <button class="ag-no" id="age-no">I am under 18</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <img src="logo/zinzin_studios_logo.png" alt="ZinZin Studios">
+  </a>
+  <div class="nav-links">
+    <a href="#games">Games</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <a href="#contact" class="nav-contact-btn">Get in Touch</a>
+  <div class="nav-burger" id="burger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div id="mobile-menu">
+  <a href="#games" onclick="toggleMenu()">Games</a>
+  <a href="#about" onclick="toggleMenu()">About</a>
+  <a href="#contact" onclick="toggleMenu()">Contact</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <video class="hero-video" autoplay muted loop playsinline
+         poster="banner-poster.jpg"
+         preload="auto">
+    <source src="banner.mp4" type="video/mp4">
+  </video>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1 class="hero-h1">Next<br><span class="gold">Level</span><br>Gaming</h1>
+    <div class="hero-btns">
+      <a href="#games" class="btn-pri">Explore Games</a>
+      <a href="#contact" class="btn-sec">Get in Touch</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <svg width="16" height="20" viewBox="0 0 16 20" fill="none">
+      <path d="M8 4v12M3 12l5 5 5-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+</section>
+
+<!-- STATS -->
+<div id="stats">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-num">10+</div>
+      <div class="stat-lbl">Games Created</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">5+</div>
+      <div class="stat-lbl">Operator Partners</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">3+</div>
+      <div class="stat-lbl">Markets</div>
+    </div>
+  </div>
+</div>
+
+<!-- GAMES -->
+<section id="games" class="section">
+  <div class="sec-head">
+    <div>
+      <div class="sec-title">Our<br>Games</div>
+      <div class="sec-title-bar"></div>
+    </div>
+    <div class="sec-right">
+      <div class="sec-muted">From Norse epics to ocean adventures — every title is built with original art and sharp mechanics.</div>
+      <div class="filter-tabs">
+        <button class="cat-btn active" onclick="filterGames('all',this)">All</button>
+        <button class="cat-btn" onclick="filterGames('slot',this)">Slots</button>
+        <button class="cat-btn" onclick="filterGames('crash',this)">Crash</button>
+        <button class="cat-btn" onclick="filterGames('instant',this)">Instant</button>
+      </div>
+    </div>
+  </div>
+  <div class="games-grid" id="gamesGrid"></div>
+  <div style="max-width:1400px;margin:40px auto 0;text-align:center">
+    <a href="#" style="font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;
+       letter-spacing:2px;text-transform:uppercase;color:var(--gold);text-decoration:none;
+       border-bottom:1px solid rgba(255,207,0,.4);padding-bottom:3px;
+       transition:border-color .2s" onmouseover="this.style.borderColor='var(--gold)'"
+       onmouseout="this.style.borderColor='rgba(255,207,0,.4)'">View All Games →</a>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="section">
+  <div class="about-inner">
+    <div class="about-text">
+      <h2><span class="who">Who</span><span class="weare">We Are</span></h2>
+      <div class="about-gold-bar"></div>
+    </div>
+    <div class="about-body">
+      <p class="lead"><span class="studio-name">ZinZin Studios</span> is an independent iGaming studio founded with a clear ambition: to build a recognisable creative force in modern gaming. What started as a bold idea has grown into a studio delivering original games across major markets.</p>
+      <p class="sub">The studio is built around creative ownership, long-term thinking, and remarkable execution. Rather than chasing trends, ZinZin Studios focuses on developing a strong identity and sustainable partnerships, expanding steadily while maintaining clarity of vision and high internal standards.</p>
+      <a href="#games" class="btn-view-games">View Games <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="section">
+  <div class="contact-inner">
+    <h2>Let's Build<br>Something Legendary</h2>
+    <p>Looking for a partner who doesn't just spin the wheels but knows how to land the jackpot? You're in the right place.</p>
+    <div class="contact-grid">
+      <div class="cf-form">
+        <h3>Contact Us</h3>
+        <div class="cf-row">
+          <div class="cf-field">
+            <label>Full Name *</label>
+            <input type="text" placeholder="John Doe">
+          </div>
+          <div class="cf-field">
+            <label>Email *</label>
+            <input type="email" placeholder="john@company.com">
+          </div>
+        </div>
+        <div class="cf-field">
+          <label>Company *</label>
+          <input type="text" placeholder="Your Company Name">
+        </div>
+        <div class="cf-field">
+          <label>Inquiry Type *</label>
+          <select>
+            <option value="" disabled selected>Select inquiry type</option>
+            <option>Game Integration</option>
+            <option>Partnership</option>
+            <option>Licensing</option>
+            <option>Press / Media</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="cf-field">
+          <label>Message *</label>
+          <textarea rows="5" placeholder="Tell us about your project..."></textarea>
+        </div>
+        <div class="cf-check">
+          <input type="checkbox" id="privacy">
+          <label for="privacy">I agree to the <a href="#">Privacy Policy</a> and consent to ZinZin Studios processing my data *</label>
+        </div>
+        <button class="btn-submit" onclick="this.textContent='Sent ✓';this.style.background='#2a9d4a'">Send Business Inquiry</button>
+      </div>
+      <div class="cf-side">
+        <div class="cf-side-inner">
+          <div class="cf-badge-icon">🎰</div>
+          <div class="cf-side-title">Don't just spin. ZinZin.</div>
+          <p class="cf-side-desc">Most studios make you scatter across the industry looking for the right partner. We're the Wild — substituting everything ordinary for something extraordinary.</p>
+        </div>
+        <div class="cf-perks">
+          <div class="cf-perk">
+            <div>
+              <div class="cf-perk-title">Fast Integration</div>
+              <div class="cf-perk-desc">RGS-ready, compliant builds — go live in days, not months.</div>
+            </div>
+          </div>
+          <div class="cf-perk">
+            <div>
+              <div class="cf-perk-title">Original Art & Mechanics</div>
+              <div class="cf-perk-desc">No white-label. Every title is built from scratch with unique identity.</div>
+            </div>
+          </div>
+          <div class="cf-perk">
+            <div>
+              <div class="cf-perk-title">Performance Focused</div>
+              <div class="cf-perk-desc">Tuned RTPs, volatility profiles and maths docs provided per title.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-bg"></div>
+  <div class="ft-overlay"></div>
+  <img src="footer_gladiator.png" alt="" class="ft-char">
+  <div class="ft-body">
+    <div class="ft-brand">
+      <img src="logo/zinzin_studios_logo.png" alt="ZinZin Studios" class="ft-logo">
+      <p>An independent iGaming studio delivering original slot games, crash games and instant win experiences to operators worldwide.</p>
+    </div>
+    <div class="ft-col">
+      <h4>Company</h4>
+      <a href="#about">About Us</a>
+      <a href="#games">Our Games</a>
+      <a href="mailto:hello@zinzinstudios.com">Contact</a>
+    </div>
+    <div class="ft-col">
+      <h4>Games</h4>
+      <a href="saga_of_valhalla/" target="_blank">Saga of Valhalla</a>
+      <a href="quack_rush_crash/" target="_blank">Quack Rush</a>
+      <a href="crystal-plinko" target="_blank">Crystal Plinko</a>
+      <a href="altitude-x" target="_blank">Altitude X</a>
+    </div>
+    <div class="ft-col">
+      <h4>Follow Us</h4>
+      <div class="ft-social">
+        <a href="#" title="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="#" title="LinkedIn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="3"/><path d="M7 10v7M7 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/></svg>
+        </a>
+        <a href="#" title="X / Twitter">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ft-badges">
+    <div class="ft-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      18+ Only
+    </div>
+    <div class="ft-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01z"/></svg>
+      Responsible Gaming
+    </div>
+    <div class="ft-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      Demo Purposes Only
+    </div>
+    <div class="ft-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
+      BeGambleAware
+    </div>
+  </div>
+
+  <div class="ft-bottom">
+    <span class="ft-copy">© 2025 ZinZin Studios. All rights reserved.</span>
+    <div class="ft-bottom-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Cookie Policy</a>
+      <a href="#">Terms of Use</a>
+    </div>
+  </div>
+  <div class="ft-disclaimer">
+    All games on this website are for demonstration and entertainment purposes only. No real money is involved. ZinZin Studios develops B2B iGaming content for licensed operators. Games are intended for adult audiences (18+). If you or someone you know has a gambling problem, please visit <a href="https://www.begambleaware.org" style="color:inherit">BeGambleAware.org</a>.
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-hero">
+      <div id="modalHero"></div>
+      <div class="modal-hero-grad"></div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-kicker" id="modalTag"></div>
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-desc" id="modalDesc"></div>
+      <div class="modal-specs" id="modalSpecs"></div>
+      <div class="modal-features" id="modalFeatures"></div>
+      <div class="modal-actions" id="modalActions"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Age gate
+document.getElementById('age-yes').addEventListener('click',()=>document.getElementById('ag').style.display='none');
+document.getElementById('age-no').addEventListener('click',()=>window.location.href='https://www.begambleaware.org');
+
+// Mobile menu
+function toggleMenu(){
+  document.getElementById('mobile-menu').classList.toggle('open');
+}
+
+// Nav background on scroll
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').style.background=window.scrollY>60?'rgba(6,6,14,.97)':'rgba(6,6,14,.85)';
+});
+
+// Games data
+const games=[
+  {
+    id:9,name:"Saga of Valhalla",category:"slot",
+    image:"assets/saga_of_valhalla.jpg",
+    demoUrl:"saga_of_valhalla/",
+    badge:"New",badgeClass:"gold",
+    short:"Fight for Valhalla. Claim your glory.",
+    desc:"Saga of Valhalla transports you to the age of Norse warriors and Viking gods. A 5×3 reel experience featuring a Valkyrie Wild, Scatter Free Spins, and an epic war drum soundtrack. With stunning original artwork, 20 paylines and a Valkyrie guardian who comes alive beside the reels, this is our most ambitious slot yet.",
+    tags:["Slot","5-Reel","Free Spins","Norse"],
+    specs:[{val:"5×3",lbl:"Grid"},{val:"RTP 96.4%",lbl:"Return to Player"},{val:"High",lbl:"Volatility"},{val:"20,000x",lbl:"Max Win"}],
+    features:[
+      {icon:"⚔️",title:"Valkyrie Wild",desc:"Substitutes all symbols with epic multipliers"},
+      {icon:"🪓",title:"Scatter Free Spins",desc:"3+ Viking King scatters unlock 10 free spins"},
+      {icon:"🥁",title:"War Drum soundtrack",desc:"Original Valhalla battle music"},
+      {icon:"🛡️",title:"Norse mythology",desc:"Gods, warriors, ravens and living Valkyrie art"}
+    ]
+  },
+  {
+    id:0,name:"Bakery Bonanza",category:"slot",
+    image:"assets/bakery-bonanza.jpg",
+    demoUrl:"bakery-bonanza",
+    badge:"New",badgeClass:"",
+    short:"Sweet symbols. Sweeter wins.",
+    desc:"Bakery Bonanza is a delightfully charming slot set inside a magical pastel bakery bursting with croissants, macarons, cakes, and candy wilds. The Oven Bonus triggers a pick-me game where hidden pastries reveal cash prizes and multipliers.",
+    tags:["Slot","Casual","Pick Bonus","Cascading"],
+    specs:[{val:"5×4",lbl:"Grid"},{val:"RTP 96.7%",lbl:"Return to Player"},{val:"Medium",lbl:"Volatility"},{val:"5,000x",lbl:"Max Win"}],
+    features:[
+      {icon:"🍰",title:"Oven Bonus",desc:"Pick hidden pastries for cash & multipliers"},
+      {icon:"🍬",title:"Candy wild",desc:"Sticky wild stays for 3 re-spins"},
+      {icon:"🎨",title:"Watercolor art",desc:"Soft pastel hand-illustrated style"},
+      {icon:"🔄",title:"Cascading reels",desc:"Winning symbols burst, new ones fall in"}
+    ]
+  },
+  {
+    id:1,name:"Blackheart's Booty",category:"slot",
+    image:"assets/blackhearts-booty.jpg",
+    badge:"Exclusive",badgeClass:"gold",
+    short:"Plunder the seas. Uncover the jackpot.",
+    desc:"Set sail with the infamous pirate Blackheart on a 6-reel treasure hunt across treacherous waters. Cascading wins, an expanding wild kraken, and a 3-level free spins bonus with increasing multipliers make this slot a blockbuster.",
+    tags:["Slot","6-Reel","Cascading","Free Spins"],
+    specs:[{val:"6×5",lbl:"Grid"},{val:"RTP 96.4%",lbl:"Return to Player"},{val:"High",lbl:"Volatility"},{val:"10,000x",lbl:"Max Win"}],
+    features:[
+      {icon:"🐙",title:"Expanding wild",desc:"Kraken wild expands to cover full reels"},
+      {icon:"💰",title:"Treasure bonus",desc:"Pick-and-click chest feature"},
+      {icon:"🌊",title:"Cascading wins",desc:"Symbols fall and chain for big wins"},
+      {icon:"🎭",title:"Character-driven",desc:"Unique pirate cast with win animations"}
+    ]
+  },
+  {
+    id:2,name:"Quack Rush",category:"instant",
+    image:"assets/quack_rush.jpg",
+    demoUrl:"quack_rush_crash/",
+    badge:"Hot",badgeClass:"red",
+    short:"Guide the ducks. Dodge the hazards. Cash out.",
+    desc:"Quack Rush is a high-tension pathfinding instant game where every step counts. Guide your chaotic squad of ducks across a hazardous multi-lane road. Each successful crossing increases your multiplier, but hit a trap and it's game over!",
+    tags:["Instant","Pathfinder","Risk-Reward"],
+    specs:[{val:"Custom",lbl:"Grid Steps"},{val:"RTP 97%",lbl:"Return to Player"},{val:"Adjustable",lbl:"Volatility"},{val:"1,000x",lbl:"Max Win"}],
+    features:[
+      {icon:"🦆",title:"Chaotic duck squad",desc:"Hilarious and fluid character animations"},
+      {icon:"💥",title:"Explosive hazards",desc:"Aggressive visual feedback on hits"},
+      {icon:"📈",title:"Step multiplier",desc:"Multiplier grows with every safe step"},
+      {icon:"🛑",title:"Cash out anytime",desc:"Take your winnings before the next step"}
+    ]
+  },
+  {
+    id:3,name:"Crystal Plinko",category:"instant",
+    image:"assets/crystal-plinko.jpg",
+    demoUrl:"crystal-plinko",
+    badge:"New",badgeClass:"gold",
+    short:"Drop the ball. Hit the multipliers.",
+    desc:"Crystal Plinko is a mesmerizing physics-based game where players drop balls down a pegged pyramid into multiplier buckets. Featuring 12, 14, or 16 rows, adjustable volatility, and max wins up to 999x.",
+    tags:["Instant","Plinko","Physics"],
+    specs:[{val:"Up to 16",lbl:"Rows"},{val:"RTP 96.0%",lbl:"Return to Player"},{val:"Adjustable",lbl:"Volatility"},{val:"999x",lbl:"Max Win"}],
+    features:[
+      {icon:"🔮",title:"Adjustable Risk",desc:"Choose from Low, Medium, or High volatility"},
+      {icon:"📐",title:"Dynamic Rows",desc:"Play with 12, 14, or 16 rows"},
+      {icon:"☄️",title:"Real Physics",desc:"Authentic gravity and bounce mechanics"},
+      {icon:"🤖",title:"Auto Mode",desc:"Set auto-rounds for rapid drops"}
+    ]
+  },
+  {
+    id:4,name:"Altitude X",category:"crash",
+    image:"assets/altitude-x.jpg",
+    demoUrl:"altitude-x",
+    badge:"Exclusive",badgeClass:"",
+    short:"Climb higher. Cash out before the crash.",
+    desc:"Altitude X is an adrenaline-fueled crash game where a vintage fighter plane soars with an ever-rising multiplier. Players bet and choose the perfect moment to cash out before the engine sputters and the plane comes down.",
+    tags:["Crash","Multiplier","Live Betting"],
+    specs:[{val:"1x–∞",lbl:"Multiplier Range"},{val:"RTP 97%",lbl:"Return to Player"},{val:"Provably Fair",lbl:"Algorithm"},{val:"Multi-player",lbl:"Mode"}],
+    features:[
+      {icon:"🛩️",title:"Cinematic art",desc:"Detailed hand-painted aircraft & sky"},
+      {icon:"👥",title:"Multiplayer lobby",desc:"See other players' bets in real-time"},
+      {icon:"📊",title:"Live history",desc:"Track crash points across rounds"},
+      {icon:"🔒",title:"Provably fair",desc:"Cryptographic seed verification"}
+    ]
+  },
+  {
+    id:5,name:"Arena Of Blood",category:"slot",
+    image:"assets/arena-of-blood.jpg",
+    badge:"Exclusive",badgeClass:"gold",
+    short:"Fight for glory. Spin for gold.",
+    desc:"Step into the blood-soaked Colosseum where gladiators clash for massive multipliers. Arena Of Blood is a high-volatility slot set in ancient Rome with 5 reels of brutal action.",
+    tags:["Slot","5-Reel","Free Spins","High Volatility"],
+    specs:[{val:"5×4",lbl:"Grid"},{val:"RTP 96.1%",lbl:"Return to Player"},{val:"Very High",lbl:"Volatility"},{val:"20,000x",lbl:"Max Win"}],
+    features:[
+      {icon:"⚔️",title:"Gladiator wilds",desc:"Stacking warrior wilds dominate the reels"},
+      {icon:"🏟️",title:"Colosseum Rage",desc:"Crowd meter activates 3x multiplier mode"},
+      {icon:"🩸",title:"Battle free spins",desc:"Choose your fighter for bonus type"},
+      {icon:"🎨",title:"Epic art direction",desc:"Cinematic hand-painted Roman visuals"}
+    ]
+  },
+  {
+    id:6,name:"Poseidon Fortunes",category:"slot",
+    image:"assets/poseidon-fortunes.jpg",
+    badge:"Exclusive",badgeClass:"gold",
+    short:"Dive deep. Rule the ocean reels.",
+    desc:"Poseidon Fortunes plunges players into a majestic underwater kingdom ruled by the god of the seas. On a colossal 7-reel grid, Poseidon himself appears as a towering stacked wild.",
+    tags:["Slot","7-Reel","Stacked Wild","Mega Ways"],
+    specs:[{val:"7×6",lbl:"Grid"},{val:"RTP 96.5%",lbl:"Return to Player"},{val:"High",lbl:"Volatility"},{val:"50,000x",lbl:"Max Win"}],
+    features:[
+      {icon:"🔱",title:"Poseidon stacked wild",desc:"God wild towers across all 6 rows"},
+      {icon:"🌊",title:"Wave multiplier",desc:"Cascading 2x–50x multiplier chain"},
+      {icon:"🐚",title:"Deep Sea spins",desc:"Trident scatter unlocks free spins"},
+      {icon:"🎨",title:"Underwater epic art",desc:"Largest canvas art piece in our portfolio"}
+    ]
+  },
+  {
+    id:7,name:"Book of Amon",category:"slot",
+    image:"assets/book-of-amon.jpg",
+    badge:"Exclusive",badgeClass:"",
+    short:"Open the book. Unleash ancient power.",
+    desc:"Book of Amon is our definitive Egyptian mystery slot. The enchanted Book of Amon is both wild and scatter — 3 books trigger a free spins round where one expanding symbol is chosen at random.",
+    tags:["Slot","Book Mechanic","Expanding Symbol","Free Spins"],
+    specs:[{val:"5×3",lbl:"Grid"},{val:"RTP 96.0%",lbl:"Return to Player"},{val:"Very High",lbl:"Volatility"},{val:"25,000x",lbl:"Max Win"}],
+    features:[
+      {icon:"📖",title:"Book wild & scatter",desc:"One symbol serves both roles"},
+      {icon:"🌟",title:"Expanding symbol",desc:"Randomly chosen symbol fills full reels"},
+      {icon:"🏺",title:"Tomb aesthetics",desc:"Dark, moody Egyptian art direction"},
+      {icon:"🎵",title:"Haunting score",desc:"Original orchestral ancient soundtrack"}
+    ]
+  },
+];
+
+function renderGames(filter){
+  const grid=document.getElementById('gamesGrid');
+  const list=filter==='all'?games:games.filter(g=>g.category===filter);
+  grid.innerHTML=list.map(g=>`
+    <div class="gc" onclick="openModal(${g.id})">
+      <div class="gc-img">
+        <img src="${g.image}" alt="${g.name}" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        ${g.badge?`<span class="gc-badge ${g.badgeClass||''}">${g.badge}</span>`:''}
+        <div class="gc-foot">
+          <span class="gc-cat">${g.category}</span>
+          <span class="gc-name">${g.name}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  // Fade in
+  grid.querySelectorAll('.gc').forEach((c,i)=>{
+    c.style.opacity='0';c.style.transform='translateY(14px)';
+    setTimeout(()=>{c.style.transition='opacity .3s ease,transform .3s ease';c.style.opacity='1';c.style.transform='none';},i*45);
+  });
+}
+
+function filterGames(cat,btn){
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGames(cat);
+}
+
+function openModal(id){
+  const g=games.find(x=>x.id===id);if(!g)return;
+  document.getElementById('modalHero').innerHTML=`<img src="${g.image}" alt="${g.name}">`;
+  document.getElementById('modalTag').textContent=g.category.toUpperCase()+' GAME';
+  document.getElementById('modalTitle').textContent=g.name;
+  document.getElementById('modalDesc').textContent=g.desc;
+  document.getElementById('modalSpecs').innerHTML=g.specs.map(s=>`
+    <div class="spec-item"><div class="spec-val">${s.val}</div><div class="spec-lbl">${s.lbl}</div></div>
+  `).join('');
+  document.getElementById('modalFeatures').innerHTML=g.features.map(f=>`
+    <div class="feature-item">
+      <div class="feature-icon">${f.icon}</div>
+      <div><div class="feature-title">${f.title}</div><div class="feature-desc">${f.desc}</div></div>
+    </div>
+  `).join('');
+  const action=g.demoUrl
+    ?`<a class="btn-modal-primary" href="${g.demoUrl}" target="_blank"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Play ${g.name}</a>`
+    :`<button class="btn-modal-primary" onclick="alert('Demo coming soon!')"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Coming Soon</button>`;
+  document.getElementById('modalActions').innerHTML=action+`<button class="btn-modal-sec" onclick="closeModal()">Close</button>`;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function closeModalOutside(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+renderGames('all');
+</script>
+
+<script>
+// ── Scroll reveal ─────────────────────────────────────────
+const ro = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) e.target.classList.add('visible');
+  });
+},{threshold:.15});
+document.querySelectorAll('.sec-head,.games-grid,.about-inner,.cf-form,.cf-side,.stat-item,.ft-brand,.ft-col').forEach(el=>{
+  el.classList.add('reveal');
+  ro.observe(el);
+});
+
+// ── 3D Card tilt ─────────────────────────────────────────
+document.addEventListener('mousemove',e=>{
+  document.querySelectorAll('.gc').forEach(card=>{
+    const r=card.getBoundingClientRect();
+    if(e.clientX<r.left-60||e.clientX>r.right+60||e.clientY<r.top-60||e.clientY>r.bottom+60) return;
+    const cx=r.left+r.width/2, cy=r.top+r.height/2;
+    const dx=(e.clientX-cx)/r.width, dy=(e.clientY-cy)/r.height;
+    const tiltX=dy*10, tiltY=-dx*10;
+    card.style.transform=`translateY(-6px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.03)`;
+    card.style.boxShadow=`${-dx*20}px ${-dy*20}px 40px rgba(0,0,0,.5)`;
+  });
+});
+document.addEventListener('mouseleave',()=>{
+  document.querySelectorAll('.gc').forEach(card=>{
+    card.style.transform='';
+    card.style.boxShadow='';
+  });
+});
+document.querySelectorAll('.gc').forEach(card=>{
+  card.addEventListener('mouseleave',()=>{
+    card.style.transform='';
+    card.style.boxShadow='';
+  });
+});
+
+// ── Nav link letter scramble ──────────────────────────────
+const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$';
+document.querySelectorAll('.nav-links a').forEach(link=>{
+  const orig=link.textContent;
+  link.addEventListener('mouseenter',()=>{
+    let iter=0;
+    const iv=setInterval(()=>{
+      link.textContent=orig.split('').map((c,i)=>{
+        if(i<iter) return orig[i];
+        return c===' '?' ':chars[Math.floor(Math.random()*chars.length)];
+      }).join('');
+      if(iter>=orig.length) clearInterval(iv);
+      iter+=1.5;
+    },40);
+  });
+  link.addEventListener('mouseleave',()=>{ link.textContent=orig; });
+});
+
+// ── Button ripple effect ──────────────────────────────────
+document.querySelectorAll('.btn-pri,.btn-submit').forEach(btn=>{
+  btn.addEventListener('click',function(e){
+    const r=this.getBoundingClientRect();
+    const ripple=document.createElement('span');
+    ripple.style.cssText=`position:absolute;border-radius:50%;background:rgba(255,255,255,.35);
+      width:20px;height:20px;left:${e.clientX-r.left-10}px;top:${e.clientY-r.top-10}px;
+      pointer-events:none;animation:btnRipple .55s ease forwards`;
+    this.appendChild(ripple);
+    setTimeout(()=>ripple.remove(),600);
+  });
+});
+
+// ── Stat counter animation ────────────────────────────────
+function animateCount(el,target,suffix){
+  let start=0, dur=1200, startTime=null;
+  function step(ts){
+    if(!startTime) startTime=ts;
+    const p=Math.min((ts-startTime)/dur,1);
+    const ease=1-Math.pow(1-p,3);
+    el.textContent=Math.floor(ease*target)+suffix;
+    if(p<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+const statObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const nums=e.target.querySelectorAll('.stat-num');
+      nums.forEach(n=>{
+        const t=parseInt(n.textContent); const s=n.textContent.replace(t,'');
+        animateCount(n,t,s);
+      });
+      statObs.unobserve(e.target);
+    }
+  });
+},{threshold:.5});
+document.querySelectorAll('#stats').forEach(s=>statObs.observe(s));
+</script>
+
+</body>
+</html>

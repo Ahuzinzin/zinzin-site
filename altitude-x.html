@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Altitude X — ZinZin Studio</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-family:'Segoe UI',sans-serif; }
+
+#game-root {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  background: #1a1a2e;
+}
+
+/* ── TOP BAR ── */
+#topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 44px;
+  background: #16213e;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.tb-logo { color: #e91e8c; font-weight: 800; font-size: 16px; letter-spacing: -0.5px; }
+.tb-logo span { color: white; }
+
+.tb-history {
+  display: flex;
+  gap: 5px;
+  flex: 1;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hist-pill {
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: opacity .3s;
+}
+.hist-low   { background: rgba(226,75,74,0.18); color: #e24b4a; }
+.hist-mid   { background: rgba(200,168,75,0.18); color: #c8a84b; }
+.hist-high  { background: rgba(29,158,117,0.18); color: #1d9e75; }
+.hist-epic  { background: rgba(233,30,140,0.22); color: #e91e8c; }
+
+.tb-balance {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1d9e75;
+  white-space: nowrap;
+}
+
+/* ── MAIN AREA ── */
+#main-area {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── LEFT PANEL — BETS LIST ── */
+#bets-panel {
+  width: 220px;
+  background: #16213e;
+  border-right: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.panel-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.panel-tab {
+  flex: 1;
+  padding: 10px 0;
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  cursor: pointer;
+  transition: all .2s;
+  border-bottom: 2px solid transparent;
+}
+.panel-tab.active { color: white; border-bottom-color: #e91e8c; }
+
+.panel-summary {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.panel-summary span { font-size: 11px; color: rgba(255,255,255,0.4); }
+.panel-summary strong { font-size: 11px; color: rgba(255,255,255,0.7); }
+
+#bets-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+#bets-list::-webkit-scrollbar { width: 3px; }
+#bets-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+.bet-row {
+  display: grid;
+  grid-template-columns: 80px 55px 40px 55px;
+  align-items: center;
+  padding: 5px 12px;
+  font-size: 11px;
+  border-radius: 4px;
+  margin: 1px 4px;
+  transition: background .2s;
+}
+.bet-row:hover { background: rgba(255,255,255,0.03); }
+.bet-row.cashed { background: rgba(29,158,117,0.08); }
+
+.bet-player { color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 5px; }
+.bet-avatar { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+.bet-amount { color: rgba(255,255,255,0.5); text-align: right; }
+.bet-mult   { color: #1d9e75; font-weight: 700; text-align: center; }
+.bet-win    { color: #1d9e75; font-weight: 600; text-align: right; }
+
+/* ── CANVAS AREA ── */
+#canvas-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+#pixi-canvas { display: block; }
+
+/* Multiplier overlay */
+#mult-display {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+
+#mult-value {
+  font-size: clamp(48px, 8vw, 88px);
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+  letter-spacing: -2px;
+  text-shadow: 0 0 40px rgba(233,30,140,0.5);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+#mult-label {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 4px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Waiting overlay */
+#waiting-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+#waiting-text {
+  font-size: 18px;
+  color: rgba(255,255,255,0.7);
+  font-weight: 500;
+}
+
+#waiting-countdown {
+  font-size: 36px;
+  font-weight: 800;
+  color: #e91e8c;
+  margin-top: 8px;
+  font-family: monospace;
+}
+
+/* Crash overlay */
+#crash-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+#crash-text {
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 800;
+  color: #e24b4a;
+  text-shadow: 0 0 30px rgba(226,75,74,0.6);
+}
+#crash-at {
+  font-size: 16px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 8px;
+  letter-spacing: 1px;
+}
+
+/* Fun mode badge */
+#fun-badge {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(200,168,75,0.2);
+  border: 1px solid rgba(200,168,75,0.4);
+  color: #c8a84b;
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  pointer-events: none;
+}
+
+/* Provably fair badge */
+#pf-badge {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.3);
+  cursor: pointer;
+}
+#pf-badge:hover { color: rgba(255,255,255,0.6); }
+
+/* ── BOTTOM PANEL ── */
+#bottom-panel {
+  height: 140px;
+  background: #16213e;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 0 20px;
+  flex-shrink: 0;
+}
+
+.bet-widget {
+  background: #0f172a;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 14px 18px;
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bw-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.bw-tab {
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: transparent;
+  color: rgba(255,255,255,0.4);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all .2s;
+  font-family: inherit;
+}
+.bw-tab.active { background: rgba(255,255,255,0.08); color: white; border-color: rgba(255,255,255,0.2); }
+
+.bw-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bw-amount-wrap {
+  flex: 1;
+  background: #1e2a3a;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 8px;
+  height: 42px;
+}
+
+.bw-amount-wrap label { font-size: 10px; color: rgba(255,255,255,0.3); white-space: nowrap; }
+
+.bw-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+  min-width: 0;
+}
+
+.bw-stepper {
+  display: flex;
+  gap: 3px;
+}
+.bw-step {
+  background: rgba(255,255,255,0.08);
+  border: none;
+  color: rgba(255,255,255,0.5);
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+  font-family: inherit;
+}
+.bw-step:hover { background: rgba(255,255,255,0.15); color: white; }
+
+.bw-presets {
+  display: flex;
+  gap: 5px;
+}
+.bw-preset {
+  flex: 1;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.45);
+  border-radius: 7px;
+  padding: 4px 0;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all .15s;
+  font-family: inherit;
+}
+.bw-preset:hover { background: rgba(255,255,255,0.1); color: white; }
+
+/* BET BUTTON */
+.btn-bet-main {
+  width: 180px;
+  height: 80px;
+  border-radius: 14px;
+  border: none;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: all .15s;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+.btn-bet-main.state-bet {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  box-shadow: 0 4px 20px rgba(34,197,94,0.3);
+}
+.btn-bet-main.state-bet:hover { transform: translateY(-1px); box-shadow: 0 6px 25px rgba(34,197,94,0.4); }
+.btn-bet-main.state-bet:active { transform: scale(0.97); }
+
+.btn-bet-main.state-cashout {
+  background: linear-gradient(135deg, #e91e8c, #c2185b);
+  color: white;
+  box-shadow: 0 4px 20px rgba(233,30,140,0.4);
+  animation: pulse-btn .8s ease-in-out infinite;
+}
+.btn-bet-main.state-cashout:hover { transform: translateY(-1px); }
+
+.btn-bet-main.state-pending {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+}
+
+.btn-bet-main.state-disabled {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.25);
+  cursor: not-allowed;
+}
+
+@keyframes pulse-btn {
+  0%, 100% { box-shadow: 0 4px 20px rgba(233,30,140,0.4); }
+  50% { box-shadow: 0 4px 35px rgba(233,30,140,0.7); }
+}
+
+.btn-small-label { font-size: 11px; opacity: 0.75; font-weight: 400; }
+
+/* Auto cashout row */
+.bw-auto-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bw-auto-row label { font-size: 11px; color: rgba(255,255,255,0.35); }
+.bw-auto-input {
+  background: #1e2a3a;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: white;
+  font-size: 13px;
+  font-family: inherit;
+  padding: 4px 10px;
+  width: 70px;
+  outline: none;
+}
+.bw-auto-toggle {
+  margin-left: auto;
+  position: relative;
+  width: 34px; height: 18px;
+}
+.bw-auto-toggle input { display: none; }
+.toggle-track {
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,0.1);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.toggle-track::after {
+  content: '';
+  position: absolute;
+  left: 2px; top: 2px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.4);
+  transition: transform .2s, background .2s;
+}
+.bw-auto-toggle input:checked + .toggle-track { background: #22c55e; }
+.bw-auto-toggle input:checked + .toggle-track::after { transform: translateX(16px); background: white; }
+
+/* Toast */
+#toast {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  background: #1d9e75;
+  color: white;
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0;
+  transition: all .3s;
+  pointer-events: none;
+  z-index: 999;
+  white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.lose { background: #e24b4a; }
+
+/* Chat bubble style live bets notification */
+.cashout-popup {
+  position: absolute;
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  pointer-events: none;
+  animation: popupFly 2s ease forwards;
+  background: rgba(29,158,117,0.9);
+  color: white;
+  white-space: nowrap;
+}
+@keyframes popupFly {
+  0% { opacity: 0; transform: translateY(0) scale(.8); }
+  15% { opacity: 1; transform: translateY(-5px) scale(1); }
+  70% { opacity: 1; transform: translateY(-20px) scale(1); }
+  100% { opacity: 0; transform: translateY(-40px) scale(.9); }
+}
+
+@media (max-width: 768px) {
+  #main-area { flex-direction: column-reverse; }
+  #bets-panel { width: 100%; height: 35vh; border-right: none; border-top: 1px solid rgba(255,255,255,0.05); }
+  #bottom-panel { padding: 0 10px; height: 100px; gap: 10px; }
+  .bet-widget { width: 100%; padding: 10px; gap: 8px; }
+  .btn-bet-main { width: 120px; height: 60px; font-size: 16px; }
+  .tb-history { display: none; }
+}
+</style>
+</head>
+<body>
+<div id="game-root">
+
+  <div id="topbar">
+    <div class="tb-logo">✈ ALTITUDE<span>X</span></div>
+    <div class="tb-history" id="historyBar"></div>
+    <div class="tb-balance" id="balanceDisplay">$ 1,000.00</div>
+  </div>
+
+  <div id="main-area">
+
+    <div id="bets-panel">
+      <div class="panel-tabs">
+        <div class="panel-tab active">All Bets</div>
+        <div class="panel-tab">Previous</div>
+        <div class="panel-tab">Top</div>
+      </div>
+      <div class="panel-summary">
+        <span id="betCount">0/0 Bets</span>
+        <strong id="totalWin">Total win $0</strong>
+      </div>
+      <div id="bets-list"></div>
+    </div>
+
+    <div id="canvas-wrap">
+      <canvas id="pixi-canvas"></canvas>
+
+      <div id="fun-badge">FUN MODE</div>
+
+      <div id="waiting-overlay" style="display:none">
+        <div id="waiting-text">Starting in</div>
+        <div id="waiting-countdown">5.0</div>
+      </div>
+
+      <div id="mult-display">
+        <div id="mult-value">1.00<span style="font-size:0.55em">x</span></div>
+        <div id="mult-label">Flying away...</div>
+      </div>
+
+      <div id="crash-overlay">
+        <div id="crash-text">FLEW AWAY!</div>
+        <div id="crash-at" id="crash-at-val"></div>
+      </div>
+
+      <div id="pf-badge">
+        🛡 Provably Fair
+      </div>
+    </div>
+
+  </div>
+
+  <div id="bottom-panel">
+    <div class="bet-widget" id="widget1">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div class="bw-tabs">
+          <button class="bw-tab active" onclick="setMode(1,'manual')">Bet</button>
+          <button class="bw-tab" onclick="setMode(1,'auto')">Auto</button>
+        </div>
+        <div class="bw-auto-row">
+          <label>Auto cash out</label>
+          <input class="bw-auto-input" id="autoCashout1" value="2.00" type="number" min="1.01" step="0.1">
+          <label class="bw-auto-toggle">
+            <input type="checkbox" id="autoToggle1">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+      </div>
+      <div class="bw-controls">
+        <div class="bw-amount-wrap">
+          <label>BET</label>
+          <input class="bw-input" id="betAmount1" value="10.00" type="number" min="0.1" step="0.1">
+          <div class="bw-stepper">
+            <button class="bw-step" onclick="adjustBet(1,-1)">−</button>
+            <button class="bw-step" onclick="adjustBet(1,1)">+</button>
+          </div>
+        </div>
+        <div class="bw-presets">
+          <button class="bw-preset" onclick="setBetPreset(1,1)">1</button>
+          <button class="bw-preset" onclick="setBetPreset(1,5)">5</button>
+          <button class="bw-preset" onclick="setBetPreset(1,10)">10</button>
+          <button class="bw-preset" onclick="setBetPreset(1,100)">100</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-bet-main state-bet" id="mainBetBtn" onclick="handleBetClick()">
+      <span id="btnLabel1">BET</span>
+      <span class="btn-small-label" id="btnSub1">$ 10.00</span>
+    </button>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+//  ALTITUDE X — SENIOR PIXIJS IMPLEMENTATION
+//  RTP: 97% | House Edge: 3%
+//  Architecture: Game Engine + Seamless Wallet API layer
+// ══════════════════════════════════════════
+
+// ── CONFIG ──────────────────────────────
+const CONFIG = {
+  RTP: 0.97,                    
+  HOUSE_EDGE: 0.03,
+  WAITING_DURATION: 5000,       
+  MIN_BET: 0.1,
+  MAX_BET: 1000,
+  CURVE_SPEED_BASE: 0.00015,    
+  PLANE_SPEED: 2.2,
+  STARS_COUNT: 120,
+  GRID_LINES: 6,
+};
+
+// ── WALLET (Seamless Wallet simulation) ─
+const Wallet = {
+  balance: 1000.00,
+  debit(amount) {
+    if (amount > this.balance) return false;
+    this.balance = parseFloat((this.balance - amount).toFixed(2));
+    updateBalanceUI();
+    return true;
+  },
+  credit(amount) {
+    this.balance = parseFloat((this.balance + amount).toFixed(2));
+    updateBalanceUI();
+  }
+};
+
+// ── PROVABLY FAIR RNG ────────────────────
+function generateCrashPoint() {
+  if (Math.random() < CONFIG.HOUSE_EDGE) return 1.00;
+  const r = Math.random();
+  const crash = CONFIG.RTP / (1 - r);
+  return Math.max(1.00, parseFloat(crash.toFixed(2)));
+}
+
+// ── GAME STATE ───────────────────────────
+const State = {
+  phase: 'waiting',  
+  crashPoint: 1.00,
+  currentMult: 1.00,
+  roundId: 1,
+  history: [],
+  playerBet: null,  
+  mockPlayers: [],
+  waitTimer: null,
+  flyTimer: null,
+  lastTime: 0,
+  elapsed: 0,
+};
+
+// ── MOCK PLAYERS ─────────────────────────
+const NAMES = ['d***0','d***1','d***2','d***3','d***4','d***5','d***6','d***7','d***8','d***9'];
+const COLORS = ['#e91e8c','#1d9e75','#c8a84b','#3b82f6','#a855f7','#ef4444','#06b6d4','#f97316'];
+const AVATARS = ['🎮','🎲','🃏','⭐','🎯','🔥','💎','🚀','🍀','👑'];
+
+function generateMockPlayers() {
+  const count = 8 + Math.floor(Math.random() * 20);
+  State.mockPlayers = Array.from({ length: count }, (_, i) => ({
+    name: NAMES[i % NAMES.length] + Math.floor(Math.random()*100),
+    bet: parseFloat((Math.random() * 200 + 1).toFixed(2)),
+    color: COLORS[i % COLORS.length],
+    avatar: AVATARS[i % AVATARS.length],
+    cashedOut: false,
+    cashoutMult: null,
+    targetMult: null,
+  }));
+}
+
+// ── PIXIJS SETUP ─────────────────────────
+const canvasWrap = document.getElementById('canvas-wrap');
+let W = canvasWrap.offsetWidth;
+let H = canvasWrap.offsetHeight;
+
+const app = new PIXI.Application({
+  view: document.getElementById('pixi-canvas'),
+  width: W,
+  height: H,
+  backgroundColor: 0x0d1520,
+  antialias: true,
+  resolution: window.devicePixelRatio || 1,
+  autoDensity: true,
+});
+
+window.addEventListener('resize', () => {
+  W = canvasWrap.offsetWidth;
+  H = canvasWrap.offsetHeight;
+  app.renderer.resize(W, H);
+  rebuildScene();
+});
+
+// ── SCENE LAYERS ─────────────────────────
+let layerBg, layerGrid, layerCurve, layerPlane, layerParticles;
+
+function rebuildScene() {
+  app.stage.removeChildren();
+  layerBg       = new PIXI.Container();
+  layerGrid     = new PIXI.Container();
+  layerCurve    = new PIXI.Container();
+  layerPlane    = new PIXI.Container();
+  layerParticles= new PIXI.Container();
+  app.stage.addChild(layerBg, layerGrid, layerCurve, layerPlane, layerParticles);
+  drawBackground();
+  drawGrid();
+}
+
+// ── BACKGROUND ───────────────────────────
+let stars = [];
+function drawBackground() {
+  const bg = new PIXI.Graphics();
+  bg.beginFill(0x0d1520);
+  bg.drawRect(0, 0, W, H);
+  bg.endFill();
+
+  const glow = new PIXI.Graphics();
+  for (let i = 8; i >= 0; i--) {
+    const alpha = 0.015 * (9 - i);
+    glow.beginFill(0xe91e8c, alpha);
+    glow.drawCircle(W * 0.7, H * 0.4, (i + 1) * 80);
+    glow.endFill();
+  }
+
+  stars = [];
+  const starGfx = new PIXI.Graphics();
+  for (let i = 0; i < CONFIG.STARS_COUNT; i++) {
+    const x = Math.random() * W;
+    const y = Math.random() * H * 0.7;
+    const r = Math.random() * 1.2 + 0.2;
+    const alpha = Math.random() * 0.6 + 0.2;
+    starGfx.beginFill(0xffffff, alpha);
+    starGfx.drawCircle(x, y, r);
+    starGfx.endFill();
+    stars.push({ x, y, r, baseAlpha: alpha, twinkle: Math.random() * Math.PI * 2 });
+  }
+  layerBg.addChild(bg, glow, starGfx);
+}
+
+// ── GRID ─────────────────────────────────
+function drawGrid() {
+  layerGrid.removeChildren();
+  const g = new PIXI.Graphics();
+  const PADDING = { left: 60, bottom: 50, right: 40, top: 30 };
+  const plotW = W - PADDING.left - PADDING.right;
+  const plotH = H - PADDING.top - PADDING.bottom;
+
+  g.lineStyle(0.5, 0x2a3a50, 0.5);
+  for (let i = 0; i <= CONFIG.GRID_LINES; i++) {
+    const y = PADDING.top + (plotH / CONFIG.GRID_LINES) * i;
+    g.moveTo(PADDING.left, y);
+    g.lineTo(W - PADDING.right, y);
+  }
+  for (let i = 0; i <= CONFIG.GRID_LINES; i++) {
+    const x = PADDING.left + (plotW / CONFIG.GRID_LINES) * i;
+    g.moveTo(x, PADDING.top);
+    g.lineTo(x, H - PADDING.bottom);
+  }
+
+  g.lineStyle(1, 0x3a4a60, 0.8);
+  g.moveTo(PADDING.left, PADDING.top);
+  g.lineTo(PADDING.left, H - PADDING.bottom);
+  g.lineTo(W - PADDING.right, H - PADDING.bottom);
+
+  layerGrid.addChild(g);
+}
+
+// ── PLANE ────────────────────────────────
+let planeGfx = null;
+let planeTrail = [];
+let planePosX = 0;
+let planePosY = 0;
+
+function drawPlane(x, y, crashed = false) {
+  layerPlane.removeChildren();
+  planeTrail = [];
+  const g = new PIXI.Graphics();
+
+  if (crashed) {
+    g.lineStyle(3, 0xe24b4a, 1);
+    g.moveTo(x - 15, y - 15);
+    g.lineTo(x + 15, y + 15);
+    g.moveTo(x + 15, y - 15);
+    g.lineTo(x - 15, y + 15);
+    layerPlane.addChild(g);
+    return;
+  }
+
+  g.beginFill(0xff3377, 1);
+  g.drawRoundedRect(x - 22, y - 7, 44, 14, 5);
+  g.endFill();
+
+  g.beginFill(0xaaddff, 0.9);
+  g.drawEllipse(x + 14, y, 8, 5);
+  g.endFill();
+
+  g.beginFill(0xff1155, 1);
+  g.moveTo(x - 5, y);
+  g.lineTo(x + 10, y - 22);
+  g.lineTo(x + 18, y - 16);
+  g.lineTo(x + 5, y);
+  g.closePath();
+  g.endFill();
+
+  g.beginFill(0xdd0044, 1);
+  g.moveTo(x - 18, y);
+  g.lineTo(x - 22, y - 12);
+  g.lineTo(x - 10, y - 8);
+  g.lineTo(x - 8, y);
+  g.closePath();
+  g.endFill();
+
+  for (let i = 3; i >= 0; i--) {
+    g.beginFill(0xff6600, 0.12 * (4 - i));
+    g.drawEllipse(x - 25 - i * 4, y, 4 + i * 1.5, 2.5 + i);
+    g.endFill();
+  }
+  g.beginFill(0xffaa00, 0.9);
+  g.drawEllipse(x - 25, y, 4, 2.5);
+  g.endFill();
+
+  layerPlane.addChild(g);
+}
+
+// ── CURVE ────────────────────────────────
+const curvePoints = [];
+let curveGfx = null;
+
+function drawCurve(crashed = false, crashColor = false) {
+  layerCurve.removeChildren();
+  if (curvePoints.length < 2) return;
+
+  const PADDING = { left: 60, bottom: 50 };
+  const plotH = H - PADDING.top - 30;
+
+  const fill = new PIXI.Graphics();
+  fill.beginFill(crashColor ? 0xe24b4a : 0xe91e8c, 0.12);
+  fill.moveTo(curvePoints[0].x, H - PADDING.bottom);
+  for (const p of curvePoints) fill.lineTo(p.x, p.y);
+  fill.lineTo(curvePoints[curvePoints.length - 1].x, H - PADDING.bottom);
+  fill.closePath();
+  fill.endFill();
+
+  const line = new PIXI.Graphics();
+  line.lineStyle(3, crashColor ? 0xe24b4a : 0xff3377, 1);
+  line.moveTo(curvePoints[0].x, curvePoints[0].y);
+  for (let i = 1; i < curvePoints.length; i++) {
+    const prev = curvePoints[i - 1];
+    const curr = curvePoints[i];
+    const cpx = (prev.x + curr.x) / 2;
+    line.bezierCurveTo(cpx, prev.y, cpx, curr.y, curr.x, curr.y);
+  }
+
+  layerCurve.addChild(fill, line);
+}
+
+// ── PARTICLES ────────────────────────────
+const particles = [];
+
+function spawnParticles(x, y) {
+  for (let i = 0; i < 20; i++) {
+    const g = new PIXI.Graphics();
+    const colors = [0xe91e8c, 0x1d9e75, 0xc8a84b, 0xffffff, 0x3b82f6];
+    g.beginFill(colors[Math.floor(Math.random() * colors.length)]);
+    g.drawCircle(0, 0, 3 + Math.random() * 4);
+    g.endFill();
+    g.x = x; g.y = y;
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 3 + Math.random() * 5;
+    g._vx = Math.cos(angle) * speed;
+    g._vy = Math.sin(angle) * speed - 4;
+    g._life = 1;
+    layerParticles.addChild(g);
+    particles.push(g);
+  }
+}
+
+// ── COORDINATE MAPPING ───────────────────
+function multToY(mult) {
+  const PADDING = { top: 30, bottom: 50 };
+  const plotH = H - PADDING.top - PADDING.bottom;
+  const logMult = Math.log(mult) / Math.log(20);
+  return H - PADDING.bottom - Math.min(plotH, logMult * plotH * 1.2);
+}
+
+function timeToX(elapsed, maxElapsed) {
+  const PADDING = { left: 60, right: 40 };
+  const plotW = W - PADDING.left - PADDING.right;
+  return PADDING.left + Math.min(plotW, (elapsed / maxElapsed) * plotW);
+}
+
+// ── UI HELPERS ───────────────────────────
+function updateBalanceUI() {
+  document.getElementById('balanceDisplay').textContent =
+    '$ ' + Wallet.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function updateMultDisplay(mult, phase) {
+  const el = document.getElementById('mult-value');
+  const lbl = document.getElementById('mult-label');
+  el.textContent = mult.toFixed(2) + 'x';
+
+  if (phase === 'flying') {
+    const hue = mult < 2 ? 'white' : mult < 5 ? '#c8a84b' : mult < 10 ? '#1d9e75' : '#e91e8c';
+    el.style.color = hue;
+    lbl.textContent = 'Flying away...';
+    lbl.style.color = 'rgba(255,255,255,0.5)';
+  } else if (phase === 'crashed') {
+    el.style.color = '#e24b4a';
+    lbl.textContent = 'FLEW AWAY';
+    lbl.style.color = '#e24b4a';
+  }
+}
+
+function showToast(msg, type = 'win') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show' + (type === 'lose' ? ' lose' : '');
+  setTimeout(() => el.className = '', 3000);
+}
+
+function addToCashoutPopups(name, mult, win) {
+  const wrap = document.getElementById('canvas-wrap');
+  const div = document.createElement('div');
+  div.className = 'cashout-popup';
+  div.textContent = `${name} cashed out × ${mult.toFixed(2)} → $${win.toFixed(2)}`;
+  div.style.left = (30 + Math.random() * (W - 300)) + 'px';
+  div.style.top  = (H * 0.4 + Math.random() * H * 0.3) + 'px';
+  wrap.appendChild(div);
+  setTimeout(() => div.remove(), 2100);
+}
+
+// ── HISTORY BAR ──────────────────────────
+function pushHistory(mult) {
+  State.history.unshift(mult);
+  if (State.history.length > 20) State.history.pop();
+  renderHistory();
+}
+
+function renderHistory() {
+  const bar = document.getElementById('historyBar');
+  bar.innerHTML = State.history.slice(0, 14).map(m => {
+    let cls = m < 2 ? 'hist-low' : m < 5 ? 'hist-mid' : m < 10 ? 'hist-high' : 'hist-epic';
+    return `<span class="hist-pill ${cls}">${m.toFixed(2)}x</span>`;
+  }).join('');
+}
+
+// ── BETS LIST ────────────────────────────
+function renderBetsList() {
+  const list = document.getElementById('bets-list');
+  const allBets = [
+    ...(State.playerBet && State.phase !== 'waiting' ? [{
+      name: 'YOU',
+      bet: State.playerBet.amount,
+      color: '#e91e8c',
+      avatar: '⭐',
+      cashedOut: State.playerBet.cashedOut,
+      cashoutMult: State.playerBet.cashoutMult,
+    }] : []),
+    ...State.mockPlayers,
+  ];
+
+  const totalBets = allBets.length;
+  const cashedOut = allBets.filter(p => p.cashedOut).length;
+  const totalWin  = allBets.filter(p => p.cashedOut)
+    .reduce((sum, p) => sum + (p.bet * p.cashoutMult), 0);
+
+  document.getElementById('betCount').textContent = `${cashedOut}/${totalBets} Bets`;
+  document.getElementById('totalWin').textContent = `Total win $${totalWin.toFixed(0)}`;
+
+  list.innerHTML = allBets.map(p => {
+    const win = p.cashedOut ? (p.bet * p.cashoutMult).toFixed(2) : '';
+    const mult = p.cashedOut ? `${p.cashoutMult.toFixed(2)}x` : '';
+    return `
+      <div class="bet-row ${p.cashedOut ? 'cashed' : ''}">
+        <div class="bet-player">
+          <div class="bet-avatar" style="background:${p.color}22;color:${p.color}">${p.avatar}</div>
+          ${p.name}
+        </div>
+        <div class="bet-amount">${p.bet.toFixed(2)}</div>
+        <div class="bet-mult">${mult}</div>
+        <div class="bet-win">${win}</div>
+      </div>`;
+  }).join('');
+}
+
+// ── BET BUTTON STATE ─────────────────────
+function setBetBtnState(state) {
+  const btn = document.getElementById('mainBetBtn');
+  const lbl = document.getElementById('btnLabel1');
+  const sub = document.getElementById('btnSub1');
+  const amount = parseFloat(document.getElementById('betAmount1').value) || 10;
+
+  btn.className = `btn-bet-main state-${state}`;
+
+  if (state === 'bet') {
+    lbl.textContent = 'BET';
+    sub.textContent = `$ ${amount.toFixed(2)}`;
+    btn.disabled = false;
+  } else if (state === 'cashout') {
+    lbl.textContent = `CASH OUT`;
+    sub.textContent = `$ ${(amount * State.currentMult).toFixed(2)}`;
+    btn.disabled = false;
+  } else if (state === 'pending') {
+    lbl.textContent = 'BET PLACED';
+    sub.textContent = `$ ${amount.toFixed(2)}`;
+    btn.disabled = false;
+  } else if (state === 'disabled') {
+    lbl.textContent = 'WAIT';
+    sub.textContent = 'Next round';
+    btn.disabled = true;
+  }
+}
+
+function updateCashoutBtn() {
+  if (State.playerBet && !State.playerBet.cashedOut && State.phase === 'flying') {
+    const sub = document.getElementById('btnSub1');
+    sub.textContent = `$ ${(State.playerBet.amount * State.currentMult).toFixed(2)}`;
+  }
+}
+
+// ── BET CONTROLS ─────────────────────────
+function adjustBet(widget, delta) {
+  const input = document.getElementById(`betAmount${widget}`);
+  let val = parseFloat(input.value) || 10;
+  val = Math.max(CONFIG.MIN_BET, Math.min(CONFIG.MAX_BET, val + delta));
+  input.value = val.toFixed(2);
+  updateBetBtn();
+}
+
+function setBetPreset(widget, amount) {
+  document.getElementById(`betAmount${widget}`).value = amount.toFixed(2);
+  updateBetBtn();
+}
+
+function setMode(widget, mode) {
+  document.querySelectorAll('.bw-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+function updateBetBtn() {
+  if (State.phase === 'waiting' || (State.phase === 'flying' && !State.playerBet)) {
+    setBetBtnState('bet');
+  }
+}
+
+// ── MAIN BET HANDLER ─────────────────────
+function handleBetClick() {
+  if (State.phase === 'flying' && State.playerBet && !State.playerBet.cashedOut) {
+    const mult = State.currentMult;
+    const win  = parseFloat((State.playerBet.amount * mult).toFixed(2));
+    State.playerBet.cashedOut   = true;
+    State.playerBet.cashoutMult = mult;
+    State.playerBet.win         = win;
+    Wallet.credit(win);
+    setBetBtnState('disabled');
+    showToast(`✅ Cashed out × ${mult.toFixed(2)} — Won $${win.toFixed(2)}`);
+    spawnParticles(planePosX, planePosY);
+    renderBetsList();
+
+  } else if (State.phase === 'waiting' || State.phase === 'flying') {
+    const amount = parseFloat(document.getElementById('betAmount1').value) || 10;
+    if (amount < CONFIG.MIN_BET || amount > CONFIG.MAX_BET) {
+      showToast('Invalid bet amount', 'lose'); return;
+    }
+    if (!Wallet.debit(amount)) {
+      showToast('Insufficient balance', 'lose'); return;
+    }
+    State.playerBet = { amount, cashedOut: false, cashoutMult: null, win: 0 };
+    setBetBtnState(State.phase === 'flying' ? 'pending' : 'pending');
+    showToast(`Bet placed: $${amount.toFixed(2)}`);
+    renderBetsList();
+  }
+}
+
+// ── AUTO CASHOUT CHECK ────────────────────
+function checkAutoCashout() {
+  const tog = document.getElementById('autoToggle1');
+  if (!tog.checked) return;
+  const target = parseFloat(document.getElementById('autoCashout1').value) || 2;
+  if (State.playerBet && !State.playerBet.cashedOut && State.currentMult >= target) {
+    handleBetClick();
+  }
+}
+
+// ── ROUND LIFECYCLE ───────────────────────
+function startWaiting() {
+  State.phase     = 'waiting';
+  State.crashPoint = generateCrashPoint();
+  State.currentMult = 1.00;
+  State.playerBet   = null;
+  State.elapsed     = 0;
+  curvePoints.length = 0;
+
+  generateMockPlayers();
+  State.mockPlayers.forEach(p => {
+    p.targetMult = 1.05 + Math.random() * Math.min(State.crashPoint - 1.05, 8);
+    p.cashedOut  = false;
+    p.cashoutMult = null;
+  });
+
+  document.getElementById('waiting-overlay').style.display = 'flex';
+  document.getElementById('mult-display').style.opacity    = '0';
+  document.getElementById('crash-overlay').style.opacity   = '0';
+  setBetBtnState('bet');
+  renderBetsList();
+  rebuildScene();
+
+  let countdown = CONFIG.WAITING_DURATION / 1000;
+  document.getElementById('waiting-countdown').textContent = countdown.toFixed(1);
+  const tick = setInterval(() => {
+    countdown -= 0.1;
+    document.getElementById('waiting-countdown').textContent = Math.max(0, countdown).toFixed(1);
+    if (countdown <= 0) {
+      clearInterval(tick);
+      startFlying();
+    }
+  }, 100);
+}
+
+function startFlying() {
+  State.phase    = 'flying';
+  State.elapsed  = 0;
+  State.lastTime = performance.now();
+
+  document.getElementById('waiting-overlay').style.display = 'none';
+  document.getElementById('mult-display').style.opacity    = '1';
+  document.getElementById('crash-overlay').style.opacity   = '0';
+
+  if (State.playerBet) setBetBtnState('cashout');
+
+  const fly = (now) => {
+    if (State.phase !== 'flying') return;
+
+    const dt = now - State.lastTime;
+    State.lastTime = now;
+    State.elapsed += dt;
+
+    const t = State.elapsed / 1000;
+    State.currentMult = parseFloat(Math.max(1.00, Math.pow(1.0 + t * 0.06, 2.2)).toFixed(2));
+
+    if (State.currentMult >= State.crashPoint) {
+      State.currentMult = State.crashPoint;
+      triggerCrash();
+      return;
+    }
+
+    State.mockPlayers.forEach(p => {
+      if (!p.cashedOut && State.currentMult >= p.targetMult) {
+        p.cashedOut   = true;
+        p.cashoutMult = State.currentMult;
+        if (Math.random() > 0.6) {
+          addToCashoutPopups(p.name, p.cashoutMult, p.bet * p.cashoutMult);
+        }
+      }
+    });
+
+    checkAutoCashout();
+    if (State.playerBet && !State.playerBet.cashedOut) updateCashoutBtn();
+
+    const maxElapsed = 30000;
+    const px = timeToX(State.elapsed, maxElapsed);
+    const py = multToY(State.currentMult);
+    curvePoints.push({ x: px, y: py });
+    if (curvePoints.length > 300) curvePoints.shift();
+
+    planePosX = px;
+    planePosY = py;
+
+    drawCurve(false);
+    drawPlane(px, py);
+    updateMultDisplay(State.currentMult, 'flying');
+    renderBetsList();
+
+    requestAnimationFrame(fly);
+  };
+  requestAnimationFrame(fly);
+}
+
+function triggerCrash() {
+  State.phase = 'crashed';
+  const crashMult = State.crashPoint;
+
+  if (State.playerBet && !State.playerBet.cashedOut) {
+    State.playerBet.cashedOut   = false;
+    showToast(`💥 Crashed at ×${crashMult.toFixed(2)} — Lost $${State.playerBet.amount.toFixed(2)}`, 'lose');
+  }
+
+  updateMultDisplay(crashMult, 'crashed');
+  drawCurve(true, true);
+  drawPlane(planePosX, planePosY, true);
+
+  document.getElementById('crash-overlay').style.opacity = '1';
+  document.getElementById('crash-at').textContent = `@ ×${crashMult.toFixed(2)}`;
+  document.getElementById('crash-text').textContent = 'FLEW AWAY!';
+
+  setBetBtnState('disabled');
+  pushHistory(crashMult);
+  State.roundId++;
+  renderBetsList();
+
+  setTimeout(startWaiting, 3000);
+}
+
+app.ticker.add((delta) => {
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p._life -= 0.025;
+    p._vy   += 0.25;
+    p.x     += p._vx;
+    p.y     += p._vy;
+    p.alpha  = p._life;
+    if (p._life <= 0) {
+      layerParticles.removeChild(p);
+      particles.splice(i, 1);
+    }
+  }
+});
+
+rebuildScene();
+updateBalanceUI();
+setTimeout(startWaiting, 500);
+
+console.log(`
+╔═══════════════════════════════════════╗
+║   ALTITUDE X CRASH GAME               ║
+║   Developer: ZinZin Studio            ║
+║   RTP: 97% | House Edge: 3%           ║
+╚═══════════════════════════════════════╝
+`);
+</script>
+</body>
+</html>

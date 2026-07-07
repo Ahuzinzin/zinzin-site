@@ -1,0 +1,9 @@
+[build]
+  publish = "."
+
+# Disable Netlify's default HTML minification (preserves inline JS/CSS)
+[build.processing]
+  skip_processing = false
+
+[build.processing.html]
+  pretty_urls = true
