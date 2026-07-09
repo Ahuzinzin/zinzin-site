@@ -666,6 +666,7 @@ footer{position:relative;overflow:hidden;background:var(--s1);border-top:1px sol
     </div>
     <div class="ft-col">
       <h4>Games</h4>
+      <a href="bullet_hole/" target="_blank">Bullet Hole</a>
       <a href="saga_of_valhalla/" target="_blank">Saga of Valhalla</a>
       <a href="quack_rush_crash/" target="_blank">Quack Rush</a>
       <a href="crystal-plinko" target="_blank">Crystal Plinko</a>
@@ -755,6 +756,22 @@ window.addEventListener('scroll',()=>{
 
 // Games data
 const games=[
+  {
+    id:10,name:"Bullet Hole",category:"slot",
+    image:"assets/bullet_hole.jpg",
+    demoUrl:"bullet_hole/",
+    badge:"New",badgeClass:"gold",
+    short:"Six symbols. Twenty lines. One showdown.",
+    desc:"Bullet Hole rides into a sun-scorched desert town for a high-noon showdown. A 5×3 reel slot with a gunslinger Wild, a bounty-poster Scatter that triggers free spins, and an outlaw crew of characters watching over every spin. Original bullet-riddled wood artwork, 20 paylines and a fully procedural spaghetti-western soundtrack synthesized live in the browser.",
+    tags:["Slot","5-Reel","Free Spins","Western"],
+    specs:[{val:"5×3",lbl:"Grid"},{val:"RTP 96.3%",lbl:"Return to Player"},{val:"High",lbl:"Volatility"},{val:"20,000x",lbl:"Max Win"}],
+    features:[
+      {icon:"🔫",title:"Gunslinger Wild",desc:"The revolver substitutes all symbols with top multipliers"},
+      {icon:"🤠",title:"Bounty Scatter Free Spins",desc:"2+ wanted scatters unlock 10 free spins"},
+      {icon:"🎻",title:"Live-synthesized score",desc:"Banjo, upright bass and whistled lead, generated in real time"},
+      {icon:"🌵",title:"Desert outlaw art",desc:"Bullet-scarred wood reels and a living gunslinger beside the frame"}
+    ]
+  },
   {
     id:9,name:"Saga of Valhalla",category:"slot",
     image:"assets/saga_of_valhalla.jpg",
