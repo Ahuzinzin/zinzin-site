@@ -609,25 +609,25 @@ footer{position:relative;overflow:hidden;background:var(--s1);border-top:1px sol
     <h2>Let's Build<br>Something Legendary</h2>
     <p>Looking for a partner who doesn't just spin the wheels but knows how to land the jackpot? You're in the right place.</p>
     <div class="contact-grid">
-      <div class="cf-form">
+      <form class="cf-form" id="contact-form" action="https://formspree.io/f/zinzinstudioo@gmail.com" method="POST">
         <h3>Contact Us</h3>
         <div class="cf-row">
           <div class="cf-field">
             <label>Full Name *</label>
-            <input type="text" placeholder="John Doe">
+            <input type="text" name="name" placeholder="John Doe" required>
           </div>
           <div class="cf-field">
             <label>Email *</label>
-            <input type="email" placeholder="john@company.com">
+            <input type="email" name="email" placeholder="john@company.com" required>
           </div>
         </div>
         <div class="cf-field">
           <label>Company *</label>
-          <input type="text" placeholder="Your Company Name">
+          <input type="text" name="company" placeholder="Your Company Name" required>
         </div>
         <div class="cf-field">
           <label>Inquiry Type *</label>
-          <select>
+          <select name="inquiry_type" required>
             <option value="" disabled selected>Select inquiry type</option>
             <option>Game Integration</option>
             <option>Partnership</option>
@@ -638,14 +638,16 @@ footer{position:relative;overflow:hidden;background:var(--s1);border-top:1px sol
         </div>
         <div class="cf-field">
           <label>Message *</label>
-          <textarea rows="5" placeholder="Tell us about your project..."></textarea>
+          <textarea rows="5" name="message" placeholder="Tell us about your project..." required></textarea>
         </div>
         <div class="cf-check">
-          <input type="checkbox" id="privacy">
+          <input type="checkbox" id="privacy" required>
           <label for="privacy">I agree to the <a href="#">Privacy Policy</a> and consent to ZinZin Studios processing my data *</label>
         </div>
-        <button class="btn-submit" onclick="this.textContent='Sent ✓';this.style.background='#2a9d4a'">Send Business Inquiry</button>
-      </div>
+        <input type="hidden" name="_subject" value="New inquiry from zinzinstudios.com">
+        <button class="btn-submit" type="submit">Send Business Inquiry</button>
+        <p id="cf-status" style="margin-top:10px;font-size:14px"></p>
+      </form>
       <div class="cf-side">
         <div class="cf-side-inner">
           <div class="cf-badge-icon">🎰</div>
@@ -1064,6 +1066,40 @@ document.querySelectorAll('.nav-links a').forEach(link=>{
   });
   link.addEventListener('mouseleave',()=>{ link.textContent=orig; });
 });
+
+// ── Contact form submit (Formspree) ───────────────────────
+const cfForm = document.getElementById('contact-form');
+if (cfForm) {
+  cfForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    const btn = cfForm.querySelector('.btn-submit');
+    const status = document.getElementById('cf-status');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    status.textContent = '';
+    fetch(cfForm.action, {
+      method: 'POST',
+      body: new FormData(cfForm),
+      headers: { 'Accept': 'application/json' }
+    }).then(response => {
+      if (response.ok) {
+        btn.textContent = 'Sent ✓';
+        btn.style.background = '#2a9d4a';
+        status.style.color = '#2a9d4a';
+        status.textContent = 'Thanks! Your message has been sent.';
+        cfForm.reset();
+      } else {
+        throw new Error('Submit failed');
+      }
+    }).catch(() => {
+      btn.disabled = false;
+      btn.textContent = originalText;
+      status.style.color = '#e05d5d';
+      status.textContent = 'Something went wrong. Please email hello@zinzinstudios.com directly.';
+    });
+  });
+}
 
 // ── Button ripple effect ──────────────────────────────────
 document.querySelectorAll('.btn-pri,.btn-submit').forEach(btn=>{
