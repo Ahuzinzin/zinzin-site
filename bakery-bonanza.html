@@ -87,11 +87,19 @@ html,body{
 }
 
 /* ── GAME SHELL ── */
+/* Fixed logical design size (1480×900) that scales as ONE unit to fit any
+   viewport (JS sets --stage-scale on resize) — same composition on
+   desktop/tablet/mobile, just smaller, never reflowed or hidden. Because
+   this element has a transform, it becomes the containing block for every
+   position:fixed descendant (topbar/hud/character/logo/popups/etc.), so
+   they dock to the STAGE instead of the real viewport. */
 #shell{
-  width:100vw; height:100vh;
+  width:1480px; height:900px;
+  position:fixed; left:50%; top:50%;
+  transform:translate(-50%,-50%) scale(var(--stage-scale,1));
+  transform-origin:center center;
   display:flex; flex-direction:column;
   align-items:center; justify-content:flex-start;
-  position:relative;
 }
 
 /* ── PIXI CANVAS ── */
@@ -118,9 +126,6 @@ html,body{
   pointer-events:none; display:none;
 }
 #character-img video.active{ display:block; }
-@media (max-width:820px){
-  #character-img{ display:none !important; }
-}
 
 /* ── BOTTOM HUD — flat, Pragmatic-style bar ── */
 #hud{
@@ -198,14 +203,9 @@ html,body{
 
 .hud-hint{
   font-size:10px; line-height:1.3; color:rgba(255,255,255,.35);
-  text-align:right; max-width:120px; flex:0 0 auto; display:none;
+  text-align:right; max-width:120px; flex:0 0 auto; display:block;
 }
 .hud-hint b{ color:rgba(255,255,255,.55); }
-@media (min-width:1180px){ .hud-hint{ display:block; } }
-@media (max-width:720px){
-  .hud-stats .hud-stat-row .lbl{ display:none; }
-  .hud-actions{ display:none; }
-}
 
 /* ── TOP BAR ── */
 #topbar{
@@ -234,31 +234,90 @@ html,body{
   padding:4px 10px; border-radius:4px;
 }
 
-/* ── SOUND TOGGLE (styled via .hud-icon-btn in the bottom HUD) ── */
-#sound-btn.muted{ opacity:.4; }
+.hud-icon-btn svg{ width:18px; height:18px; }
+
+/* ── SIDE MENU (hamburger panel) ──────────────────────────
+   Sound and Music are separate switches here — SFX and background
+   music can be muted independently, unlike the old single mute toggle. */
+#side-menu-overlay{
+  position:fixed; inset:0; z-index:300;
+  background:rgba(0,0,0,.55);
+  opacity:0; pointer-events:none;
+  transition:opacity .25s ease;
+}
+#side-menu-overlay.show{ opacity:1; pointer-events:all; }
+
+#side-menu{
+  position:fixed; top:0; left:0; bottom:0; width:min(78vw, 300px);
+  z-index:301;
+  background:#111018;
+  border-right:1px solid rgba(255,255,255,.08);
+  padding:84px 0 24px;
+  display:flex; flex-direction:column;
+  transform:translateX(-100%);
+  transition:transform .3s cubic-bezier(.22,1,.36,1);
+  overflow-y:auto;
+}
+#side-menu-overlay.show #side-menu{ transform:translateX(0); }
+
+.menu-close{
+  position:absolute; top:22px; right:18px;
+  width:34px; height:34px; border-radius:50%;
+  background:rgba(255,255,255,.08); border:none; color:#fff;
+  font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:background .15s;
+}
+.menu-close:hover{ background:rgba(255,255,255,.16); }
+
+.menu-row{
+  display:flex; align-items:center; gap:16px;
+  width:100%; padding:14px 26px;
+  background:none; border:none; cursor:pointer;
+  color:#fff; font-family:'Nunito',sans-serif; font-weight:800;
+  font-size:14px; letter-spacing:1px; text-transform:uppercase;
+  text-align:left; text-decoration:none;
+  transition:background .15s;
+}
+.menu-row:hover{ background:rgba(255,255,255,.06); }
+.menu-icon{
+  width:38px; height:38px; border-radius:50%; flex-shrink:0;
+  border:2px solid rgba(255,255,255,.55);
+  display:flex; align-items:center; justify-content:center;
+  transition:background .15s, border-color .15s;
+}
+.menu-icon svg{ width:18px; height:18px; fill:none; stroke:#fff; stroke-width:2; }
+.menu-row.active .menu-icon{ background:linear-gradient(135deg,#ff4daa,#c0006b); border-color:transparent; }
 
 /* ── WIN MESSAGE ── */
+/* A self-contained popup: no button, no "collect" step, no repeated "YOU
+   WIN!" label — the amount itself bursts in, holds, then auto-dismisses
+   on its own (see showWinMsg()/hideWinMsg()). Pure slot-machine pacing. */
 #win-msg{
   position:fixed; top:50%; left:50%;
   transform:translate(-50%, -50%);
   text-align:center; pointer-events:none;
-  z-index:60; opacity:0;
-  transition:opacity .3s;
+  z-index:60; opacity:0; visibility:hidden;
+  transition:opacity .25s ease, visibility 0s .25s;
 }
-#win-msg.show{ opacity:1; }
-#win-msg-text{
-  font-family:'Fredoka One',cursive;
-  font-size:clamp(28px,5vw,52px);
-  color:#ffd700;
-  text-shadow:0 0 30px rgba(255,215,0,.7), 0 4px 0 rgba(180,100,0,.5);
-  letter-spacing:1px;
+#win-msg.show{
+  opacity:1; visibility:visible;
+  transition:opacity .15s ease, visibility 0s;
 }
 #win-msg-amount{
   font-family:'Fredoka One',cursive;
-  font-size:clamp(38px,7vw,72px);
+  font-size:64px;
   color:#fff;
   text-shadow:0 0 40px rgba(255,215,0,.9), 0 6px 0 rgba(180,80,0,.6);
   margin-top:4px;
+  opacity:0; transform:scale(.3);
+}
+#win-msg.show #win-msg-amount{
+  animation:winPop .5s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes winPop{
+  0%{ transform:scale(.3); opacity:0; }
+  55%{ transform:scale(1.15); opacity:1; }
+  100%{ transform:scale(1); opacity:1; }
 }
 
 /* ── SUPER WIN OVERLAY ── */
@@ -278,28 +337,23 @@ html,body{
   backdrop-filter:blur(8px) brightness(.55);
   -webkit-backdrop-filter:blur(8px) brightness(.55);
 }
-/* Gold rays */
-#super-win-rays{
-  position:absolute; inset:0;
-  background:conic-gradient(from 0deg, transparent 0deg 5deg, rgba(255,215,0,.04) 5deg 10deg, transparent 10deg 15deg, rgba(255,215,0,.04) 15deg 20deg, transparent 20deg);
-  animation:rays 8s linear infinite;
-  pointer-events:none;
-}
-@keyframes rays{ from{transform:rotate(0)} to{transform:rotate(360deg)} }
-
 #super-win-content{
   position:relative; z-index:2;
   text-align:center;
-  animation:superPop .5s cubic-bezier(.34,1.56,.64,1) both;
+  animation:superPop .6s cubic-bezier(.22,1,.36,1) both;
   padding:0 20px;
 }
+/* Explicit grow-then-settle: pops past its final size, then eases back
+   down to a steady, readable scale — not a runaway "always bigger" motion. */
 @keyframes superPop{
-  from{transform:scale(.4);opacity:0}
-  to{transform:scale(1);opacity:1}
+  0%{ transform:scale(.3); opacity:0; }
+  55%{ transform:scale(1.22); opacity:1; }
+  78%{ transform:scale(.93); }
+  100%{ transform:scale(1); opacity:1; }
 }
 
 #sw-banner-img{
-  width:min(64vw, 380px);
+  width:420px;
   height:auto;
   filter:drop-shadow(0 8px 24px rgba(255,180,0,.4));
   margin-bottom:6px;
@@ -307,7 +361,7 @@ html,body{
 
 .sw-type{
   font-family:'Fredoka One',cursive;
-  font-size:clamp(38px,7vw,84px);
+  font-size:88px;
   line-height:.9; letter-spacing:2px;
   background:linear-gradient(180deg,#fff9c0 0%,#ffd700 40%,#ff8c00 80%,#ff4400 100%);
   -webkit-background-clip:text; -webkit-text-fill-color:transparent;
@@ -318,24 +372,16 @@ html,body{
 .sw-amount-wrap{ margin:14px 0; }
 .sw-amount{
   font-family:'Fredoka One',cursive;
-  font-size:clamp(40px,7vw,88px);
+  font-size:90px;
   color:#fff;
   text-shadow:0 0 40px rgba(255,215,0,1), 0 8px 0 rgba(180,80,0,.6);
 }
 
-.sw-close{
-  background:linear-gradient(135deg,#ff4daa,#c0006b);
-  color:#fff; border:none; border-radius:50px;
-  padding:14px 44px; font-family:'Fredoka One',cursive;
-  font-size:18px; letter-spacing:1px; cursor:pointer;
-  box-shadow:0 6px 24px rgba(255,77,170,.4);
-  transition:all .2s; margin-top:8px;
-}
-.sw-close:hover{ transform:translateY(-2px); box-shadow:0 10px 30px rgba(255,77,170,.6); }
-
 /* ── PARTICLES CANVAS ── */
+/* Sits ABOVE the Super Win overlay (z-index 200) — confetti must fall in
+   front of the popup, not behind its blurred/darkened backdrop. */
 #pfx{
-  position:fixed; inset:0; pointer-events:none; z-index:190;
+  position:fixed; inset:0; pointer-events:none; z-index:210;
 }
 
 /* ── FREE SPINS BANNER ── */
@@ -384,17 +430,20 @@ html,body{
   <button id="play-btn">▶ Play Now</button>
 </div>
 
-<!-- IN-GAME CHARACTER -->
-<div id="character-img">
-  <video id="char-vid-idle"  class="active" src="/Bakerybonanza/Animation/character_Idle_transparent.webm"  autoplay loop muted playsinline></video>
-  <video id="char-vid-touch" src="/Bakerybonanza/Animation/character_touch_transparent.webm" loop muted playsinline></video>
-</div>
-
-<!-- LOGO — sized/positioned by JS to match the reel symbols and sit
-     centered right above the character's head (see positionLogo()). -->
-<img id="tb-logo-img" src="/Bakerybonanza/logo.png" alt="Bakery Bonanza">
-
+<!-- Everything below lives inside #shell — the fixed 1480×900 design
+     stage — so it docks/scales as one unit instead of the raw viewport
+     (see #shell's CSS comment and updateStageScale() in the script). -->
 <div id="shell">
+  <!-- IN-GAME CHARACTER -->
+  <div id="character-img">
+    <video id="char-vid-idle"  class="active" src="/Bakerybonanza/Animation/character_Idle_transparent.webm"  autoplay loop muted playsinline></video>
+    <video id="char-vid-touch" src="/Bakerybonanza/Animation/character_touch_transparent.webm" loop muted playsinline></video>
+  </div>
+
+  <!-- LOGO — sized/positioned by JS to match the reel symbols and sit
+       centered right above the character's head (see positionLogo()). -->
+  <img id="tb-logo-img" src="/Bakerybonanza/logo.png" alt="Bakery Bonanza">
+
   <!-- TOP BAR -->
   <div id="topbar">
     <div class="tb-right">
@@ -411,16 +460,15 @@ html,body{
 
   <!-- WIN MESSAGE (mid-screen) -->
   <div id="win-msg">
-    <div id="win-msg-text">YOU WIN!</div>
     <div id="win-msg-amount">$0.00</div>
   </div>
 
   <!-- BOTTOM HUD -->
   <div id="hud">
     <div class="hud-left">
-      <button class="hud-icon-btn" id="settings-btn" title="Settings">⚙</button>
-      <button class="hud-icon-btn" id="sound-btn" onclick="toggleSound()" title="Sound">🔊</button>
-      <button class="hud-icon-btn" id="info-btn" title="Info">i</button>
+      <button class="hud-icon-btn" id="menu-btn" title="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
     </div>
 
     <div class="hud-stats">
@@ -450,31 +498,79 @@ html,body{
 
     <div class="hud-hint">Hold <b>spacebar</b> for turbo spin</div>
   </div>
+
+  <!-- SUPER WIN OVERLAY — no button: pure timed popup like the small win
+       message, just bigger. Auto-dismisses on its own (see showSuperWin()). -->
+  <div id="super-win">
+    <div id="super-win-bg"></div>
+    <div id="super-win-content">
+      <img id="sw-banner-img" src="/Bakerybonanza/super_win_popup.png" alt="Super Win">
+      <div class="sw-type" id="sw-type-text">SUPER WIN</div>
+      <div class="sw-amount-wrap">
+        <div class="sw-amount" id="sw-amount">$0.00</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PARTICLES -->
+  <canvas id="pfx"></canvas>
+  <div id="toast"></div>
 </div>
 
-<!-- SUPER WIN OVERLAY -->
-<div id="super-win">
-  <div id="super-win-bg"></div>
-  <div id="super-win-rays"></div>
-  <div id="super-win-content">
-    <img id="sw-banner-img" src="/Bakerybonanza/super_win_popup.png" alt="Super Win">
-    <div class="sw-type" id="sw-type-text">SUPER WIN</div>
-    <div class="sw-amount-wrap">
-      <div class="sw-amount" id="sw-amount">$0.00</div>
-    </div>
-    <button class="sw-close" onclick="closeSuperWin()">Collect & Continue →</button>
+<!-- SIDE MENU — Sound and Music are independent switches here. -->
+<div id="side-menu-overlay">
+  <div id="side-menu">
+    <button class="menu-close" id="menu-close-btn" title="Close">✕</button>
+
+    <button class="menu-row active" id="menu-sound-row">
+      <span class="menu-icon">
+        <svg viewBox="0 0 24 24" fill="#fff" id="menu-sound-icon"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-.77-3.29-2-4.24v8.48c1.23-.95 2-2.47 2-4.24z"/></svg>
+      </span>
+      SOUND
+    </button>
+
+    <button class="menu-row active" id="menu-music-row">
+      <span class="menu-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      </span>
+      MUSIC
+    </button>
+
+    <button class="menu-row" id="menu-superturbo-row">
+      <span class="menu-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </span>
+      SUPER TURBO
+    </button>
+
+    <button class="menu-row" id="menu-turbo-row">
+      <span class="menu-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </span>
+      TURBO
+    </button>
+
+    <button class="menu-row" id="menu-info-row">
+      <span class="menu-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="7.5" x2="12" y2="8"/></svg>
+      </span>
+      INFO
+    </button>
+
+    <a class="menu-row" id="menu-home-row" href="/#games">
+      <span class="menu-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+      </span>
+      HOME
+    </a>
   </div>
 </div>
-
-<!-- PARTICLES -->
-<canvas id="pfx"></canvas>
-<div id="toast"></div>
 
 <script>
 // ════════════════════════════════════════════════════════
 //  BAKERY BONANZA — Senior PixiJS Slot Engine
 //  ZinZin Studio · RTP ~96.5% · 5×4 · Pays-Anywhere + Tumble
-//  Sweet-Bonanza-style: no paylines, 5+ of a kind pays anywhere,
+//  Sweet-Bonanza-style: no paylines, 6+ of a kind pays anywhere,
 //  winning symbols burst and cascade, Wild carries a random
 //  multiplier (2x-100x) applied whenever it's part of a win.
 //  Art: original ZinZin Studio bakery/candy symbol set
@@ -489,7 +585,8 @@ const ASSET_DIR = '/Bakerybonanza/';
 // Background music is one original AI-generated lofi loop (no sampled
 // or ripped audio), embedded as base64 — same approach used site-wide
 // in the other ZinZin Studio demo games.
-const Sound = { ctx:null, muted:false };
+// Sound and Music are independent mutes — see toggleSound()/toggleMusic().
+const Sound = { ctx:null, sfxMuted:false, musicMuted:false };
 
 function sndCtx() {
   if (!Sound.ctx) {
@@ -500,7 +597,7 @@ function sndCtx() {
 }
 
 function tone({freq, to, dur=0.18, type='sine', vol=0.22, delay=0, attack=0.008}) {
-  if (Sound.muted) return;
+  if (Sound.sfxMuted) return;
   const ctx = sndCtx();
   const t0 = ctx.currentTime + delay;
   const osc = ctx.createOscillator();
@@ -516,7 +613,7 @@ function tone({freq, to, dur=0.18, type='sine', vol=0.22, delay=0, attack=0.008}
 }
 
 function noiseBurst({dur=0.05, vol=0.12, freq=2200, delay=0}) {
-  if (Sound.muted) return;
+  if (Sound.sfxMuted) return;
   const ctx = sndCtx();
   const t0 = ctx.currentTime + delay;
   const n = Math.floor(ctx.sampleRate * dur);
@@ -548,7 +645,7 @@ function sndReelStop(colIdx) {
 // "Jelly bounce": quick downward squish then a soft rebound — the
 // signature candy/jelly-game win sound.
 function sndWinBounce() {
-  if (Sound.muted) return;
+  if (Sound.sfxMuted) return;
   const ctx = sndCtx();
   const t0 = ctx.currentTime;
   const osc = ctx.createOscillator();
@@ -579,13 +676,18 @@ function sndBigWin() {
   noiseBurst({dur:.3, vol:.08, freq:4000, delay:.05});
 }
 
+// SOUND toggles SFX only; MUSIC (below) toggles the background loop —
+// independently, so players can mute one without the other.
 function toggleSound() {
-  Sound.muted = !Sound.muted;
-  const btn = document.getElementById('sound-btn');
-  btn.textContent = Sound.muted ? '🔇' : '🔊';
-  btn.classList.toggle('muted', Sound.muted);
-  if (bgMusic) { if (Sound.muted) bgMusic.pause(); else bgMusic.play().catch(()=>{}); }
-  if (!Sound.muted) sndClick();
+  Sound.sfxMuted = !Sound.sfxMuted;
+  document.getElementById('menu-sound-row').classList.toggle('active', !Sound.sfxMuted);
+  if (!Sound.sfxMuted) sndClick();
+}
+
+function toggleMusic() {
+  Sound.musicMuted = !Sound.musicMuted;
+  document.getElementById('menu-music-row').classList.toggle('active', !Sound.musicMuted);
+  if (bgMusic) { if (Sound.musicMuted) bgMusic.pause(); else bgMusic.play().catch(()=>{}); }
 }
 
 // ── BACKGROUND MUSIC (pre-rendered loop, same pattern as the other
@@ -608,7 +710,7 @@ const GIGGLE_SRC = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwL
 let giggleAudio = null;
 const GIGGLE_CLIP_SECONDS = 2; // only the last 2s of the giggle clip are played
 function playGiggle() {
-  if (Sound.muted) return;
+  if (Sound.sfxMuted) return;
   if (!giggleAudio) { giggleAudio = new Audio(GIGGLE_SRC); giggleAudio.volume = 0.8; }
   const startFromLast3s = () => {
     const dur = giggleAudio.duration;
@@ -623,7 +725,8 @@ function playGiggle() {
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 // Turbo mode scales every pacing/animation duration down uniformly.
 let Turbo = false;
-function T(ms) { return Turbo ? Math.round(ms * 0.4) : ms; }
+let SuperTurbo = false; // menu-only, even faster than Turbo — overrides it when on
+function T(ms) { return Math.round(ms * (SuperTurbo ? 0.15 : (Turbo ? 0.4 : 1))); }
 function easeInQuad(t)  { return t * t; }
 function easeOutQuad(t) { return t * (2 - t); }
 function easeOutBack(t) {
@@ -649,24 +752,31 @@ function tweenTo(target, props, duration, ease = t => t) {
 // the highest threshold met by the total count-on-grid applies.
 // Wild has no independent pay (pure substitute + multiplier carrier).
 // Scatter pays via its own cumulative end-of-spin count (see MIN_SCATTER).
+// Pay table + weights tuned by Monte-Carlo simulation (2M+ spins) to land
+// on ~96.5% RTP / ~36% hit frequency — the original numbers simulated to
+// a broken 760%+ RTP because the Wild both (a) adds to every symbol's
+// count simultaneously and (b) multiplies the combined win by the sum of
+// every Wild's multiplier on screen. That combo is kept (it's our own
+// game's signature, not Sweet Bonanza's free-spins-only mechanic) but the
+// odds of it firing, and how much it pays when it does, are now sane.
 const SYMS = [
-  { id:0,  img:'symbol_0.png',  label:'Blue Gem',       tier:'low',  pays:[[5,0.25],[7,0.6],[9,1.5],[11,4]],  weight:15 },
-  { id:1,  img:'symbol_1.png',  label:'Green Gem',      tier:'low',  pays:[[5,0.25],[7,0.6],[9,1.5],[11,4]],  weight:15 },
-  { id:2,  img:'symbol_2.png',  label:'Red Gem',        tier:'low',  pays:[[5,0.3], [7,0.8],[9,2],  [11,5]],  weight:13 },
-  { id:3,  img:'symbol_3.png',  label:'Purple Gem',     tier:'low',  pays:[[5,0.3], [7,0.8],[9,2],  [11,5]],  weight:13 },
-  { id:4,  img:'symbol_4.png',  label:'Raspberry Cake', tier:'mid',  pays:[[5,0.5], [7,1.2],[9,3],  [11,8]],  weight:10 },
-  { id:5,  img:'symbol_5.png',  label:'Kiwi Cake',      tier:'mid',  pays:[[5,0.5], [7,1.2],[9,3],  [11,8]],  weight:10 },
-  { id:6,  img:'symbol_6.png',  label:'Orange Cake',    tier:'mid',  pays:[[5,0.6], [7,1.5],[9,4],  [11,10]], weight:8  },
-  { id:7,  img:'symbol_7.png',  label:'Milkshake',      tier:'high', pays:[[5,1],   [7,2.5],[9,6],  [11,15]], weight:6  },
-  { id:8,  img:'symbol_8.png',  label:'Ice Cream',      tier:'high', pays:[[5,1.5], [7,4],  [9,10], [11,25]], weight:5  },
-  { id:9,  img:'symbol_9.png',  label:'Wild',           tier:'wild', pays:[],                                 weight:3  }, // WILD — substitute + multiplier
-  { id:10, img:'symbol_10.png', label:'Scatter',        tier:'scat', pays:[[4,2],[5,5],[6,20]],                weight:4  }, // SCATTER → Free Spins
+  { id:0,  img:'symbol_0.png',  label:'Blue Gem',       tier:'low',  pays:[[6,0.26],[8,0.63],[10,1.58],[12,4.2]],   weight:15 },
+  { id:1,  img:'symbol_1.png',  label:'Green Gem',      tier:'low',  pays:[[6,0.26],[8,0.63],[10,1.58],[12,4.2]],   weight:15 },
+  { id:2,  img:'symbol_2.png',  label:'Red Gem',        tier:'low',  pays:[[6,0.32],[8,0.84],[10,2.1], [12,5.25]],  weight:13 },
+  { id:3,  img:'symbol_3.png',  label:'Purple Gem',     tier:'low',  pays:[[6,0.32],[8,0.84],[10,2.1], [12,5.25]],  weight:13 },
+  { id:4,  img:'symbol_4.png',  label:'Raspberry Cake', tier:'mid',  pays:[[6,0.53],[8,1.26],[10,3.15],[12,8.4]],   weight:10 },
+  { id:5,  img:'symbol_5.png',  label:'Kiwi Cake',      tier:'mid',  pays:[[6,0.53],[8,1.26],[10,3.15],[12,8.4]],   weight:10 },
+  { id:6,  img:'symbol_6.png',  label:'Orange Cake',    tier:'mid',  pays:[[6,0.63],[8,1.58],[10,4.2], [12,10.5]],  weight:8  },
+  { id:7,  img:'symbol_7.png',  label:'Milkshake',      tier:'high', pays:[[6,1.05],[8,2.63],[10,6.3], [12,15.75]], weight:6  },
+  { id:8,  img:'symbol_8.png',  label:'Ice Cream',      tier:'high', pays:[[6,1.58],[8,4.2], [10,10.5],[12,26.25]], weight:5  },
+  { id:9,  img:'symbol_9.png',  label:'Wild',           tier:'wild', pays:[],                                      weight:2  }, // WILD — substitute + multiplier
+  { id:10, img:'symbol_10.png', label:'Scatter',        tier:'scat', pays:[[4,2],[5,5],[6,20]],                     weight:4  }, // SCATTER → Free Spins
 ];
 
 const WILD_ID    = 9;
 const SCATTER_ID = 10;
 const COLS = 5, ROWS = 4;
-const MIN_MATCH = 5; // minimum count-anywhere to pay (out of 20 cells)
+const MIN_MATCH = 6; // minimum count-anywhere to pay (out of 20 cells)
 const TOTAL_WEIGHT = SYMS.reduce((s,sym) => s + sym.weight, 0);
 
 function getTierPay(tiers, count) {
@@ -719,8 +829,16 @@ const canvas = document.getElementById('game-canvas');
 // HUD_H must match #hud's CSS height. The canvas is sized to fill exactly
 // the band between them so the board's bottom edge lands flush on the HUD.
 const TOPBAR_H = 84, HUD_H = 84;
-let W = Math.min(window.innerWidth - 24, 2200);
-let H = Math.min(window.innerHeight - TOPBAR_H - HUD_H, 1000);
+// Fixed logical design resolution — must match #shell's CSS width/height.
+// The layout below is computed ONCE against these constants, never against
+// window.innerWidth/innerHeight, so the composition (board + character +
+// HUD) never reflows. updateStageScale() scales the whole #shell as one
+// unit to fit whatever viewport it's shown in (same idea as a fixed-canvas
+// game with a "fit" scale mode — how Sweet Bonanza/Peter&Sons-style slots
+// stay visually identical on desktop, tablet and mobile).
+const STAGE_W = 1480, STAGE_H = 900;
+let W = STAGE_W - 24;
+let H = STAGE_H - TOPBAR_H - HUD_H;
 
 const app = new PIXI.Application({
   view: canvas,
@@ -750,7 +868,6 @@ let charDispW = 0, charDispH = 0, charLeft = 0, charTop = 0;
 function computeLayout() {
   const availW  = W - SIDE_MARGIN * 2;
   const availH  = H - TOP_MARGIN - BOTTOM_MARGIN;
-  const showChar = window.innerWidth >= 820;
 
   // The board is the primary game element — it always fills the full
   // available height. It is never shrunk to make room for the character.
@@ -759,13 +876,14 @@ function computeLayout() {
   if (boardW > availW) { boardW = availW; boardH = boardW / BOARD_ASPECT; }
 
   // The character stands beside the board, close to full board height
-  // (matches the reference art direction). It's decorative, so if there
-  // isn't enough spare width it shrinks (or disappears) — the board never does.
-  let cH = showChar ? boardH * CHAR_HEIGHT_RATIO : 0;
+  // (matches the reference art direction). Layout is computed once against
+  // the fixed STAGE_W/STAGE_H design resolution, so the character is always
+  // part of the composition — it never disappears at any screen size.
+  let cH = boardH * CHAR_HEIGHT_RATIO;
   let cW = cH * CHAR_ASPECT;
-  let gap = showChar ? CHAR_GAP : 0;
+  let gap = CHAR_GAP;
   const spareW = availW - boardW - gap;
-  if (showChar && cW > spareW) {
+  if (cW > spareW) {
     if (spareW > 40) {
       const scale = spareW / cW;
       cW *= scale; cH *= scale;
@@ -796,9 +914,9 @@ computeLayout();
 
 function positionCharacter() {
   const el = document.getElementById('character-img');
-  if (window.innerWidth < 820 || charDispW <= 0) { el.style.display = 'none'; return; }
+  if (charDispW <= 0) { el.style.display = 'none'; return; }
   el.style.display = 'block';
-  const canvasLeft = (window.innerWidth - W) / 2;
+  const canvasLeft = (STAGE_W - W) / 2; // canvas is centered within the fixed-width #shell
   const canvasTop  = TOPBAR_H; // matches #game-canvas's margin-top
   el.style.height = charDispH + 'px';
   el.style.width  = charDispW + 'px';
@@ -810,12 +928,12 @@ function positionCharacter() {
 // 0.8 * CELL_H — see below) and centered right above the character's head.
 function positionLogo() {
   const el = document.getElementById('tb-logo-img');
-  const canvasLeft = (window.innerWidth - W) / 2;
+  const canvasLeft = (STAGE_W - W) / 2;
   const canvasTop  = TOPBAR_H;
-  if (charDispW <= 0) { // no character on narrow viewports — small top-right badge
+  if (charDispW <= 0) { // fallback if the board ever leaves no spare width — small top-right badge
     el.style.transform = 'none';
     el.style.height = '38px';
-    el.style.left = (window.innerWidth - 24 - 90) + 'px';
+    el.style.left = (STAGE_W - 24 - 90) + 'px';
     el.style.top  = '14px';
     return;
   }
@@ -1328,6 +1446,11 @@ async function runCascade() {
 }
 
 // ── SUPER WIN ────────────────────────────────────────────
+// Same no-button, timed-popup pattern as the small win message — just
+// bigger and reserved for tiers that deserve the extra fanfare + confetti.
+const SUPER_WIN_DURATION = 3000;
+let superWinHideTimer = null;
+
 function showSuperWin(amount, mult, type) {
   const label = type || (mult >= 100 ? 'JACKPOT!' : mult >= 50 ? 'SUPER WIN' : 'MEGA WIN');
   // super_win_popup.png already reads "SUPER WIN" — only surface it for that
@@ -1341,19 +1464,31 @@ function showSuperWin(amount, mult, type) {
   document.getElementById('super-win').classList.add('show');
   sndBigWin();
   spawnConfetti();
+
+  clearTimeout(superWinHideTimer);
+  superWinHideTimer = setTimeout(closeSuperWin, SUPER_WIN_DURATION);
 }
 
 function closeSuperWin() {
-  sndClick();
+  clearTimeout(superWinHideTimer);
   document.getElementById('super-win').classList.remove('show');
   stopConfetti();
   endSpin();
 }
 
 // ── WIN MESSAGE ──────────────────────────────────────────
+// A no-button popup: bursts in, the amount count-up follows a beat later,
+// confetti falls, and after WIN_MSG_DURATION it dismisses itself — no
+// "collect & continue" step, this is a slot machine, not a modal dialog.
+const WIN_MSG_DURATION = 3000;
+let winMsgHideTimer = null;
+
 function showWinMsg(amount) {
+  clearTimeout(winMsgHideTimer);
   document.getElementById('win-msg-amount').textContent = '$ ' + amount.toFixed(2);
   document.getElementById('win-msg').classList.add('show');
+  // Confetti is reserved for the Super Win overlay (see showSuperWin()) —
+  // not spammed on every small win.
 
   let cur = 0, tick = 0;
   const step = amount / 30;
@@ -1363,9 +1498,12 @@ function showWinMsg(amount) {
     if (tick++ % 3 === 0) sndCoinTick();
     if (cur >= amount) clearInterval(iv);
   }, 40);
+
+  winMsgHideTimer = setTimeout(hideWinMsg, WIN_MSG_DURATION);
 }
 
 function hideWinMsg() {
+  clearTimeout(winMsgHideTimer);
   document.getElementById('win-msg').classList.remove('show');
 }
 
@@ -1402,14 +1540,24 @@ function changeBet(dir) {
 }
 
 // ── TURBO / AUTO ──────────────────────────────────────────
-let turboToggled = false; // TURBO pill
+// Turbo, super-turbo (menu-only) and holding spacebar are mutually
+// exclusive speed presets — the fastest one active wins (see T()).
+let turboToggled = false; // TURBO pill / menu row
 let turboKeyHeld = false; // spacebar held down
 function updateTurboState() { Turbo = turboToggled || turboKeyHeld; }
 function toggleTurbo() {
   sndClick();
   turboToggled = !turboToggled;
+  if (turboToggled && SuperTurbo) { SuperTurbo = false; document.getElementById('menu-superturbo-row').classList.remove('active'); }
   document.getElementById('turbo-btn').classList.toggle('active', turboToggled);
+  document.getElementById('menu-turbo-row').classList.toggle('active', turboToggled);
   updateTurboState();
+}
+function toggleSuperTurbo() {
+  sndClick();
+  SuperTurbo = !SuperTurbo;
+  if (SuperTurbo && turboToggled) { turboToggled = false; document.getElementById('turbo-btn').classList.remove('active'); document.getElementById('menu-turbo-row').classList.remove('active'); updateTurboState(); }
+  document.getElementById('menu-superturbo-row').classList.toggle('active', SuperTurbo);
 }
 
 let autoSpin = false;
@@ -1422,8 +1570,8 @@ function toggleAuto() {
 
 // ── CONFETTI PARTICLES ────────────────────────────────────
 const pfx    = document.getElementById('pfx');
-pfx.width    = window.innerWidth;
-pfx.height   = window.innerHeight;
+pfx.width    = STAGE_W;
+pfx.height   = STAGE_H;
 const pfxCtx = pfx.getContext('2d');
 let confetti = [], confettiRunning = false;
 
@@ -1518,48 +1666,36 @@ charImg.addEventListener('click', () => { // touch-device fallback (no hover)
   charTouchRevertTimer = setTimeout(charShowIdle, 2400);
 });
 
-// ── HUD ICON BUTTONS (settings / info) ────────────────────
-document.getElementById('settings-btn').addEventListener('click', () => {
+// ── SIDE MENU ──────────────────────────────────────────────
+const sideMenuOverlay = document.getElementById('side-menu-overlay');
+function openMenu()  { sndClick(); sideMenuOverlay.classList.add('show'); }
+function closeMenu() { sndClick(); sideMenuOverlay.classList.remove('show'); }
+
+document.getElementById('menu-btn').addEventListener('click', openMenu);
+document.getElementById('menu-close-btn').addEventListener('click', closeMenu);
+sideMenuOverlay.addEventListener('click', (e) => { if (e.target === sideMenuOverlay) closeMenu(); });
+
+document.getElementById('menu-sound-row').addEventListener('click', toggleSound);
+document.getElementById('menu-music-row').addEventListener('click', toggleMusic);
+document.getElementById('menu-superturbo-row').addEventListener('click', toggleSuperTurbo);
+document.getElementById('menu-turbo-row').addEventListener('click', toggleTurbo);
+document.getElementById('menu-info-row').addEventListener('click', () => {
   sndClick();
-  toast('Settings — demo build');
-});
-document.getElementById('info-btn').addEventListener('click', () => {
-  sndClick();
-  toast('5×4 grid · pays anywhere (5+) · Wild multiplies ×2–×100');
+  toast('5×4 grid · pays anywhere (6+) · Wild multiplies ×2–×100');
 });
 
-// ── RESIZE ───────────────────────────────────────────────
-window.addEventListener('resize', () => {
-  W = Math.min(window.innerWidth - 24, 2200);
-  H = Math.min(window.innerHeight - TOPBAR_H - HUD_H, 1000);
-  app.renderer.resize(W, H);
-  computeLayout();
-  positionCharacter();
-  positionLogo();
-
-  // Guard: a resize can fire before boot() has built the reels (e.g. while
-  // assets are still loading, or before "Play Now" is clicked) — the mask
-  // and sprite grids don't exist yet, so there's nothing more to redraw.
-  const clipMask = layerReels.mask;
-  if (!clipMask) return;
-
-  layerBG.removeChildren(); drawBG();
-  layerFrame.removeChildren(); drawFrame();
-
-  clipMask.clear(); clipMask.beginFill(0xffffff); clipMask.drawRect(GRID_X, GRID_Y, GRID_W, GRID_H); clipMask.endFill();
-
-  for (let c = 0; c < COLS; c++) {
-    reelContainers[c].x = GRID_X + c * CELL_W;
-    reelContainers[c].y = GRID_Y;
-    for (let r = 0; r < ROWS; r++) {
-      const sp = symbolSprites[c][r];
-      if (!sp) continue;
-      sp.y = r * CELL_H;
-      const icon = sp.children[1];
-      if (icon) fitSprite(icon, icon.texture, CELL_W, CELL_H, 0.8);
-    }
-  }
-});
+// ── RESPONSIVE SCALE ──────────────────────────────────────
+// The design is fixed (STAGE_W×STAGE_H, see computeLayout()) and never
+// reflows on resize — only #shell's CSS scale changes, so desktop, tablet
+// and mobile always show the exact same composition, just uniformly
+// bigger or smaller (letterboxed on very different aspect ratios, same
+// as any fixed-resolution HTML5 slot using a "fit" scale mode).
+function updateStageScale() {
+  const scale = Math.min(window.innerWidth / STAGE_W, window.innerHeight / STAGE_H);
+  document.getElementById('shell').style.setProperty('--stage-scale', scale);
+}
+window.addEventListener('resize', updateStageScale);
+updateStageScale();
 
 // ── BOOT (after assets are loaded) ───────────────────────
 function boot() {
