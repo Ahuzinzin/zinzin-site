@@ -1,0 +1,5 @@
+.vercel
+.DS_Store
+
+# Animation master files (huge) — only the .webm exports are used on the site
+Bakerybonanza/Animation/*.mov
