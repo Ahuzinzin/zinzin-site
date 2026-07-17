@@ -8,14 +8,22 @@
 // No browser reliably composites a codec's native alpha channel for on-screen
 // <video> (confirmed: HEVC-with-alpha renders opaque even in Chrome, and
 // WebKit's transparent-WebM support never covered Safari at all). WebKit
-// (Safari + every iOS browser) gets a canvas compositor instead: two plain
-// opaque videos (RGB color + a grayscale alpha matte) played in lockstep and
-// combined per-pixel every frame — real 24fps video smoothness, genuine
-// per-pixel alpha, no codec-alpha reliance. Runs before body paint.
+// (Safari + every iOS browser) gets a WebGL compositor instead: a single
+// stacked video (RGB color on top, grayscale alpha matte on bottom) sampled
+// by a fragment shader that combines them per pixel — real 24fps video
+// smoothness, genuine per-pixel alpha, no codec-alpha reliance.
+// Apple requires EVERY browser on iOS to run on the WebKit engine, so
+// "Chrome"/"Firefox"/"Edge" on an iPhone are WebKit under the hood too and
+// hit the exact same black-box bug as Safari — their UA strings (CriOS,
+// FxiOS, EdgiOS, OPiOS) must NOT be treated as "not WebKit". Only on
+// desktop does the browser name reliably indicate a different engine.
+// Runs before body paint.
 (function () {
   var ua = navigator.userAgent;
-  var isAppleWebKit = /AppleWebKit/.test(ua) && !/Chrome|Chromium|CriOS|FxiOS|EdgiOS|OPiOS|OPR|Edg\//.test(ua);
-  if (isAppleWebKit) document.documentElement.classList.add('no-alpha-video');
+  var isIOSDevice = /iPad|iPhone|iPod/.test(ua) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); // iPadOS 13+ reports as a Mac
+  var isDesktopSafari = /AppleWebKit/.test(ua) && !/Chrome|Chromium|CriOS|FxiOS|EdgiOS|OPiOS|OPR|Edg\//.test(ua);
+  if (isIOSDevice || isDesktopSafari) document.documentElement.classList.add('no-alpha-video');
 })();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
@@ -1695,11 +1703,22 @@ document.addEventListener('keyup', e => {
 // the bottom half — the combine happens on the GPU, every frame, for free.
 // The canvas is also now sized in *device* pixels (was CSS pixels), which
 // is what made the character look soft/blocky on any Retina display.
-function createVideoAlphaCompositor(canvas, width, height) {
-  const video = document.createElement('video');
-  video.muted = true; video.loop = true; video.playsInline = true;
-  video.style.display = 'none';
-  document.body.appendChild(video);
+function createVideoAlphaCompositor(canvas, width, height, sources) {
+  // Every named clip gets its own always-playing, always-decoding <video> —
+  // switching "active" is just picking which one the shader reads from, no
+  // src reassignment. Reassigning .src (the old approach) forces a full
+  // unload/refetch/rebuffer, which is what caused the touch-trigger stutter.
+  const videos = {};
+  for (const key in sources) {
+    const v = document.createElement('video');
+    v.muted = true; v.loop = true; v.playsInline = true;
+    v.style.display = 'none';
+    v.src = sources[key];
+    v.play().catch(() => {});
+    document.body.appendChild(v);
+    videos[key] = v;
+  }
+  let activeKey = Object.keys(sources)[0];
 
   const gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true }) ||
              canvas.getContext('experimental-webgl', { alpha: true, premultipliedAlpha: true });
@@ -1757,12 +1776,10 @@ function createVideoAlphaCompositor(canvas, width, height) {
   gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
   gl.clearColor(0, 0, 0, 0);
 
-  function setSrc(src) {
-    if (video.getAttribute('data-src') === src) return;
-    video.setAttribute('data-src', src);
-    video.src = src;
-    video.currentTime = 0;
-    video.play().catch(() => {});
+  function setActive(key, resetTime) {
+    if (!videos[key]) return;
+    activeKey = key;
+    if (resetTime) videos[key].currentTime = 0;
   }
 
   let running = true;
@@ -1770,6 +1787,7 @@ function createVideoAlphaCompositor(canvas, width, height) {
 
   function draw() {
     if (!running) return;
+    const video = videos[activeKey];
     if (video.readyState >= 2) {
       const dpr = window.devicePixelRatio || 1;
       const cw = Math.round(canvas.clientWidth * dpr), ch = Math.round(canvas.clientHeight * dpr);
@@ -1802,7 +1820,7 @@ function createVideoAlphaCompositor(canvas, width, height) {
     requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
-  return { setSrc, stop };
+  return { setActive, stop };
 }
 
 let bbCharCompositor = null;
@@ -1810,11 +1828,14 @@ let bbLdCompositor = null;
 if (document.documentElement.classList.contains('no-alpha-video')) {
   const CW = 704, CH = 1248;
 
-  bbLdCompositor = createVideoAlphaCompositor(document.getElementById('ld-char-canvas'), CW, CH);
-  bbLdCompositor.setSrc('/Bakerybonanza/Animation/idle_stacked.mp4');
+  bbLdCompositor = createVideoAlphaCompositor(document.getElementById('ld-char-canvas'), CW, CH, {
+    idle: '/Bakerybonanza/Animation/idle_stacked.mp4',
+  });
 
-  bbCharCompositor = createVideoAlphaCompositor(document.getElementById('char-canvas'), CW, CH);
-  bbCharCompositor.setSrc('/Bakerybonanza/Animation/idle_stacked.mp4');
+  bbCharCompositor = createVideoAlphaCompositor(document.getElementById('char-canvas'), CW, CH, {
+    idle: '/Bakerybonanza/Animation/idle_stacked.mp4',
+    touch: '/Bakerybonanza/Animation/touch_stacked.mp4',
+  });
 }
 
 // ── CHARACTER MASCOT INTERACTION ──────────────────────────
@@ -1832,13 +1853,13 @@ function charShowTouch() {
   charVidTouch.classList.add('active');
   charVidTouch.currentTime = 0;
   charVidTouch.play().catch(() => {});
-  if (bbCharCompositor) bbCharCompositor.setSrc('/Bakerybonanza/Animation/touch_stacked.mp4');
+  if (bbCharCompositor) bbCharCompositor.setActive('touch', true);
 }
 function charShowIdle() {
   charVidTouch.classList.remove('active');
   charVidIdle.classList.add('active');
   charVidIdle.play().catch(() => {});
-  if (bbCharCompositor) bbCharCompositor.setSrc('/Bakerybonanza/Animation/idle_stacked.mp4');
+  if (bbCharCompositor) bbCharCompositor.setActive('idle', false);
 }
 
 charImg.addEventListener('mouseenter', () => { playGiggle(); charShowTouch(); });
