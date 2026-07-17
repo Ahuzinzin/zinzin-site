@@ -454,7 +454,7 @@ html.no-alpha-video #character-img .static-fallback{ display:block !important; }
       <source src="/Bakerybonanza/Animation/character_Idle_alpha.mp4" type="video/mp4; codecs=hvc1">
       <source src="/Bakerybonanza/Animation/character_Idle_transparent.webm" type="video/webm">
     </video>
-    <canvas id="ld-char-canvas" class="static-fallback" width="352" height="624"></canvas>
+    <canvas id="ld-char-canvas" class="static-fallback" width="704" height="1248"></canvas>
   </div>
   <img id="ld-logo-img" src="/Bakerybonanza/logo.png" alt="Bakery Bonanza">
   <div id="ld-bar-wrap">
@@ -478,7 +478,7 @@ html.no-alpha-video #character-img .static-fallback{ display:block !important; }
       <source src="/Bakerybonanza/Animation/character_touch_alpha.mp4" type="video/mp4; codecs=hvc1">
       <source src="/Bakerybonanza/Animation/character_touch_transparent.webm" type="video/webm">
     </video>
-    <canvas id="char-canvas" class="static-fallback" width="352" height="624"></canvas>
+    <canvas id="char-canvas" class="static-fallback" width="704" height="1248"></canvas>
   </div>
 
   <!-- LOGO — sized/positioned by JS to match the reel symbols and sit
@@ -1681,11 +1681,12 @@ document.addEventListener('keyup', e => {
 // ── WEBKIT SPRITE-SHEET PLAYER ────────────────────────────
 // Safari/iOS can't be trusted to composite alpha-channel <video>, so on
 // those browsers (see the no-alpha-video class set in <head>) the
-// character is instead drawn frame-by-frame on a <canvas> from a PNG
-// sprite sheet (33 frames, real per-pixel alpha, sampled from the same
-// source clips) — slower to load once, but genuinely transparent and
-// animated everywhere.
-function createSpritePlayer(canvas, frameW, frameH, fps) {
+// character is instead drawn frame-by-frame on a <canvas> from a full-
+// resolution PNG sprite sheet (49 frames @ 12fps, real per-pixel alpha,
+// sampled from the same source clips, laid out as a grid so no single
+// sheet dimension gets too large) — a bigger one-time download, but
+// genuinely transparent, sharp, and smoothly animated everywhere.
+function createSpritePlayer(canvas, frameW, frameH, fps, cols) {
   const ctx = canvas.getContext('2d');
   const sheets = {};
   let currentSheet = null;
@@ -1714,7 +1715,8 @@ function createSpritePlayer(canvas, frameW, frameH, fps) {
     const scale = Math.min(cw / frameW, ch / frameH);
     const dw = frameW * scale, dh = frameH * scale;
     const dx = (cw - dw) / 2, dy = ch - dh; // bottom-aligned, matches object-position:bottom
-    ctx.drawImage(entry.img, frameIndex * frameW, 0, frameW, frameH, dx, dy, dw, dh);
+    const col = frameIndex % cols, row = Math.floor(frameIndex / cols);
+    ctx.drawImage(entry.img, col * frameW, row * frameH, frameW, frameH, dx, dy, dw, dh);
   }
   function tick(now) {
     const entry = sheets[currentSheet];
@@ -1731,13 +1733,13 @@ function createSpritePlayer(canvas, frameW, frameH, fps) {
 
 let bbCharSpritePlayer = null;
 if (document.documentElement.classList.contains('no-alpha-video')) {
-  const SPRITE_W = 352, SPRITE_H = 624, SPRITE_FPS = 8, SPRITE_FRAMES = 33;
+  const SPRITE_W = 704, SPRITE_H = 1248, SPRITE_FPS = 12, SPRITE_FRAMES = 49, SPRITE_COLS = 10;
 
-  const ldPlayer = createSpritePlayer(document.getElementById('ld-char-canvas'), SPRITE_W, SPRITE_H, SPRITE_FPS);
+  const ldPlayer = createSpritePlayer(document.getElementById('ld-char-canvas'), SPRITE_W, SPRITE_H, SPRITE_FPS, SPRITE_COLS);
   ldPlayer.loadSheet('idle', '/Bakerybonanza/Animation/idle_sprite.png', SPRITE_FRAMES);
   ldPlayer.setSheet('idle');
 
-  bbCharSpritePlayer = createSpritePlayer(document.getElementById('char-canvas'), SPRITE_W, SPRITE_H, SPRITE_FPS);
+  bbCharSpritePlayer = createSpritePlayer(document.getElementById('char-canvas'), SPRITE_W, SPRITE_H, SPRITE_FPS, SPRITE_COLS);
   bbCharSpritePlayer.loadSheet('idle', '/Bakerybonanza/Animation/idle_sprite.png', SPRITE_FRAMES);
   bbCharSpritePlayer.loadSheet('touch', '/Bakerybonanza/Animation/touch_sprite.png', SPRITE_FRAMES);
   bbCharSpritePlayer.setSheet('idle');
