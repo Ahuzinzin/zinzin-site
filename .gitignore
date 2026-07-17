@@ -1,8 +1,6 @@
 .vercel
 .DS_Store
 
-# Animation master files (huge ProRes originals) — the .webm exports are used on the site,
-# except the HEVC-with-alpha .mov re-encodes below, which are served to Safari (no WebM alpha support)
+# Animation master files (huge ProRes originals) — the site uses the .webm exports
+# (Chrome/Firefox) and the HEVC-with-alpha .mp4 re-encodes (Safari, no WebM alpha support)
 Bakerybonanza/Animation/*.mov
-!Bakerybonanza/Animation/character_Idle_alpha.mov
-!Bakerybonanza/Animation/character_touch_alpha.mov
