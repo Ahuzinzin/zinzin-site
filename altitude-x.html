@@ -29,9 +29,10 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
   border-bottom: 1px solid rgba(255,255,255,0.06);
   flex-shrink: 0;
   z-index: 10;
+  gap: 10px;
 }
 
-.tb-logo { color: #e91e8c; font-weight: 800; font-size: 16px; letter-spacing: -0.5px; }
+.tb-logo { color: #e91e8c; font-weight: 800; font-size: 16px; letter-spacing: -0.5px; flex-shrink:0; }
 .tb-logo span { color: white; }
 
 .tb-history {
@@ -49,11 +50,27 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
   font-weight: 600;
   white-space: nowrap;
   transition: opacity .3s;
+  cursor: default;
 }
 .hist-low   { background: rgba(226,75,74,0.18); color: #e24b4a; }
 .hist-mid   { background: rgba(200,168,75,0.18); color: #c8a84b; }
 .hist-high  { background: rgba(29,158,117,0.18); color: #1d9e75; }
 .hist-epic  { background: rgba(233,30,140,0.22); color: #e91e8c; }
+
+.tb-right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+
+.sound-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.55);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background .15s, color .15s;
+  line-height:1;
+}
+.sound-btn:hover { background: rgba(255,255,255,0.08); color: white; }
 
 .tb-balance {
   font-size: 13px;
@@ -71,8 +88,8 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
 
 /* ── LEFT PANEL — BETS LIST ── */
 #bets-panel {
-  width: 220px;
-  background: #16213e;
+  width: 250px;
+  background: #0a0d14;
   border-right: 1px solid rgba(255,255,255,0.05);
   display: flex;
   flex-direction: column;
@@ -81,53 +98,73 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
 
 .panel-tabs {
   display: flex;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  gap: 6px;
+  padding: 14px 14px 10px;
 }
 
 .panel-tab {
   flex: 1;
-  padding: 10px 0;
+  padding: 8px 0;
   text-align: center;
   font-size: 11px;
-  color: rgba(255,255,255,0.35);
+  font-weight: 600;
+  color: rgba(255,255,255,0.4);
   cursor: pointer;
   transition: all .2s;
-  border-bottom: 2px solid transparent;
+  border-radius: 16px;
+  background: transparent;
+  border: none;
+  font-family: inherit;
 }
-.panel-tab.active { color: white; border-bottom-color: #e91e8c; }
+.panel-tab.active { color: white; background: rgba(255,255,255,0.1); }
+.panel-tab:hover:not(.active) { color: rgba(255,255,255,0.65); }
 
 .panel-summary {
   display: flex;
   justify-content: space-between;
-  padding: 8px 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  align-items: baseline;
+  padding: 4px 16px 12px;
 }
-.panel-summary span { font-size: 11px; color: rgba(255,255,255,0.4); }
-.panel-summary strong { font-size: 11px; color: rgba(255,255,255,0.7); }
+.panel-summary span { font-size: 11px; color: rgba(255,255,255,0.35); }
+.panel-summary strong { font-size: 14px; color: rgba(255,255,255,0.85); }
+
+.bets-header {
+  display: grid;
+  grid-template-columns: 90px 62px 46px 60px;
+  padding: 0 16px 8px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: rgba(255,255,255,0.28);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.bets-header span:nth-child(2) { text-align: right; }
+.bets-header span:nth-child(3) { text-align: center; }
+.bets-header span:nth-child(4) { text-align: right; }
 
 #bets-list {
   flex: 1;
   overflow-y: auto;
-  padding: 4px 0;
+  padding: 6px 0;
 }
 #bets-list::-webkit-scrollbar { width: 3px; }
 #bets-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
 
 .bet-row {
   display: grid;
-  grid-template-columns: 80px 55px 40px 55px;
+  grid-template-columns: 90px 62px 46px 60px;
   align-items: center;
-  padding: 5px 12px;
-  font-size: 11px;
-  border-radius: 4px;
-  margin: 1px 4px;
+  padding: 7px 12px;
+  font-size: 11.5px;
+  border-radius: 6px;
+  margin: 2px 6px;
   transition: background .2s;
 }
 .bet-row:hover { background: rgba(255,255,255,0.03); }
 .bet-row.cashed { background: rgba(29,158,117,0.08); }
 
-.bet-player { color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 5px; }
-.bet-avatar { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+.bet-player { color: rgba(255,255,255,0.6); display: flex; align-items: center; gap: 7px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.bet-avatar { width: 23px; height: 23px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
 .bet-amount { color: rgba(255,255,255,0.5); text-align: right; }
 .bet-mult   { color: #1d9e75; font-weight: 700; text-align: center; }
 .bet-win    { color: #1d9e75; font-weight: 600; text-align: right; }
@@ -195,32 +232,6 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
   font-family: monospace;
 }
 
-/* Crash overlay */
-#crash-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity .3s;
-}
-
-#crash-text {
-  font-size: clamp(36px, 6vw, 64px);
-  font-weight: 800;
-  color: #e24b4a;
-  text-shadow: 0 0 30px rgba(226,75,74,0.6);
-}
-#crash-at {
-  font-size: 16px;
-  color: rgba(255,255,255,0.5);
-  margin-top: 8px;
-  letter-spacing: 1px;
-}
-
 /* Fun mode badge */
 #fun-badge {
   position: absolute;
@@ -249,19 +260,52 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
   font-size: 10px;
   color: rgba(255,255,255,0.3);
   cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: color .15s, background .15s;
 }
-#pf-badge:hover { color: rgba(255,255,255,0.6); }
+#pf-badge:hover { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.05); }
 
-/* ── BOTTOM PANEL ── */
-#bottom-panel {
-  height: 140px;
-  background: #16213e;
-  border-top: 1px solid rgba(255,255,255,0.06);
+/* Provably fair modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  padding: 0 20px;
+  z-index: 1000;
+}
+.modal-box {
+  background: #16213e;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 20px 22px;
+  width: 380px;
+  max-width: 90vw;
+  color: white;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.modal-title { font-size: 15px; font-weight: 800; margin-bottom: 4px; display:flex; align-items:center; gap:6px; }
+.modal-row { display:flex; justify-content:space-between; align-items:center; font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 12px; }
+.modal-hash { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 10.5px; color: #c8a84b; word-break: break-all; background: rgba(255,255,255,0.05); padding: 7px 9px; border-radius: 7px; margin-top: 5px; }
+.modal-note { font-size: 10.5px; color: rgba(255,255,255,0.4); line-height: 1.6; margin-top: 16px; }
+.modal-close { margin-top: 18px; width: 100%; padding: 10px; border-radius: 9px; border: none; background: rgba(255,255,255,0.08); color: white; cursor: pointer; font-family: inherit; font-size: 12px; font-weight: 600; transition: background .15s; }
+.modal-close:hover { background: rgba(255,255,255,0.16); }
+
+/* ── BOTTOM PANEL ── */
+#bottom-panel {
+  background: #16213e;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 16px;
+  /* left-shifted to counter the 220px bets-panel sidebar, so the widgets stay centered under the canvas above, not the full page */
+  padding: 14px 20px 14px calc(250px + 20px);
   flex-shrink: 0;
 }
 
@@ -269,11 +313,11 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
   background: #0f172a;
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 14px;
-  padding: 14px 18px;
-  width: 340px;
+  padding: 12px 14px;
+  width: 280px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 7px;
 }
 
 .bw-tabs {
@@ -282,12 +326,12 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
 }
 
 .bw-tab {
-  padding: 5px 14px;
+  padding: 4px 14px;
   border-radius: 20px;
   border: 1px solid rgba(255,255,255,0.1);
   background: transparent;
   color: rgba(255,255,255,0.4);
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
   transition: all .2s;
   font-family: inherit;
@@ -297,11 +341,13 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
 .bw-controls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  min-width: 0;
 }
 
 .bw-amount-wrap {
   flex: 1;
+  min-width: 0;
   background: #1e2a3a;
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 10px;
@@ -309,7 +355,7 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
   align-items: center;
   padding: 0 10px;
   gap: 8px;
-  height: 42px;
+  height: 38px;
 }
 
 .bw-amount-wrap label { font-size: 10px; color: rgba(255,255,255,0.3); white-space: nowrap; }
@@ -320,11 +366,21 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
   border: none;
   outline: none;
   color: white;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   font-family: inherit;
   min-width: 0;
+  width: 100%;
+  -moz-appearance: textfield;
 }
+.bw-input::-webkit-outer-spin-button,
+.bw-input::-webkit-inner-spin-button,
+.bw-auto-input::-webkit-outer-spin-button,
+.bw-auto-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.bw-auto-input { -moz-appearance: textfield; }
 
 .bw-stepper {
   display: flex;
@@ -334,10 +390,10 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
   background: rgba(255,255,255,0.08);
   border: none;
   color: rgba(255,255,255,0.5);
-  width: 22px; height: 22px;
+  width: 20px; height: 20px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
   display: flex; align-items: center; justify-content: center;
   transition: all .15s;
   font-family: inherit;
@@ -354,7 +410,7 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
   border: 1px solid rgba(255,255,255,0.08);
   color: rgba(255,255,255,0.45);
   border-radius: 7px;
-  padding: 4px 0;
+  padding: 3px 0;
   font-size: 11px;
   cursor: pointer;
   transition: all .15s;
@@ -364,22 +420,23 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
 
 /* BET BUTTON */
 .btn-bet-main {
-  width: 180px;
-  height: 80px;
-  border-radius: 14px;
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
   border: none;
   font-family: inherit;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 1px;
   transition: all .15s;
   letter-spacing: 0.3px;
   flex-shrink: 0;
+  margin-top: auto;
 }
 
 .btn-bet-main.state-bet {
@@ -414,7 +471,7 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
   50% { box-shadow: 0 4px 35px rgba(233,30,140,0.7); }
 }
 
-.btn-small-label { font-size: 11px; opacity: 0.75; font-weight: 400; }
+.btn-small-label { font-size: 10.5px; opacity: 0.75; font-weight: 400; }
 
 /* Auto cashout row */
 .bw-auto-row {
@@ -422,16 +479,16 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
   align-items: center;
   gap: 8px;
 }
-.bw-auto-row label { font-size: 11px; color: rgba(255,255,255,0.35); }
+.bw-auto-row label { font-size: 10.5px; color: rgba(255,255,255,0.35); }
 .bw-auto-input {
   background: #1e2a3a;
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 8px;
   color: white;
-  font-size: 13px;
+  font-size: 12px;
   font-family: inherit;
   padding: 4px 10px;
-  width: 70px;
+  width: 64px;
   outline: none;
 }
 .bw-auto-toggle {
@@ -502,10 +559,9 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
 
 @media (max-width: 768px) {
   #main-area { flex-direction: column-reverse; }
-  #bets-panel { width: 100%; height: 35vh; border-right: none; border-top: 1px solid rgba(255,255,255,0.05); }
-  #bottom-panel { padding: 0 10px; height: 100px; gap: 10px; }
-  .bet-widget { width: 100%; padding: 10px; gap: 8px; }
-  .btn-bet-main { width: 120px; height: 60px; font-size: 16px; }
+  #bets-panel { width: 100%; height: 30vh; border-right: none; border-top: 1px solid rgba(255,255,255,0.05); }
+  #bottom-panel { flex-direction: column; padding: 10px; gap: 8px; max-height: 46vh; overflow-y: auto; }
+  .bet-widget { width: 100%; padding: 10px; gap: 6px; }
   .tb-history { display: none; }
 }
 </style>
@@ -516,20 +572,26 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
   <div id="topbar">
     <div class="tb-logo">✈ ALTITUDE<span>X</span></div>
     <div class="tb-history" id="historyBar"></div>
-    <div class="tb-balance" id="balanceDisplay">$ 1,000.00</div>
+    <div class="tb-right">
+      <button id="soundBtn" class="sound-btn" onclick="toggleSound()" aria-label="Toggle sound">🔊</button>
+      <div class="tb-balance" id="balanceDisplay">$ 1,000.00</div>
+    </div>
   </div>
 
   <div id="main-area">
 
     <div id="bets-panel">
       <div class="panel-tabs">
-        <div class="panel-tab active">All Bets</div>
-        <div class="panel-tab">Previous</div>
-        <div class="panel-tab">Top</div>
+        <button class="panel-tab active" id="panelTabAll" onclick="setPanelTab('all')">All Bets</button>
+        <button class="panel-tab" id="panelTabPrevious" onclick="setPanelTab('previous')">Previous</button>
+        <button class="panel-tab" id="panelTabTop" onclick="setPanelTab('top')">Top</button>
       </div>
       <div class="panel-summary">
         <span id="betCount">0/0 Bets</span>
         <strong id="totalWin">Total win $0</strong>
+      </div>
+      <div class="bets-header">
+        <span>Player</span><span>Bet USD</span><span>X</span><span>Win USD</span>
       </div>
       <div id="bets-list"></div>
     </div>
@@ -549,32 +611,18 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
         <div id="mult-label">Flying away...</div>
       </div>
 
-      <div id="crash-overlay">
-        <div id="crash-text">FLEW AWAY!</div>
-        <div id="crash-at" id="crash-at-val"></div>
-      </div>
-
-      <div id="pf-badge">
-        🛡 Provably Fair
-      </div>
+      <button id="pf-badge" onclick="openPFModal()">🛡 Provably Fair</button>
     </div>
 
   </div>
 
   <div id="bottom-panel">
+
     <div class="bet-widget" id="widget1">
       <div style="display:flex; align-items:center; justify-content:space-between;">
         <div class="bw-tabs">
-          <button class="bw-tab active" onclick="setMode(1,'manual')">Bet</button>
-          <button class="bw-tab" onclick="setMode(1,'auto')">Auto</button>
-        </div>
-        <div class="bw-auto-row">
-          <label>Auto cash out</label>
-          <input class="bw-auto-input" id="autoCashout1" value="2.00" type="number" min="1.01" step="0.1">
-          <label class="bw-auto-toggle">
-            <input type="checkbox" id="autoToggle1">
-            <span class="toggle-track"></span>
-          </label>
+          <button class="bw-tab active" onclick="setMode(1,'manual',event)">Bet</button>
+          <button class="bw-tab" onclick="setMode(1,'auto',event)">Auto</button>
         </div>
       </div>
       <div class="bw-controls">
@@ -586,44 +634,104 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
             <button class="bw-step" onclick="adjustBet(1,1)">+</button>
           </div>
         </div>
-        <div class="bw-presets">
-          <button class="bw-preset" onclick="setBetPreset(1,1)">1</button>
-          <button class="bw-preset" onclick="setBetPreset(1,5)">5</button>
-          <button class="bw-preset" onclick="setBetPreset(1,10)">10</button>
-          <button class="bw-preset" onclick="setBetPreset(1,100)">100</button>
-        </div>
       </div>
+      <div class="bw-presets">
+        <button class="bw-preset" onclick="setBetPreset(1,1)">1</button>
+        <button class="bw-preset" onclick="setBetPreset(1,5)">5</button>
+        <button class="bw-preset" onclick="setBetPreset(1,10)">10</button>
+        <button class="bw-preset" onclick="setBetPreset(1,100)">100</button>
+      </div>
+      <div class="bw-auto-row">
+        <label>Auto cash out</label>
+        <input class="bw-auto-input" id="autoCashout1" value="2.00" type="number" min="1.01" step="0.1">
+        <label class="bw-auto-toggle">
+          <input type="checkbox" id="autoToggle1">
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+      <button class="btn-bet-main state-bet" id="mainBetBtn1" onclick="handleBetClick(1)">
+        <span id="btnLabel1">BET</span>
+        <span class="btn-small-label" id="btnSub1">$ 10.00</span>
+      </button>
     </div>
 
-    <button class="btn-bet-main state-bet" id="mainBetBtn" onclick="handleBetClick()">
-      <span id="btnLabel1">BET</span>
-      <span class="btn-small-label" id="btnSub1">$ 10.00</span>
-    </button>
+    <div class="bet-widget" id="widget2">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div class="bw-tabs">
+          <button class="bw-tab active" onclick="setMode(2,'manual',event)">Bet</button>
+          <button class="bw-tab" onclick="setMode(2,'auto',event)">Auto</button>
+        </div>
+      </div>
+      <div class="bw-controls">
+        <div class="bw-amount-wrap">
+          <label>BET</label>
+          <input class="bw-input" id="betAmount2" value="10.00" type="number" min="0.1" step="0.1">
+          <div class="bw-stepper">
+            <button class="bw-step" onclick="adjustBet(2,-1)">−</button>
+            <button class="bw-step" onclick="adjustBet(2,1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="bw-presets">
+        <button class="bw-preset" onclick="setBetPreset(2,1)">1</button>
+        <button class="bw-preset" onclick="setBetPreset(2,5)">5</button>
+        <button class="bw-preset" onclick="setBetPreset(2,10)">10</button>
+        <button class="bw-preset" onclick="setBetPreset(2,100)">100</button>
+      </div>
+      <div class="bw-auto-row">
+        <label>Auto cash out</label>
+        <input class="bw-auto-input" id="autoCashout2" value="3.00" type="number" min="1.01" step="0.1">
+        <label class="bw-auto-toggle">
+          <input type="checkbox" id="autoToggle2">
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+      <button class="btn-bet-main state-bet" id="mainBetBtn2" onclick="handleBetClick(2)">
+        <span id="btnLabel2">BET</span>
+        <span class="btn-small-label" id="btnSub2">$ 10.00</span>
+      </button>
+    </div>
 
   </div>
 </div>
 
 <div id="toast"></div>
 
+<div id="pf-modal" class="modal-overlay" style="display:none" onclick="closePFModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">🛡 Provably Fair</div>
+    <div class="modal-row"><span>Round</span><strong id="pfRound">#1</strong></div>
+    <div class="modal-row"><span>Commit hash — SHA-256(serverSeed)</span></div>
+    <div class="modal-hash" id="pfCommit">—</div>
+    <div class="modal-row"><span>Revealed server seed</span></div>
+    <div class="modal-hash" id="pfSeed">—</div>
+    <div class="modal-row"><span>Result</span><strong id="pfResult">—</strong></div>
+    <p class="modal-note">The seed for this round is generated and its hash shown here <em>before</em> the plane takes off — so the outcome is locked in and can't be changed once betting opens. After the round crashes, the seed itself is revealed: hashing it should reproduce the commit above, and hashing <code>seed:round</code> derives the round's random value r, where <code>crash = RTP / (1 − r)</code>.</p>
+    <button class="modal-close" onclick="closePFModal(event)">Close</button>
+  </div>
+</div>
+
+<audio id="bgMusic" src="altitude-x/audio/soundtrack.mp3" loop preload="auto"></audio>
+
 <script>
 // ══════════════════════════════════════════
-//  ALTITUDE X — SENIOR PIXIJS IMPLEMENTATION
-//  RTP: 97% | House Edge: 3%
-//  Architecture: Game Engine + Seamless Wallet API layer
+//  ALTITUDE X — PIXIJS CRASH GAME
+//  RTP: 97% | House Edge: 3% | Provably-fair simulated (commit/reveal, SHA-256)
 // ══════════════════════════════════════════
 
 // ── CONFIG ──────────────────────────────
 const CONFIG = {
-  RTP: 0.97,                    
+  RTP: 0.97,
   HOUSE_EDGE: 0.03,
-  WAITING_DURATION: 5000,       
+  WAITING_DURATION: 5000,
   MIN_BET: 0.1,
   MAX_BET: 1000,
-  CURVE_SPEED_BASE: 0.00015,    
-  PLANE_SPEED: 2.2,
-  STARS_COUNT: 120,
+  GROWTH_K: 0.14,          // continuous exponential growth rate (per second)
+  STARS_COUNT: 110,
   GRID_LINES: 6,
 };
+
+const PADDING = { left: 60, right: 40, top: 30, bottom: 50 };
 
 // ── WALLET (Seamless Wallet simulation) ─
 const Wallet = {
@@ -640,27 +748,175 @@ const Wallet = {
   }
 };
 
-// ── PROVABLY FAIR RNG ────────────────────
-function generateCrashPoint() {
-  if (Math.random() < CONFIG.HOUSE_EDGE) return 1.00;
-  const r = Math.random();
+// ── SOUND (WebAudio-synthesized, no external files) ─
+const Sound = {
+  ctx: null,
+  master: null,
+  engine: null,
+  muted: localStorage.getItem('ax_muted') === '1',
+  ensureRunning() {
+    if (!this.ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      this.ctx = new AC();
+      this.master = this.ctx.createGain();
+      this.master.gain.value = this.muted ? 0 : 0.5;
+      this.master.connect(this.ctx.destination);
+    }
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+  },
+  setMuted(v) {
+    this.muted = v;
+    localStorage.setItem('ax_muted', v ? '1' : '0');
+    if (this.master) this.master.gain.setTargetAtTime(v ? 0 : 0.5, this.ctx.currentTime, 0.05);
+    if (v) this.stopEngine();
+  },
+  startEngine() {
+    this.ensureRunning();
+    if (!this.ctx || this.engine) return;
+    const osc = this.ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.value = 60;
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 300;
+    const gain = this.ctx.createGain();
+    gain.gain.value = 0.0001;
+    gain.gain.linearRampToValueAtTime(0.16, this.ctx.currentTime + 0.4);
+    osc.connect(filter); filter.connect(gain); gain.connect(this.master);
+    osc.start();
+    this.engine = { osc, filter, gain };
+  },
+  updateEngine(mult) {
+    if (!this.engine) return;
+    const f = Math.min(340, 60 + Math.log(mult + 1) * 75);
+    this.engine.osc.frequency.setTargetAtTime(f, this.ctx.currentTime, 0.12);
+    this.engine.filter.frequency.setTargetAtTime(Math.min(2200, 300 + mult * 60), this.ctx.currentTime, 0.15);
+  },
+  stopEngine() {
+    if (!this.engine || !this.ctx) return;
+    const { osc, gain } = this.engine;
+    gain.gain.setTargetAtTime(0.0001, this.ctx.currentTime, 0.15);
+    osc.stop(this.ctx.currentTime + 0.5);
+    this.engine = null;
+  },
+  tone(freq, duration, type, delay, gainVal) {
+    this.ensureRunning();
+    if (!this.ctx) return;
+    const t0 = this.ctx.currentTime + (delay || 0);
+    const osc = this.ctx.createOscillator();
+    osc.type = type || 'sine';
+    osc.frequency.value = freq;
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, t0);
+    gain.gain.linearRampToValueAtTime(gainVal || 0.22, t0 + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+    osc.connect(gain); gain.connect(this.master);
+    osc.start(t0); osc.stop(t0 + duration + 0.05);
+  },
+  cashout() {
+    this.tone(660, 0.14, 'triangle', 0);
+    this.tone(880, 0.16, 'triangle', 0.09);
+    this.tone(1180, 0.22, 'triangle', 0.18);
+  },
+  takeoff() {
+    this.tone(1000, 0.08, 'square', 0, 0.16);
+    this.tone(1000, 0.08, 'square', 0.16, 0.16);
+    this.tone(1000, 0.08, 'square', 0.32, 0.16);
+    this.tone(1400, 0.16, 'square', 0.5, 0.18);
+  },
+  crash() {
+    this.ensureRunning();
+    if (!this.ctx) return;
+    const bufferSize = this.ctx.sampleRate * 0.5;
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 900;
+    filter.frequency.exponentialRampToValueAtTime(80, this.ctx.currentTime + 0.5);
+    const gain = this.ctx.createGain();
+    gain.gain.value = 0.5;
+    noise.connect(filter); filter.connect(gain); gain.connect(this.master);
+    noise.start();
+    this.stopEngine();
+  },
+};
+document.getElementById('soundBtn').textContent = Sound.muted ? '🔇' : '🔊';
+
+// ── BACKGROUND MUSIC (looping soundtrack) ──
+const bgMusic = document.getElementById('bgMusic');
+bgMusic.volume = 0.28;
+bgMusic.muted = Sound.muted;
+bgMusic.play().catch(() => {
+  // autoplay blocked without a gesture — retry on the first click/keypress
+  const resumeMusic = () => {
+    bgMusic.play().catch(() => {});
+    window.removeEventListener('pointerdown', resumeMusic);
+    window.removeEventListener('keydown', resumeMusic);
+  };
+  window.addEventListener('pointerdown', resumeMusic);
+  window.addEventListener('keydown', resumeMusic);
+});
+
+function toggleSound() {
+  Sound.ensureRunning();
+  Sound.setMuted(!Sound.muted);
+  bgMusic.muted = Sound.muted;
+  if (!Sound.muted) bgMusic.play().catch(() => {});
+  document.getElementById('soundBtn').textContent = Sound.muted ? '🔇' : '🔊';
+}
+
+// ── PROVABLY FAIR (commit/reveal, SHA-256) ──
+async function sha256Hex(str) {
+  if (window.crypto && window.crypto.subtle) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(16).padStart(8, '0').repeat(8).slice(0, 64);
+}
+function randomHex(bytes) {
+  const arr = new Uint8Array(bytes);
+  (window.crypto || window.msCrypto).getRandomValues(arr);
+  return Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+function generateCrashPoint(r) {
+  if (r < CONFIG.HOUSE_EDGE) return 1.00;
   const crash = CONFIG.RTP / (1 - r);
   return Math.max(1.00, parseFloat(crash.toFixed(2)));
+}
+async function prepareRound() {
+  State.serverSeed = randomHex(16);
+  State.commitHash = await sha256Hex(State.serverSeed);
+  State.roundHash = await sha256Hex(State.serverSeed + ':' + State.roundId);
+  State.r = parseInt(State.roundHash.slice(0, 8), 16) / 0xffffffff;
+  State.crashPoint = generateCrashPoint(State.r);
 }
 
 // ── GAME STATE ───────────────────────────
 const State = {
-  phase: 'waiting',  
+  phase: 'waiting',
   crashPoint: 1.00,
   currentMult: 1.00,
   roundId: 1,
   history: [],
-  playerBet: null,  
+  playerBets: { 1: null, 2: null },
   mockPlayers: [],
-  waitTimer: null,
-  flyTimer: null,
-  lastTime: 0,
   elapsed: 0,
+  lastTime: 0,
+  serverSeed: null,
+  commitHash: null,
+  roundHash: null,
+  r: 0,
+  lastReveal: null,
+  previousBets: [],
+  topBets: [],
+  panelTab: 'all',
 };
 
 // ── MOCK PLAYERS ─────────────────────────
@@ -704,56 +960,114 @@ window.addEventListener('resize', () => {
 });
 
 // ── SCENE LAYERS ─────────────────────────
-let layerBg, layerGrid, layerCurve, layerPlane, layerParticles;
+let worldContainer, layerBg, layerRays, layerGrid, layerCurve, layerPlane, layerParticles;
+let planeParts = null;
 
 function rebuildScene() {
   app.stage.removeChildren();
-  layerBg       = new PIXI.Container();
-  layerGrid     = new PIXI.Container();
-  layerCurve    = new PIXI.Container();
-  layerPlane    = new PIXI.Container();
-  layerParticles= new PIXI.Container();
-  app.stage.addChild(layerBg, layerGrid, layerCurve, layerPlane, layerParticles);
+  worldContainer = new PIXI.Container();
+  layerBg        = new PIXI.Container();
+  layerRays      = new PIXI.Container();
+  layerGrid      = new PIXI.Container();
+  layerCurve     = new PIXI.Container();
+  layerPlane     = new PIXI.Container();
+  layerParticles = new PIXI.Container();
+  worldContainer.addChild(layerBg, layerRays, layerGrid, layerCurve, layerPlane, layerParticles);
+  app.stage.addChild(worldContainer);
+
   drawBackground();
+  drawRays();
   drawGrid();
+
+  planeParts = buildPlane();
+  layerPlane.addChild(planeParts.container);
+  positionPlaneIdle(performance.now());
 }
 
-// ── BACKGROUND ───────────────────────────
+// ── STARTUP RAYS (searchlight fan behind the plane during the waiting screen) ──
+function drawRays() {
+  layerRays.removeChildren();
+  const g = new PIXI.Graphics();
+  const originX = 0;
+  const originY = H;
+  const rayCount = 14;
+  const startAngle = -Math.PI / 2 - 0.08;
+  const endAngle = 0.08;
+  const len = Math.hypot(W, H) * 1.3;
+  for (let i = 0; i < rayCount; i++) {
+    const a0 = startAngle + (endAngle - startAngle) * (i / rayCount);
+    const a1 = startAngle + (endAngle - startAngle) * ((i + 1) / rayCount);
+    g.beginFill(i % 2 === 0 ? 0xff5fa8 : 0x000000, i % 2 === 0 ? 0.10 : 0.22);
+    g.moveTo(originX, originY);
+    g.lineTo(originX + Math.cos(a0) * len, originY + Math.sin(a0) * len);
+    g.lineTo(originX + Math.cos(a1) * len, originY + Math.sin(a1) * len);
+    g.closePath();
+    g.endFill();
+  }
+  layerRays.addChild(g);
+  layerRays.pivot.set(originX, originY);
+  layerRays.position.set(originX, originY);
+}
+
+// ── BACKGROUND (dusk sky gradient + stars) ──
 let stars = [];
 function drawBackground() {
   const bg = new PIXI.Graphics();
-  bg.beginFill(0x0d1520);
-  bg.drawRect(0, 0, W, H);
-  bg.endFill();
-
-  const glow = new PIXI.Graphics();
-  for (let i = 8; i >= 0; i--) {
-    const alpha = 0.015 * (9 - i);
-    glow.beginFill(0xe91e8c, alpha);
-    glow.drawCircle(W * 0.7, H * 0.4, (i + 1) * 80);
-    glow.endFill();
+  const top = { r: 10, g: 14, b: 30 };
+  const bottom = { r: 32, g: 56, b: 96 };
+  const bands = 36;
+  for (let i = 0; i < bands; i++) {
+    const t = i / (bands - 1);
+    const r = Math.round(top.r + (bottom.r - top.r) * t);
+    const g = Math.round(top.g + (bottom.g - top.g) * t);
+    const b = Math.round(top.b + (bottom.b - top.b) * t);
+    bg.beginFill((r << 16) | (g << 8) | b, 1);
+    bg.drawRect(0, H * (i / bands), W, H / bands + 1);
+    bg.endFill();
   }
 
   stars = [];
   const starGfx = new PIXI.Graphics();
   for (let i = 0; i < CONFIG.STARS_COUNT; i++) {
     const x = Math.random() * W;
-    const y = Math.random() * H * 0.7;
+    const y = Math.random() * H * 0.55;
     const r = Math.random() * 1.2 + 0.2;
-    const alpha = Math.random() * 0.6 + 0.2;
+    const alpha = Math.random() * 0.55 + 0.15;
     starGfx.beginFill(0xffffff, alpha);
     starGfx.drawCircle(x, y, r);
     starGfx.endFill();
-    stars.push({ x, y, r, baseAlpha: alpha, twinkle: Math.random() * Math.PI * 2 });
+    stars.push({ x, y, r, baseAlpha: alpha });
   }
-  layerBg.addChild(bg, glow, starGfx);
+  layerBg.addChild(bg, starGfx);
+}
+
+// ── TAKEOFF GLOW (brief flash at screen center when a round starts flying) ──
+function flashTakeoffGlow() {
+  const g = new PIXI.Graphics();
+  for (let i = 6; i >= 0; i--) {
+    g.beginFill(0xe91e8c, 0.05 * (7 - i));
+    g.drawCircle(0, 0, (i + 1) * 70);
+    g.endFill();
+  }
+  g.x = W / 2;
+  g.y = H / 2;
+  worldContainer.addChild(g);
+  const start = performance.now();
+  const dur = 700;
+  const fade = (now) => {
+    const t = (now - start) / dur;
+    if (t >= 1) { worldContainer.removeChild(g); return; }
+    g.alpha = 1 - t;
+    g.scale.set(1 + t * 0.6);
+    requestAnimationFrame(fade);
+  };
+  requestAnimationFrame(fade);
 }
 
 // ── GRID ─────────────────────────────────
 function drawGrid() {
   layerGrid.removeChildren();
   const g = new PIXI.Graphics();
-  const PADDING = { left: 60, bottom: 50, right: 40, top: 30 };
   const plotW = W - PADDING.left - PADDING.right;
   const plotH = H - PADDING.top - PADDING.bottom;
 
@@ -769,96 +1083,143 @@ function drawGrid() {
     g.lineTo(x, H - PADDING.bottom);
   }
 
-  g.lineStyle(1, 0x3a4a60, 0.8);
-  g.moveTo(PADDING.left, PADDING.top);
-  g.lineTo(PADDING.left, H - PADDING.bottom);
-  g.lineTo(W - PADDING.right, H - PADDING.bottom);
-
   layerGrid.addChild(g);
 }
 
-// ── PLANE ────────────────────────────────
-let planeGfx = null;
-let planeTrail = [];
-let planePosX = 0;
-let planePosY = 0;
-
-function drawPlane(x, y, crashed = false) {
-  layerPlane.removeChildren();
-  planeTrail = [];
-  const g = new PIXI.Graphics();
-
-  if (crashed) {
-    g.lineStyle(3, 0xe24b4a, 1);
-    g.moveTo(x - 15, y - 15);
-    g.lineTo(x + 15, y + 15);
-    g.moveTo(x + 15, y - 15);
-    g.lineTo(x - 15, y + 15);
-    layerPlane.addChild(g);
-    return;
+// ── PLANE — built once, transformed per frame ──
+function drawStarPolygon(g, cx, cy, points, outerR, innerR) {
+  const step = Math.PI / points;
+  g.moveTo(cx + Math.cos(-Math.PI / 2) * outerR, cy + Math.sin(-Math.PI / 2) * outerR);
+  for (let i = 1; i < points * 2; i++) {
+    const r = i % 2 === 0 ? outerR : innerR;
+    const a = -Math.PI / 2 + i * step;
+    g.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
   }
-
-  g.beginFill(0xff3377, 1);
-  g.drawRoundedRect(x - 22, y - 7, 44, 14, 5);
-  g.endFill();
-
-  g.beginFill(0xaaddff, 0.9);
-  g.drawEllipse(x + 14, y, 8, 5);
-  g.endFill();
-
-  g.beginFill(0xff1155, 1);
-  g.moveTo(x - 5, y);
-  g.lineTo(x + 10, y - 22);
-  g.lineTo(x + 18, y - 16);
-  g.lineTo(x + 5, y);
   g.closePath();
-  g.endFill();
-
-  g.beginFill(0xdd0044, 1);
-  g.moveTo(x - 18, y);
-  g.lineTo(x - 22, y - 12);
-  g.lineTo(x - 10, y - 8);
-  g.lineTo(x - 8, y);
-  g.closePath();
-  g.endFill();
-
-  for (let i = 3; i >= 0; i--) {
-    g.beginFill(0xff6600, 0.12 * (4 - i));
-    g.drawEllipse(x - 25 - i * 4, y, 4 + i * 1.5, 2.5 + i);
-    g.endFill();
-  }
-  g.beginFill(0xffaa00, 0.9);
-  g.drawEllipse(x - 25, y, 4, 2.5);
-  g.endFill();
-
-  layerPlane.addChild(g);
 }
 
-// ── CURVE ────────────────────────────────
+function buildPlane() {
+  const root = new PIXI.Container();
+
+  const wing = new PIXI.Graphics();
+  wing.beginFill(0xf4f1e8, 1);
+  wing.drawEllipse(-2, 3, 26, 6);
+  wing.endFill();
+  wing.beginFill(0xd4af37, 0.9);
+  wing.drawEllipse(-2, 3, 26, 2);
+  wing.endFill();
+  wing.beginFill(0xb5121b, 1);
+  wing.drawEllipse(6, 3, 8, 5.5);
+  wing.endFill();
+  root.addChild(wing);
+
+  const tail = new PIXI.Graphics();
+  tail.beginFill(0xb5121b, 1);
+  tail.moveTo(-22, 0);
+  tail.lineTo(-32, -11);
+  tail.lineTo(-23, -1.5);
+  tail.closePath();
+  tail.endFill();
+  tail.beginFill(0xf4f1e8, 1);
+  tail.drawEllipse(-25, 0, 8, 2.8);
+  tail.endFill();
+  root.addChild(tail);
+
+  const body = new PIXI.Graphics();
+  body.beginFill(0x8e0f18, 1);
+  body.drawRoundedRect(-24, -5, 42, 10, 5);
+  body.endFill();
+  body.beginFill(0xc41e2a, 1);
+  body.drawRoundedRect(-24, -6.5, 42, 6, 4);
+  body.endFill();
+  body.beginFill(0xd4af37, 0.9);
+  body.moveTo(-24, 0.6); body.lineTo(18, 0.6); body.lineTo(18, -0.6); body.lineTo(-24, -0.6);
+  body.closePath();
+  body.endFill();
+  root.addChild(body);
+
+  const canopy = new PIXI.Graphics();
+  canopy.beginFill(0x9fd8e8, 0.92);
+  canopy.drawEllipse(-2, -6, 8, 4.4);
+  canopy.endFill();
+  canopy.lineStyle(1, 0x1a2a3a, 0.6);
+  canopy.drawEllipse(-2, -6, 8, 4.4);
+  root.addChild(canopy);
+
+  const roundel = new PIXI.Graphics();
+  roundel.beginFill(0xffffff, 1);
+  roundel.drawCircle(-9, 0, 5.5);
+  roundel.endFill();
+  roundel.lineStyle(1, 0xb5121b, 1);
+  roundel.drawCircle(-9, 0, 5.5);
+  roundel.beginFill(0xb5121b, 1);
+  drawStarPolygon(roundel, -9, 0, 5, 4.2, 1.8);
+  roundel.endFill();
+  root.addChild(roundel);
+
+  const nose = new PIXI.Graphics();
+  nose.beginFill(0xd4af37, 1);
+  nose.drawRoundedRect(16, -4.5, 8, 9, 3);
+  nose.endFill();
+  root.addChild(nose);
+
+  const propeller = new PIXI.Container();
+  propeller.x = 25; propeller.y = 0;
+  const blades = new PIXI.Graphics();
+  blades.beginFill(0xffffff, 0.55);
+  blades.drawEllipse(0, 0, 1.6, 11);
+  blades.endFill();
+  blades.beginFill(0xffffff, 0.55);
+  blades.drawEllipse(0, 0, 11, 1.6);
+  blades.endFill();
+  const hub = new PIXI.Graphics();
+  hub.beginFill(0x2a2a2a, 1);
+  hub.drawCircle(0, 0, 2.2);
+  hub.endFill();
+  propeller.addChild(blades, hub);
+  root.addChild(propeller);
+
+  return { container: root, propeller };
+}
+
+function positionPlaneIdle(now) {
+  if (!planeParts) return;
+  const t = now / 1000;
+  const baseX = PADDING.left + 20, baseY = H - PADDING.bottom - 14;
+  planeParts.container.x = baseX + Math.sin(t * 1.3) * 4;
+  planeParts.container.y = baseY + Math.sin(t * 2.1) * 3;
+  planeParts.container.rotation = -0.12 + Math.sin(t * 1.7) * 0.03;
+  planeParts.container.alpha = 1;
+}
+
+function idleTick(now) {
+  if (State.phase !== 'waiting') return;
+  positionPlaneIdle(now);
+  requestAnimationFrame(idleTick);
+}
+
+// ── CURVE (raw {t,mult} points, recomputed each draw against the current view scale) ──
 const curvePoints = [];
-let curveGfx = null;
 
 function drawCurve(crashed = false, crashColor = false) {
   layerCurve.removeChildren();
   if (curvePoints.length < 2) return;
 
-  const PADDING = { left: 60, bottom: 50 };
-  const plotH = H - PADDING.top - 30;
+  const pts = curvePoints.map(p => ({ x: timeToX(p.t), y: multToY(p.m) }));
 
   const fill = new PIXI.Graphics();
   fill.beginFill(crashColor ? 0xe24b4a : 0xe91e8c, 0.12);
-  fill.moveTo(curvePoints[0].x, H - PADDING.bottom);
-  for (const p of curvePoints) fill.lineTo(p.x, p.y);
-  fill.lineTo(curvePoints[curvePoints.length - 1].x, H - PADDING.bottom);
+  fill.moveTo(pts[0].x, H - PADDING.bottom);
+  for (const p of pts) fill.lineTo(p.x, p.y);
+  fill.lineTo(pts[pts.length - 1].x, H - PADDING.bottom);
   fill.closePath();
   fill.endFill();
 
   const line = new PIXI.Graphics();
   line.lineStyle(3, crashColor ? 0xe24b4a : 0xff3377, 1);
-  line.moveTo(curvePoints[0].x, curvePoints[0].y);
-  for (let i = 1; i < curvePoints.length; i++) {
-    const prev = curvePoints[i - 1];
-    const curr = curvePoints[i];
+  line.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) {
+    const prev = pts[i - 1], curr = pts[i];
     const cpx = (prev.x + curr.x) / 2;
     line.bezierCurveTo(cpx, prev.y, cpx, curr.y, curr.x, curr.y);
   }
@@ -866,39 +1227,70 @@ function drawCurve(crashed = false, crashColor = false) {
   layerCurve.addChild(fill, line);
 }
 
-// ── PARTICLES ────────────────────────────
+// ── PARTICLES (cashout burst / smoke trail / explosion share one system) ──
 const particles = [];
 
+function addParticle(x, y, opts) {
+  opts = opts || {};
+  const color = opts.color !== undefined ? opts.color : 0xffffff;
+  const size = opts.size !== undefined ? opts.size : 3;
+  const speed = opts.speed !== undefined ? opts.speed : 4;
+  const spread = opts.spread !== undefined ? opts.spread : Math.PI * 2;
+  const angleBase = opts.angleBase !== undefined ? opts.angleBase : 0;
+  const life = opts.life !== undefined ? opts.life : 1;
+  const decay = opts.decay !== undefined ? opts.decay : 0.025;
+  const gravity = opts.gravity !== undefined ? opts.gravity : 0.25;
+  const alpha = opts.alpha !== undefined ? opts.alpha : 1;
+
+  const g = new PIXI.Graphics();
+  g.beginFill(color, alpha);
+  g.drawCircle(0, 0, size);
+  g.endFill();
+  g.x = x; g.y = y;
+  const angle = angleBase + (Math.random() - 0.5) * spread;
+  const sp = speed * (0.5 + Math.random() * 0.5);
+  g._vx = Math.cos(angle) * sp;
+  g._vy = Math.sin(angle) * sp;
+  g._life = life;
+  g._decay = decay;
+  g._gravity = gravity;
+  layerParticles.addChild(g);
+  particles.push(g);
+}
+
 function spawnParticles(x, y) {
+  const colors = [0xe91e8c, 0x1d9e75, 0xc8a84b, 0xffffff, 0x3b82f6];
   for (let i = 0; i < 20; i++) {
-    const g = new PIXI.Graphics();
-    const colors = [0xe91e8c, 0x1d9e75, 0xc8a84b, 0xffffff, 0x3b82f6];
-    g.beginFill(colors[Math.floor(Math.random() * colors.length)]);
-    g.drawCircle(0, 0, 3 + Math.random() * 4);
-    g.endFill();
-    g.x = x; g.y = y;
-    const angle = Math.random() * Math.PI * 2;
-    const speed = 3 + Math.random() * 5;
-    g._vx = Math.cos(angle) * speed;
-    g._vy = Math.sin(angle) * speed - 4;
-    g._life = 1;
-    layerParticles.addChild(g);
-    particles.push(g);
+    addParticle(x, y, { color: colors[i % colors.length], size: 3 + Math.random() * 4, speed: 6, life: 1, decay: 0.025, gravity: 0.25 });
   }
 }
 
-// ── COORDINATE MAPPING ───────────────────
-function multToY(mult) {
-  const PADDING = { top: 30, bottom: 50 };
-  const plotH = H - PADDING.top - PADDING.bottom;
-  const logMult = Math.log(mult) / Math.log(20);
-  return H - PADDING.bottom - Math.min(plotH, logMult * plotH * 1.2);
+function spawnExplosion(x, y) {
+  const colors = [0xff6a00, 0xff3377, 0xffd166, 0xffffff, 0xe24b4a];
+  for (let i = 0; i < 50; i++) {
+    addParticle(x, y, { color: colors[i % colors.length], size: 2 + Math.random() * 5, speed: 9, life: 1, decay: 0.02, gravity: 0.15 });
+  }
 }
 
-function timeToX(elapsed, maxElapsed) {
-  const PADDING = { left: 60, right: 40 };
+// ── VIEW SCALE (adaptive "camera" so curve + plane always stay in frame) ──
+let viewElapsed = 8000;
+let viewMultLog = Math.log(3);
+function resetView() { viewElapsed = 8000; viewMultLog = Math.log(3); }
+function updateView(elapsed, mult) {
+  const targetElapsed = elapsed > viewElapsed * 0.8 ? elapsed / 0.8 : viewElapsed;
+  viewElapsed += (targetElapsed - viewElapsed) * 0.12;
+  const lm = Math.log(Math.max(mult, 1.01));
+  const targetLog = lm > viewMultLog * 0.8 ? lm / 0.8 : viewMultLog;
+  viewMultLog += (targetLog - viewMultLog) * 0.12;
+}
+function timeToX(elapsed) {
   const plotW = W - PADDING.left - PADDING.right;
-  return PADDING.left + Math.min(plotW, (elapsed / maxElapsed) * plotW);
+  return PADDING.left + Math.min(plotW, (elapsed / viewElapsed) * plotW);
+}
+function multToY(mult) {
+  const plotH = H - PADDING.top - PADDING.bottom;
+  const lm = Math.log(Math.max(mult, 1));
+  return H - PADDING.bottom - Math.min(plotH, (lm / viewMultLog) * plotH);
 }
 
 // ── UI HELPERS ───────────────────────────
@@ -924,7 +1316,7 @@ function updateMultDisplay(mult, phase) {
   }
 }
 
-function showToast(msg, type = 'win') {
+function showToast(msg, type) {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.className = 'show' + (type === 'lose' ? ' lose' : '');
@@ -960,27 +1352,36 @@ function renderHistory() {
 // ── BETS LIST ────────────────────────────
 function renderBetsList() {
   const list = document.getElementById('bets-list');
-  const allBets = [
-    ...(State.playerBet && State.phase !== 'waiting' ? [{
-      name: 'YOU',
-      bet: State.playerBet.amount,
-      color: '#e91e8c',
-      avatar: '⭐',
-      cashedOut: State.playerBet.cashedOut,
-      cashoutMult: State.playerBet.cashoutMult,
-    }] : []),
-    ...State.mockPlayers,
-  ];
+  let bets;
 
-  const totalBets = allBets.length;
-  const cashedOut = allBets.filter(p => p.cashedOut).length;
-  const totalWin  = allBets.filter(p => p.cashedOut)
+  if (State.panelTab === 'previous') {
+    bets = State.previousBets;
+  } else if (State.panelTab === 'top') {
+    bets = State.topBets;
+  } else {
+    const bothActive = State.playerBets[1] && State.playerBets[2] && State.phase !== 'waiting';
+    const youBets = [1, 2]
+      .filter(w => State.playerBets[w] && State.phase !== 'waiting')
+      .map(w => ({
+        name: bothActive ? `YOU (${w})` : 'YOU',
+        bet: State.playerBets[w].amount,
+        color: '#e91e8c',
+        avatar: '⭐',
+        cashedOut: State.playerBets[w].cashedOut,
+        cashoutMult: State.playerBets[w].cashoutMult,
+      }));
+    bets = [...youBets, ...State.mockPlayers];
+  }
+
+  const totalBets = bets.length;
+  const cashedOut = bets.filter(p => p.cashedOut).length;
+  const totalWin  = bets.filter(p => p.cashedOut)
     .reduce((sum, p) => sum + (p.bet * p.cashoutMult), 0);
 
   document.getElementById('betCount').textContent = `${cashedOut}/${totalBets} Bets`;
   document.getElementById('totalWin').textContent = `Total win $${totalWin.toFixed(0)}`;
 
-  list.innerHTML = allBets.map(p => {
+  list.innerHTML = bets.map(p => {
     const win = p.cashedOut ? (p.bet * p.cashoutMult).toFixed(2) : '';
     const mult = p.cashedOut ? `${p.cashoutMult.toFixed(2)}x` : '';
     return `
@@ -996,113 +1397,163 @@ function renderBetsList() {
   }).join('');
 }
 
-// ── BET BUTTON STATE ─────────────────────
-function setBetBtnState(state) {
-  const btn = document.getElementById('mainBetBtn');
-  const lbl = document.getElementById('btnLabel1');
-  const sub = document.getElementById('btnSub1');
-  const amount = parseFloat(document.getElementById('betAmount1').value) || 10;
+function setPanelTab(tab) {
+  State.panelTab = tab;
+  document.getElementById('panelTabAll').classList.toggle('active', tab === 'all');
+  document.getElementById('panelTabPrevious').classList.toggle('active', tab === 'previous');
+  document.getElementById('panelTabTop').classList.toggle('active', tab === 'top');
+  renderBetsList();
+}
 
+// ── PER-WIDGET DOM HELPERS ───────────────
+function betInput(w) { return document.getElementById('betAmount' + w); }
+function autoInput(w) { return document.getElementById('autoCashout' + w); }
+function autoToggleEl(w) { return document.getElementById('autoToggle' + w); }
+function betBtn(w) { return document.getElementById('mainBetBtn' + w); }
+function btnLabel(w) { return document.getElementById('btnLabel' + w); }
+function btnSub(w) { return document.getElementById('btnSub' + w); }
+
+function setBetBtnState(w, state) {
+  const btn = betBtn(w);
+  const amount = parseFloat(betInput(w).value) || 10;
   btn.className = `btn-bet-main state-${state}`;
 
   if (state === 'bet') {
-    lbl.textContent = 'BET';
-    sub.textContent = `$ ${amount.toFixed(2)}`;
+    btnLabel(w).textContent = 'BET';
+    btnSub(w).textContent = `$ ${amount.toFixed(2)}`;
     btn.disabled = false;
   } else if (state === 'cashout') {
-    lbl.textContent = `CASH OUT`;
-    sub.textContent = `$ ${(amount * State.currentMult).toFixed(2)}`;
+    btnLabel(w).textContent = 'CASH OUT';
+    btnSub(w).textContent = `$ ${(amount * State.currentMult).toFixed(2)}`;
     btn.disabled = false;
   } else if (state === 'pending') {
-    lbl.textContent = 'BET PLACED';
-    sub.textContent = `$ ${amount.toFixed(2)}`;
+    btnLabel(w).textContent = 'BET PLACED';
+    btnSub(w).textContent = `$ ${amount.toFixed(2)}`;
     btn.disabled = false;
   } else if (state === 'disabled') {
-    lbl.textContent = 'WAIT';
-    sub.textContent = 'Next round';
+    btnLabel(w).textContent = 'WAIT';
+    btnSub(w).textContent = 'Next round';
     btn.disabled = true;
   }
 }
 
-function updateCashoutBtn() {
-  if (State.playerBet && !State.playerBet.cashedOut && State.phase === 'flying') {
-    const sub = document.getElementById('btnSub1');
-    sub.textContent = `$ ${(State.playerBet.amount * State.currentMult).toFixed(2)}`;
+function updateCashoutBtn(w) {
+  const bet = State.playerBets[w];
+  if (bet && !bet.cashedOut && State.phase === 'flying') {
+    btnSub(w).textContent = `$ ${(bet.amount * State.currentMult).toFixed(2)}`;
   }
 }
 
 // ── BET CONTROLS ─────────────────────────
-function adjustBet(widget, delta) {
-  const input = document.getElementById(`betAmount${widget}`);
+function adjustBet(w, delta) {
+  const input = betInput(w);
   let val = parseFloat(input.value) || 10;
   val = Math.max(CONFIG.MIN_BET, Math.min(CONFIG.MAX_BET, val + delta));
   input.value = val.toFixed(2);
-  updateBetBtn();
+  updateBetBtn(w);
 }
 
-function setBetPreset(widget, amount) {
-  document.getElementById(`betAmount${widget}`).value = amount.toFixed(2);
-  updateBetBtn();
+function setBetPreset(w, amount) {
+  betInput(w).value = amount.toFixed(2);
+  updateBetBtn(w);
 }
 
-function setMode(widget, mode) {
-  document.querySelectorAll('.bw-tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
+function setMode(w, mode, evt) {
+  const scope = document.getElementById('widget' + w);
+  scope.querySelectorAll('.bw-tab').forEach(t => t.classList.remove('active'));
+  if (evt && evt.target) evt.target.classList.add('active');
 }
 
-function updateBetBtn() {
-  if (State.phase === 'waiting' || (State.phase === 'flying' && !State.playerBet)) {
-    setBetBtnState('bet');
+function updateBetBtn(w) {
+  if (State.phase === 'waiting' || (State.phase === 'flying' && !State.playerBets[w])) {
+    setBetBtnState(w, 'bet');
   }
 }
 
-// ── MAIN BET HANDLER ─────────────────────
-function handleBetClick() {
-  if (State.phase === 'flying' && State.playerBet && !State.playerBet.cashedOut) {
+// ── MAIN BET HANDLER (per widget) ────────
+function handleBetClick(w) {
+  Sound.ensureRunning();
+  const bet = State.playerBets[w];
+
+  if (State.phase === 'flying' && bet && !bet.cashedOut) {
     const mult = State.currentMult;
-    const win  = parseFloat((State.playerBet.amount * mult).toFixed(2));
-    State.playerBet.cashedOut   = true;
-    State.playerBet.cashoutMult = mult;
-    State.playerBet.win         = win;
+    const win  = parseFloat((bet.amount * mult).toFixed(2));
+    bet.cashedOut   = true;
+    bet.cashoutMult = mult;
+    bet.win         = win;
     Wallet.credit(win);
-    setBetBtnState('disabled');
+    setBetBtnState(w, 'disabled');
     showToast(`✅ Cashed out × ${mult.toFixed(2)} — Won $${win.toFixed(2)}`);
     spawnParticles(planePosX, planePosY);
+    Sound.cashout();
     renderBetsList();
 
   } else if (State.phase === 'waiting' || State.phase === 'flying') {
-    const amount = parseFloat(document.getElementById('betAmount1').value) || 10;
+    const amount = parseFloat(betInput(w).value) || 10;
     if (amount < CONFIG.MIN_BET || amount > CONFIG.MAX_BET) {
       showToast('Invalid bet amount', 'lose'); return;
     }
     if (!Wallet.debit(amount)) {
       showToast('Insufficient balance', 'lose'); return;
     }
-    State.playerBet = { amount, cashedOut: false, cashoutMult: null, win: 0 };
-    setBetBtnState(State.phase === 'flying' ? 'pending' : 'pending');
+    State.playerBets[w] = { amount, cashedOut: false, cashoutMult: null, win: 0 };
+    setBetBtnState(w, 'pending');
     showToast(`Bet placed: $${amount.toFixed(2)}`);
     renderBetsList();
   }
 }
 
 // ── AUTO CASHOUT CHECK ────────────────────
-function checkAutoCashout() {
-  const tog = document.getElementById('autoToggle1');
+function checkAutoCashout(w) {
+  const tog = autoToggleEl(w);
   if (!tog.checked) return;
-  const target = parseFloat(document.getElementById('autoCashout1').value) || 2;
-  if (State.playerBet && !State.playerBet.cashedOut && State.currentMult >= target) {
-    handleBetClick();
+  const target = parseFloat(autoInput(w).value) || 2;
+  const bet = State.playerBets[w];
+  if (bet && !bet.cashedOut && State.currentMult >= target) handleBetClick(w);
+}
+
+// ── PROVABLY FAIR MODAL ───────────────────
+function openPFModal() {
+  document.getElementById('pfRound').textContent = '#' + State.roundId;
+  document.getElementById('pfCommit').textContent = State.commitHash || '—';
+  if (State.lastReveal && State.lastReveal.round === State.roundId - 1) {
+    document.getElementById('pfSeed').textContent = State.lastReveal.seed + '  (round #' + State.lastReveal.round + ')';
+    document.getElementById('pfResult').textContent = `r = ${State.lastReveal.r.toFixed(6)} → crash ${State.lastReveal.crash.toFixed(2)}x`;
+  } else {
+    document.getElementById('pfSeed').textContent = 'Revealed once this round crashes';
+    document.getElementById('pfResult').textContent = 'Pending…';
   }
+  document.getElementById('pf-modal').style.display = 'flex';
+}
+function closePFModal(e) {
+  document.getElementById('pf-modal').style.display = 'none';
+}
+
+// ── SCREEN SHAKE ──────────────────────────
+function shakeScreen() {
+  const dur = 260, start = performance.now(), amp = 10;
+  function step(now) {
+    const t = (now - start) / dur;
+    if (t >= 1) { worldContainer.x = 0; worldContainer.y = 0; return; }
+    const decay = 1 - t;
+    worldContainer.x = (Math.random() * 2 - 1) * amp * decay;
+    worldContainer.y = (Math.random() * 2 - 1) * amp * decay;
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
 }
 
 // ── ROUND LIFECYCLE ───────────────────────
-function startWaiting() {
-  State.phase     = 'waiting';
-  State.crashPoint = generateCrashPoint();
+let planePosX = 0, planePosY = 0;
+
+async function startWaiting() {
+  State.phase       = 'waiting';
+  await prepareRound();
   State.currentMult = 1.00;
-  State.playerBet   = null;
+  State.playerBets  = { 1: null, 2: null };
   State.elapsed     = 0;
   curvePoints.length = 0;
+  resetView();
 
   generateMockPlayers();
   State.mockPlayers.forEach(p => {
@@ -1113,10 +1564,11 @@ function startWaiting() {
 
   document.getElementById('waiting-overlay').style.display = 'flex';
   document.getElementById('mult-display').style.opacity    = '0';
-  document.getElementById('crash-overlay').style.opacity   = '0';
-  setBetBtnState('bet');
+  setBetBtnState(1, 'bet');
+  setBetBtnState(2, 'bet');
   renderBetsList();
   rebuildScene();
+  requestAnimationFrame(idleTick);
 
   let countdown = CONFIG.WAITING_DURATION / 1000;
   document.getElementById('waiting-countdown').textContent = countdown.toFixed(1);
@@ -1137,9 +1589,12 @@ function startFlying() {
 
   document.getElementById('waiting-overlay').style.display = 'none';
   document.getElementById('mult-display').style.opacity    = '1';
-  document.getElementById('crash-overlay').style.opacity   = '0';
+  flashTakeoffGlow();
 
-  if (State.playerBet) setBetBtnState('cashout');
+  Sound.takeoff();
+  Sound.startEngine();
+  if (State.playerBets[1]) setBetBtnState(1, 'cashout');
+  if (State.playerBets[2]) setBetBtnState(2, 'cashout');
 
   const fly = (now) => {
     if (State.phase !== 'flying') return;
@@ -1149,7 +1604,7 @@ function startFlying() {
     State.elapsed += dt;
 
     const t = State.elapsed / 1000;
-    State.currentMult = parseFloat(Math.max(1.00, Math.pow(1.0 + t * 0.06, 2.2)).toFixed(2));
+    State.currentMult = parseFloat(Math.max(1.00, Math.exp(CONFIG.GROWTH_K * t)).toFixed(2));
 
     if (State.currentMult >= State.crashPoint) {
       State.currentMult = State.crashPoint;
@@ -1167,20 +1622,36 @@ function startFlying() {
       }
     });
 
-    checkAutoCashout();
-    if (State.playerBet && !State.playerBet.cashedOut) updateCashoutBtn();
+    checkAutoCashout(1);
+    checkAutoCashout(2);
+    if (State.playerBets[1] && !State.playerBets[1].cashedOut) updateCashoutBtn(1);
+    if (State.playerBets[2] && !State.playerBets[2].cashedOut) updateCashoutBtn(2);
 
-    const maxElapsed = 30000;
-    const px = timeToX(State.elapsed, maxElapsed);
+    updateView(State.elapsed, State.currentMult);
+    curvePoints.push({ t: State.elapsed, m: State.currentMult });
+    if (curvePoints.length > 600) curvePoints.shift();
+
+    const px = timeToX(State.elapsed);
     const py = multToY(State.currentMult);
-    curvePoints.push({ x: px, y: py });
-    if (curvePoints.length > 300) curvePoints.shift();
+    const prev = curvePoints.length > 1 ? curvePoints[curvePoints.length - 2] : null;
+    if (prev && planeParts) {
+      const prevX = timeToX(prev.t), prevY = multToY(prev.m);
+      const targetAngle = Math.atan2(py - prevY, px - prevX);
+      let delta = targetAngle - planeParts.container.rotation;
+      while (delta > Math.PI) delta -= Math.PI * 2;
+      while (delta < -Math.PI) delta += Math.PI * 2;
+      planeParts.container.rotation += delta * 0.15;
+    }
+    if (planeParts) {
+      planeParts.container.x = px;
+      planeParts.container.y = py;
+      planeParts.container.alpha = 1;
+    }
 
-    planePosX = px;
-    planePosY = py;
+    planePosX = px; planePosY = py;
 
+    Sound.updateEngine(State.currentMult);
     drawCurve(false);
-    drawPlane(px, py);
     updateMultDisplay(State.currentMult, 'flying');
     renderBetsList();
 
@@ -1193,39 +1664,88 @@ function triggerCrash() {
   State.phase = 'crashed';
   const crashMult = State.crashPoint;
 
-  if (State.playerBet && !State.playerBet.cashedOut) {
-    State.playerBet.cashedOut   = false;
-    showToast(`💥 Crashed at ×${crashMult.toFixed(2)} — Lost $${State.playerBet.amount.toFixed(2)}`, 'lose');
+  if (State.playerBets[1] && !State.playerBets[1].cashedOut) {
+    showToast(`💥 Crashed at ×${crashMult.toFixed(2)} — Lost $${State.playerBets[1].amount.toFixed(2)}`, 'lose');
+  }
+  if (State.playerBets[2] && !State.playerBets[2].cashedOut) {
+    showToast(`💥 Crashed at ×${crashMult.toFixed(2)} — Lost $${State.playerBets[2].amount.toFixed(2)}`, 'lose');
   }
 
   updateMultDisplay(crashMult, 'crashed');
   drawCurve(true, true);
-  drawPlane(planePosX, planePosY, true);
 
-  document.getElementById('crash-overlay').style.opacity = '1';
-  document.getElementById('crash-at').textContent = `@ ×${crashMult.toFixed(2)}`;
-  document.getElementById('crash-text').textContent = 'FLEW AWAY!';
-
-  setBetBtnState('disabled');
+  setBetBtnState(1, 'disabled');
+  setBetBtnState(2, 'disabled');
   pushHistory(crashMult);
+
+  const bothActive = State.playerBets[1] && State.playerBets[2];
+  const youBetsSnapshot = [1, 2]
+    .filter(w => State.playerBets[w])
+    .map(w => ({
+      name: bothActive ? `YOU (${w})` : 'YOU',
+      bet: State.playerBets[w].amount,
+      color: '#e91e8c',
+      avatar: '⭐',
+      cashedOut: State.playerBets[w].cashedOut,
+      cashoutMult: State.playerBets[w].cashoutMult,
+    }));
+  State.previousBets = [...youBetsSnapshot, ...State.mockPlayers];
+  const newWinners = State.previousBets.filter(p => p.cashedOut);
+  State.topBets = [...State.topBets, ...newWinners]
+    .sort((a, b) => (b.bet * b.cashoutMult) - (a.bet * a.cashoutMult))
+    .slice(0, 30);
+
+  State.lastReveal = {
+    round: State.roundId,
+    seed: State.serverSeed,
+    hash: State.roundHash,
+    r: State.r,
+    crash: State.crashPoint,
+  };
   State.roundId++;
   renderBetsList();
+
+  Sound.crash();
+  shakeScreen();
+  spawnExplosion(planePosX, planePosY);
+
+  if (planeParts) {
+    const crashX = planePosX, crashY = planePosY, rot = planeParts.container.rotation;
+    const dirX = Math.cos(rot), dirY = Math.sin(rot);
+    const startT = performance.now();
+    const crashFly = (now) => {
+      if (State.phase !== 'crashed' || !planeParts) return;
+      const dt = Math.min(now - startT, 700);
+      const p = dt / 700;
+      planeParts.container.x = crashX + dirX * 160 * p;
+      planeParts.container.y = crashY + dirY * 160 * p;
+      planeParts.container.alpha = 1 - p;
+      if (p < 1) requestAnimationFrame(crashFly);
+    };
+    requestAnimationFrame(crashFly);
+  }
 
   setTimeout(startWaiting, 3000);
 }
 
-app.ticker.add((delta) => {
+app.ticker.add(() => {
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];
-    p._life -= 0.025;
-    p._vy   += 0.25;
+    p._life -= p._decay;
+    p._vy   += p._gravity;
     p.x     += p._vx;
     p.y     += p._vy;
-    p.alpha  = p._life;
+    p.alpha  = Math.max(0, p._life);
     if (p._life <= 0) {
       layerParticles.removeChild(p);
       particles.splice(i, 1);
     }
+  }
+  if (planeParts) {
+    planeParts.propeller.rotation += (State.phase === 'flying' ? 1.7 : 0.5);
+  }
+  if (layerRays) {
+    layerRays.rotation = Math.sin(performance.now() / 2600) * 0.04;
   }
 });
 
@@ -1238,6 +1758,7 @@ console.log(`
 ║   ALTITUDE X CRASH GAME               ║
 ║   Developer: ZinZin Studio            ║
 ║   RTP: 97% | House Edge: 3%           ║
+║   Provably fair: SHA-256 commit/reveal║
 ╚═══════════════════════════════════════╝
 `);
 </script>
