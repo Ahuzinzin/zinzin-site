@@ -86,9 +86,17 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
   overflow: hidden;
 }
 
-/* ── LEFT PANEL — BETS LIST ── */
+#right-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* ── LEFT PANEL — BETS LIST (full-height, alongside the bottom bet bar too) ── */
 #bets-panel {
-  width: 250px;
+  width: 300px;
   background: #0a0d14;
   border-right: 1px solid rgba(255,255,255,0.05);
   display: flex;
@@ -232,21 +240,25 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
   font-family: monospace;
 }
 
-.loading-propeller {
+.loading-propeller-wrap {
   position: absolute;
   top: 50%;
   left: 50%;
   width: 170px;
-  height: auto;
+  height: 170px;
   transform: translate(-50%, -50%);
-  opacity: 0.25;
-  animation: spinProp 1s linear infinite;
   pointer-events: none;
-  filter: drop-shadow(0 0 25px rgba(196,30,42,0.5));
+}
+.loading-propeller {
+  width: 100%;
+  height: 100%;
+  opacity: 0.92;
+  animation: spinProp 1s linear infinite;
+  filter: drop-shadow(0 0 20px rgba(196,30,42,0.6));
 }
 @keyframes spinProp {
-  from { transform: translate(-50%, -50%) rotate(0deg); }
-  to   { transform: translate(-50%, -50%) rotate(360deg); }
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 /* Fun mode badge */
@@ -320,8 +332,6 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
   display: flex;
   align-items: stretch;
   height: 138px;
-  /* left-shifted to counter the 250px bets-panel sidebar, so the widgets stay under the canvas above, not the full page */
-  padding-left: 250px;
   flex-shrink: 0;
 }
 
@@ -624,13 +634,16 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
       <div id="bets-list"></div>
     </div>
 
+    <div id="right-col">
     <div id="canvas-wrap">
       <canvas id="pixi-canvas"></canvas>
 
       <div id="fun-badge">FUN MODE</div>
 
       <div id="waiting-overlay" style="display:none">
-        <img src="altitude-x/propeller-red.png" class="loading-propeller" alt="">
+        <div class="loading-propeller-wrap">
+          <img src="altitude-x/propeller-red.png" class="loading-propeller" alt="">
+        </div>
         <div id="waiting-text">Starting in</div>
         <div id="waiting-countdown">5.0</div>
       </div>
@@ -643,9 +656,7 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
       <button id="pf-badge" onclick="openPFModal()">🛡 Provably Fair</button>
     </div>
 
-  </div>
-
-  <div id="bottom-panel">
+    <div id="bottom-panel">
 
     <div class="bet-widget" id="widget1">
       <div class="bw-left">
@@ -721,6 +732,8 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
       </button>
     </div>
 
+    </div>
+    </div>
   </div>
 </div>
 
