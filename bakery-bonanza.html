@@ -1681,44 +1681,49 @@ document.addEventListener('keyup', e => {
 // alpha — and combine them per pixel on a canvas every frame. Both videos
 // decode natively at full 24fps, so this is real video smoothness, not a
 // sampled frame sequence.
+// Two independently-decoded videos drift out of sync within seconds (each
+// has its own internal buffering/decode latency), which shows up as dark
+// ghost silhouettes where the matte's shape no longer lines up with the
+// color frame. Fix: pack color (top half) and matte (bottom half) into a
+// SINGLE video, so there is exactly one decode stream — both halves come
+// from the same already-decoded frame, so they can never drift apart.
 function createVideoAlphaCompositor(canvas, width, height) {
-  const colorVideo = document.createElement('video');
-  const matteVideo = document.createElement('video');
-  [colorVideo, matteVideo].forEach(v => {
-    v.muted = true; v.loop = true; v.playsInline = true;
-    v.style.display = 'none';
-    document.body.appendChild(v);
-  });
+  const video = document.createElement('video');
+  video.muted = true; video.loop = true; video.playsInline = true;
+  video.style.display = 'none';
+  document.body.appendChild(video);
 
   const off = document.createElement('canvas');
-  off.width = width; off.height = height;
+  off.width = width; off.height = height * 2;
   const offCtx = off.getContext('2d', { willReadFrequently: true });
-  const offMatte = document.createElement('canvas');
-  offMatte.width = width; offMatte.height = height;
-  const offMatteCtx = offMatte.getContext('2d', { willReadFrequently: true });
   const ctx = canvas.getContext('2d');
 
-  function setPair(colorSrc, matteSrc) {
-    if (colorVideo.getAttribute('data-src') === colorSrc) return;
-    colorVideo.setAttribute('data-src', colorSrc);
-    colorVideo.src = colorSrc;
-    matteVideo.src = matteSrc;
-    colorVideo.currentTime = 0; matteVideo.currentTime = 0;
-    colorVideo.play().catch(() => {});
-    matteVideo.play().catch(() => {});
+  function setSrc(src) {
+    if (video.getAttribute('data-src') === src) return;
+    video.setAttribute('data-src', src);
+    video.src = src;
+    video.currentTime = 0;
+    video.play().catch(() => {});
   }
 
   function draw() {
-    if (colorVideo.readyState >= 2 && matteVideo.readyState >= 2) {
+    if (video.readyState >= 2) {
       const cw = canvas.clientWidth, ch = canvas.clientHeight;
       if (cw > 0 && ch > 0) {
-        offCtx.drawImage(colorVideo, 0, 0, width, height);
-        offMatteCtx.drawImage(matteVideo, 0, 0, width, height);
-        const colorData = offCtx.getImageData(0, 0, width, height);
-        const matteData = offMatteCtx.getImageData(0, 0, width, height);
-        const cd = colorData.data, md = matteData.data;
-        for (let i = 0; i < cd.length; i += 4) cd[i + 3] = md[i];
-        offCtx.putImageData(colorData, 0, 0);
+        offCtx.drawImage(video, 0, 0, width, height * 2);
+        const full = offCtx.getImageData(0, 0, width, height * 2);
+        const fd = full.data;
+        const rowBytes = width * 4;
+        // combine top half (color) with bottom half's red channel (alpha) in place
+        for (let y = 0; y < height; y++) {
+          const colorRow = y * rowBytes;
+          const matteRow = (y + height) * rowBytes;
+          for (let x = 0; x < rowBytes; x += 4) {
+            fd[colorRow + x + 3] = fd[matteRow + x];
+          }
+        }
+        const combined = new ImageData(fd.slice(0, height * rowBytes), width, height);
+        offCtx.putImageData(combined, 0, 0);
 
         if (canvas.width !== cw) canvas.width = cw;
         if (canvas.height !== ch) canvas.height = ch;
@@ -1732,7 +1737,7 @@ function createVideoAlphaCompositor(canvas, width, height) {
     requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
-  return { setPair };
+  return { setSrc };
 }
 
 let bbCharCompositor = null;
@@ -1740,10 +1745,10 @@ if (document.documentElement.classList.contains('no-alpha-video')) {
   const CW = 704, CH = 1248;
 
   const ldCompositor = createVideoAlphaCompositor(document.getElementById('ld-char-canvas'), CW, CH);
-  ldCompositor.setPair('/Bakerybonanza/Animation/idle_color.mp4', '/Bakerybonanza/Animation/idle_matte.mp4');
+  ldCompositor.setSrc('/Bakerybonanza/Animation/idle_stacked.mp4');
 
   bbCharCompositor = createVideoAlphaCompositor(document.getElementById('char-canvas'), CW, CH);
-  bbCharCompositor.setPair('/Bakerybonanza/Animation/idle_color.mp4', '/Bakerybonanza/Animation/idle_matte.mp4');
+  bbCharCompositor.setSrc('/Bakerybonanza/Animation/idle_stacked.mp4');
 }
 
 // ── CHARACTER MASCOT INTERACTION ──────────────────────────
@@ -1761,13 +1766,13 @@ function charShowTouch() {
   charVidTouch.classList.add('active');
   charVidTouch.currentTime = 0;
   charVidTouch.play().catch(() => {});
-  if (bbCharCompositor) bbCharCompositor.setPair('/Bakerybonanza/Animation/touch_color.mp4', '/Bakerybonanza/Animation/touch_matte.mp4');
+  if (bbCharCompositor) bbCharCompositor.setSrc('/Bakerybonanza/Animation/touch_stacked.mp4');
 }
 function charShowIdle() {
   charVidTouch.classList.remove('active');
   charVidIdle.classList.add('active');
   charVidIdle.play().catch(() => {});
-  if (bbCharCompositor) bbCharCompositor.setPair('/Bakerybonanza/Animation/idle_color.mp4', '/Bakerybonanza/Animation/idle_matte.mp4');
+  if (bbCharCompositor) bbCharCompositor.setSrc('/Bakerybonanza/Animation/idle_stacked.mp4');
 }
 
 charImg.addEventListener('mouseenter', () => { playGiggle(); charShowTouch(); });
