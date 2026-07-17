@@ -232,6 +232,23 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
   font-family: monospace;
 }
 
+.loading-propeller {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 170px;
+  height: auto;
+  transform: translate(-50%, -50%);
+  opacity: 0.25;
+  animation: spinProp 1s linear infinite;
+  pointer-events: none;
+  filter: drop-shadow(0 0 25px rgba(196,30,42,0.5));
+}
+@keyframes spinProp {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
 /* Fun mode badge */
 #fun-badge {
   position: absolute;
@@ -298,25 +315,35 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
 
 /* ── BOTTOM PANEL ── */
 #bottom-panel {
-  background: #16213e;
+  background: #12182a;
   border-top: 1px solid rgba(255,255,255,0.06);
   display: flex;
   align-items: stretch;
-  justify-content: center;
-  gap: 16px;
-  /* left-shifted to counter the 220px bets-panel sidebar, so the widgets stay centered under the canvas above, not the full page */
-  padding: 14px 20px 14px calc(250px + 20px);
+  height: 138px;
+  /* left-shifted to counter the 250px bets-panel sidebar, so the widgets stay under the canvas above, not the full page */
+  padding-left: 250px;
   flex-shrink: 0;
 }
 
 .bet-widget {
+  flex: 1;
+  min-width: 0;
   background: #0f172a;
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 14px;
-  padding: 12px 14px;
-  width: 280px;
+  border-right: 1px solid rgba(255,255,255,0.07);
+  padding: 14px 22px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+.bet-widget:last-child { border-right: none; }
+
+.bw-left {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 7px;
 }
 
@@ -420,23 +447,22 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
 
 /* BET BUTTON */
 .btn-bet-main {
-  width: 100%;
-  height: 48px;
-  border-radius: 12px;
+  width: 190px;
+  height: 100%;
+  border-radius: 14px;
   border: none;
   font-family: inherit;
-  font-size: 15px;
+  font-size: 19px;
   font-weight: 700;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
+  gap: 3px;
   transition: all .15s;
   letter-spacing: 0.3px;
   flex-shrink: 0;
-  margin-top: auto;
 }
 
 .btn-bet-main.state-bet {
@@ -471,7 +497,7 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
   50% { box-shadow: 0 4px 35px rgba(233,30,140,0.7); }
 }
 
-.btn-small-label { font-size: 10.5px; opacity: 0.75; font-weight: 400; }
+.btn-small-label { font-size: 13px; opacity: 0.8; font-weight: 400; }
 
 /* Auto cashout row */
 .bw-auto-row {
@@ -560,8 +586,10 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
 @media (max-width: 768px) {
   #main-area { flex-direction: column-reverse; }
   #bets-panel { width: 100%; height: 30vh; border-right: none; border-top: 1px solid rgba(255,255,255,0.05); }
-  #bottom-panel { flex-direction: column; padding: 10px; gap: 8px; max-height: 46vh; overflow-y: auto; }
-  .bet-widget { width: 100%; padding: 10px; gap: 6px; }
+  #bottom-panel { flex-direction: column; height: auto; padding: 10px 10px 10px 10px; gap: 8px; max-height: 46vh; overflow-y: auto; }
+  .bet-widget { flex-direction: column; width: 100%; padding: 10px; gap: 8px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .bet-widget:last-child { border-bottom: none; }
+  .btn-bet-main { width: 100%; height: 50px; }
   .tb-history { display: none; }
 }
 </style>
@@ -602,6 +630,7 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
       <div id="fun-badge">FUN MODE</div>
 
       <div id="waiting-overlay" style="display:none">
+        <img src="altitude-x/propeller-red.png" class="loading-propeller" alt="">
         <div id="waiting-text">Starting in</div>
         <div id="waiting-countdown">5.0</div>
       </div>
@@ -619,35 +648,35 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
   <div id="bottom-panel">
 
     <div class="bet-widget" id="widget1">
-      <div style="display:flex; align-items:center; justify-content:space-between;">
+      <div class="bw-left">
         <div class="bw-tabs">
           <button class="bw-tab active" onclick="setMode(1,'manual',event)">Bet</button>
           <button class="bw-tab" onclick="setMode(1,'auto',event)">Auto</button>
         </div>
-      </div>
-      <div class="bw-controls">
-        <div class="bw-amount-wrap">
-          <label>BET</label>
-          <input class="bw-input" id="betAmount1" value="10.00" type="number" min="0.1" step="0.1">
-          <div class="bw-stepper">
-            <button class="bw-step" onclick="adjustBet(1,-1)">−</button>
-            <button class="bw-step" onclick="adjustBet(1,1)">+</button>
+        <div class="bw-controls">
+          <div class="bw-amount-wrap">
+            <label>BET</label>
+            <input class="bw-input" id="betAmount1" value="10.00" type="number" min="0.1" step="0.1">
+            <div class="bw-stepper">
+              <button class="bw-step" onclick="adjustBet(1,-1)">−</button>
+              <button class="bw-step" onclick="adjustBet(1,1)">+</button>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="bw-presets">
-        <button class="bw-preset" onclick="setBetPreset(1,1)">1</button>
-        <button class="bw-preset" onclick="setBetPreset(1,5)">5</button>
-        <button class="bw-preset" onclick="setBetPreset(1,10)">10</button>
-        <button class="bw-preset" onclick="setBetPreset(1,100)">100</button>
-      </div>
-      <div class="bw-auto-row">
-        <label>Auto cash out</label>
-        <input class="bw-auto-input" id="autoCashout1" value="2.00" type="number" min="1.01" step="0.1">
-        <label class="bw-auto-toggle">
-          <input type="checkbox" id="autoToggle1">
-          <span class="toggle-track"></span>
-        </label>
+        <div class="bw-presets">
+          <button class="bw-preset" onclick="setBetPreset(1,1)">1</button>
+          <button class="bw-preset" onclick="setBetPreset(1,5)">5</button>
+          <button class="bw-preset" onclick="setBetPreset(1,10)">10</button>
+          <button class="bw-preset" onclick="setBetPreset(1,100)">100</button>
+        </div>
+        <div class="bw-auto-row">
+          <label>Auto cash out</label>
+          <input class="bw-auto-input" id="autoCashout1" value="2.00" type="number" min="1.01" step="0.1">
+          <label class="bw-auto-toggle">
+            <input type="checkbox" id="autoToggle1">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
       </div>
       <button class="btn-bet-main state-bet" id="mainBetBtn1" onclick="handleBetClick(1)">
         <span id="btnLabel1">BET</span>
@@ -656,35 +685,35 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
     </div>
 
     <div class="bet-widget" id="widget2">
-      <div style="display:flex; align-items:center; justify-content:space-between;">
+      <div class="bw-left">
         <div class="bw-tabs">
           <button class="bw-tab active" onclick="setMode(2,'manual',event)">Bet</button>
           <button class="bw-tab" onclick="setMode(2,'auto',event)">Auto</button>
         </div>
-      </div>
-      <div class="bw-controls">
-        <div class="bw-amount-wrap">
-          <label>BET</label>
-          <input class="bw-input" id="betAmount2" value="10.00" type="number" min="0.1" step="0.1">
-          <div class="bw-stepper">
-            <button class="bw-step" onclick="adjustBet(2,-1)">−</button>
-            <button class="bw-step" onclick="adjustBet(2,1)">+</button>
+        <div class="bw-controls">
+          <div class="bw-amount-wrap">
+            <label>BET</label>
+            <input class="bw-input" id="betAmount2" value="10.00" type="number" min="0.1" step="0.1">
+            <div class="bw-stepper">
+              <button class="bw-step" onclick="adjustBet(2,-1)">−</button>
+              <button class="bw-step" onclick="adjustBet(2,1)">+</button>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="bw-presets">
-        <button class="bw-preset" onclick="setBetPreset(2,1)">1</button>
-        <button class="bw-preset" onclick="setBetPreset(2,5)">5</button>
-        <button class="bw-preset" onclick="setBetPreset(2,10)">10</button>
-        <button class="bw-preset" onclick="setBetPreset(2,100)">100</button>
-      </div>
-      <div class="bw-auto-row">
-        <label>Auto cash out</label>
-        <input class="bw-auto-input" id="autoCashout2" value="3.00" type="number" min="1.01" step="0.1">
-        <label class="bw-auto-toggle">
-          <input type="checkbox" id="autoToggle2">
-          <span class="toggle-track"></span>
-        </label>
+        <div class="bw-presets">
+          <button class="bw-preset" onclick="setBetPreset(2,1)">1</button>
+          <button class="bw-preset" onclick="setBetPreset(2,5)">5</button>
+          <button class="bw-preset" onclick="setBetPreset(2,10)">10</button>
+          <button class="bw-preset" onclick="setBetPreset(2,100)">100</button>
+        </div>
+        <div class="bw-auto-row">
+          <label>Auto cash out</label>
+          <input class="bw-auto-input" id="autoCashout2" value="3.00" type="number" min="1.01" step="0.1">
+          <label class="bw-auto-toggle">
+            <input type="checkbox" id="autoToggle2">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
       </div>
       <button class="btn-bet-main state-bet" id="mainBetBtn2" onclick="handleBetClick(2)">
         <span id="btnLabel2">BET</span>
