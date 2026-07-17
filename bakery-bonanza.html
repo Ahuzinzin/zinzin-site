@@ -76,6 +76,9 @@ html,body{
 }
 #ld-character canvas.webkit-canvas{
   height:min(92vh, 880px); width:auto;
+  aspect-ratio:704/1248; /* pinned so width:auto doesn't derive from the canvas's own
+    width/height attributes, which the compositor rewrites every frame for DPR scaling —
+    without this, that rewrite feeds back into layout and reflows the element every frame */
   filter:drop-shadow(-10px 16px 26px rgba(0,0,0,.45));
   display:none;
 }
