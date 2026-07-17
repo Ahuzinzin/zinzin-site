@@ -20,7 +20,7 @@
  * two halves into a real RGBA image on a <canvas> using WebGL, every frame.
  *
  * HOW TO MAKE THE STACKED MP4 (already done for your idle/touch clips —
- * idle_stacked.mp4 / touch_stacked.mp4 in this folder):
+ * idle_stacked.mp4 / touch_stacked.mp4 in the Animation folder):
  *   ffmpeg -i color_with_alpha.mov -filter_complex \
  *     "[0:v]format=yuva420p,split=2[c][a]; \
  *      [c]format=yuv420p[color]; \
@@ -114,7 +114,17 @@ export class AlphaVideo {
     this.video.muted = this.opts.muted;
     this.video.playsInline = true;
     this.video.autoplay = false; // we drive playback ourselves
-    this.video.style.display = 'none';
+    // NOT display:none — Safari throttles display:none <video> elements to a
+    // reduced internal decode resolution (it assumes nothing needs the pixels),
+    // which shows up as a blocky/pixelated texture once sampled into WebGL.
+    // Keeping it in the render tree at 1x1 with opacity 0 keeps full-res decode.
+    this.video.style.position = 'fixed';
+    this.video.style.top = '0';
+    this.video.style.left = '0';
+    this.video.style.width = '1px';
+    this.video.style.height = '1px';
+    this.video.style.opacity = '0';
+    this.video.style.pointerEvents = 'none';
     document.body.appendChild(this.video);
 
     if (!this.opts.loop) {
