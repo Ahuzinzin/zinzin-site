@@ -73,10 +73,23 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
 .sound-btn:hover { background: rgba(255,255,255,0.08); color: white; }
 
 .tb-balance {
-  font-size: 13px;
-  font-weight: 600;
-  color: #1d9e75;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.35;
   white-space: nowrap;
+}
+.tb-balance-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.tb-balance-amount {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1d9e75;
 }
 
 /* ── MAIN AREA ── */
@@ -127,14 +140,53 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
 .panel-tab.active { color: white; background: rgba(255,255,255,0.1); }
 .panel-tab:hover:not(.active) { color: rgba(255,255,255,0.65); }
 
-.panel-summary {
+.panel-round {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding: 4px 16px 12px;
+  padding: 4px 16px 10px;
+  font-size: 11px;
 }
-.panel-summary span { font-size: 11px; color: rgba(255,255,255,0.35); }
-.panel-summary strong { font-size: 14px; color: rgba(255,255,255,0.85); }
+.panel-round span { color: rgba(255,255,255,0.35); }
+.panel-round strong { color: rgba(255,255,255,0.85); font-weight: 700; }
+
+.panel-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 0 16px 10px;
+}
+.panel-stats .stat-label {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  color: rgba(255,255,255,0.32);
+  white-space: nowrap;
+}
+.panel-stats .stat-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.panel-stats .stat-col:last-child .stat-value { color: #1d9e75; }
+
+.panel-progress {
+  height: 3px;
+  margin: 0 16px 12px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.panel-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1d9e75, #22c55e);
+  width: 0%;
+  transition: width .3s;
+}
 
 .bets-header {
   display: grid;
@@ -612,7 +664,10 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
     <div class="tb-history" id="historyBar"></div>
     <div class="tb-right">
       <button id="soundBtn" class="sound-btn" onclick="toggleSound()" aria-label="Toggle sound">🔊</button>
-      <div class="tb-balance" id="balanceDisplay">$ 1,000.00</div>
+      <div class="tb-balance">
+        <span class="tb-balance-label">Balance</span>
+        <span class="tb-balance-amount" id="balanceDisplay">$ 1,000.00</span>
+      </div>
     </div>
   </div>
 
@@ -624,10 +679,25 @@ html, body { width:100%; height:100%; background:#1a1a2e; overflow:hidden; font-
         <button class="panel-tab" id="panelTabPrevious" onclick="setPanelTab('previous')">Previous</button>
         <button class="panel-tab" id="panelTabTop" onclick="setPanelTab('top')">Top</button>
       </div>
-      <div class="panel-summary">
-        <span id="betCount">0/0 Bets</span>
-        <strong id="totalWin">Total win $0</strong>
+      <div class="panel-round">
+        <span>Round</span>
+        <strong id="roundNumber">#1</strong>
       </div>
+      <div class="panel-stats">
+        <div class="stat-col">
+          <div class="stat-label">Bets</div>
+          <div class="stat-value" id="betCount">0/0</div>
+        </div>
+        <div class="stat-col">
+          <div class="stat-label">Volume Total</div>
+          <div class="stat-value" id="volumeTotal">$0</div>
+        </div>
+        <div class="stat-col">
+          <div class="stat-label">Total Win</div>
+          <div class="stat-value" id="totalWin">$0</div>
+        </div>
+      </div>
+      <div class="panel-progress"><div class="panel-progress-fill" id="panelProgressFill"></div></div>
       <div class="bets-header">
         <span>Player</span><span>Bet USD</span><span>X</span><span>Win USD</span>
       </div>
@@ -1143,18 +1213,6 @@ function drawStarPolygon(g, cx, cy, points, outerR, innerR) {
 function buildPlane() {
   const root = new PIXI.Container();
 
-  const wing = new PIXI.Graphics();
-  wing.beginFill(0xf4f1e8, 1);
-  wing.drawEllipse(-2, 3, 26, 6);
-  wing.endFill();
-  wing.beginFill(0xd4af37, 0.9);
-  wing.drawEllipse(-2, 3, 26, 2);
-  wing.endFill();
-  wing.beginFill(0xb5121b, 1);
-  wing.drawEllipse(6, 3, 8, 5.5);
-  wing.endFill();
-  root.addChild(wing);
-
   const tail = new PIXI.Graphics();
   tail.beginFill(0xb5121b, 1);
   tail.moveTo(-22, 0);
@@ -1417,11 +1475,15 @@ function renderBetsList() {
 
   const totalBets = bets.length;
   const cashedOut = bets.filter(p => p.cashedOut).length;
+  const volumeTotal = bets.reduce((sum, p) => sum + p.bet, 0);
   const totalWin  = bets.filter(p => p.cashedOut)
     .reduce((sum, p) => sum + (p.bet * p.cashoutMult), 0);
 
-  document.getElementById('betCount').textContent = `${cashedOut}/${totalBets} Bets`;
-  document.getElementById('totalWin').textContent = `Total win $${totalWin.toFixed(0)}`;
+  document.getElementById('roundNumber').textContent = '#' + State.roundId;
+  document.getElementById('betCount').textContent = `${cashedOut}/${totalBets}`;
+  document.getElementById('volumeTotal').textContent = `$${volumeTotal.toFixed(0)}`;
+  document.getElementById('totalWin').textContent = `$${totalWin.toFixed(0)}`;
+  document.getElementById('panelProgressFill').style.width = totalBets ? `${(cashedOut / totalBets) * 100}%` : '0%';
 
   list.innerHTML = bets.map(p => {
     const win = p.cashedOut ? (p.bet * p.cashoutMult).toFixed(2) : '';
