@@ -423,7 +423,10 @@ html,body{
 <!-- LOADING / SPLASH SCREEN -->
 <div id="loading">
   <div id="ld-character">
-    <video src="/Bakerybonanza/Animation/character_Idle_transparent.webm" autoplay loop muted playsinline></video>
+    <video autoplay loop muted playsinline>
+      <source src="/Bakerybonanza/Animation/character_Idle_alpha.mov" type="video/mp4; codecs=hvc1">
+      <source src="/Bakerybonanza/Animation/character_Idle_transparent.webm" type="video/webm">
+    </video>
   </div>
   <img id="ld-logo-img" src="/Bakerybonanza/logo.png" alt="Bakery Bonanza">
   <div id="ld-bar-wrap">
@@ -439,8 +442,14 @@ html,body{
 <div id="shell">
   <!-- IN-GAME CHARACTER -->
   <div id="character-img">
-    <video id="char-vid-idle"  class="active" src="/Bakerybonanza/Animation/character_Idle_transparent.webm"  autoplay loop muted playsinline></video>
-    <video id="char-vid-touch" src="/Bakerybonanza/Animation/character_touch_transparent.webm" loop muted playsinline></video>
+    <video id="char-vid-idle" class="active" autoplay loop muted playsinline>
+      <source src="/Bakerybonanza/Animation/character_Idle_alpha.mov" type="video/mp4; codecs=hvc1">
+      <source src="/Bakerybonanza/Animation/character_Idle_transparent.webm" type="video/webm">
+    </video>
+    <video id="char-vid-touch" loop muted playsinline>
+      <source src="/Bakerybonanza/Animation/character_touch_alpha.mov" type="video/mp4; codecs=hvc1">
+      <source src="/Bakerybonanza/Animation/character_touch_transparent.webm" type="video/webm">
+    </video>
   </div>
 
   <!-- LOGO — sized/positioned by JS to match the reel symbols and sit
