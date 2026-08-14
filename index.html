@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>ZinZin Studios | Slot Game Art & iGaming Design Studio</title>
-<meta name="description" content="ZinZin Studios is an art-driven iGaming studio crafting original slot game art, animation and game design — from Saga of Valhalla to Bullet Hole. Play our demos.">
-<meta name="keywords" content="slot game art, slot game design, iGaming art studio, game art studio, slot game development, casino game art">
+<title>ZinZin Studios | Slot Game & iGaming Art Studio</title>
+<meta name="description" content="ZinZin Studios is an iGaming art studio crafting original slot game art, slot game animation and design — from Saga of Valhalla to Bullet Hole. Play our demos.">
+<meta name="keywords" content="slot, slot game, igaming, art studio, igaming art studio, igaming art, slot game art, slot game design, iGaming art studio, game art studio, slot game development, casino game art">
 <link rel="canonical" href="https://zinzinstudios.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ZinZin Studios">
-<meta property="og:title" content="ZinZin Studios | Slot Game Art & iGaming Design Studio">
-<meta property="og:description" content="An art-driven iGaming studio crafting original slot game art, animation and game design. Explore the portfolio and play our demos.">
+<meta property="og:title" content="ZinZin Studios | Slot Game & iGaming Art Studio">
+<meta property="og:description" content="An iGaming art studio crafting original slot game art, animation and game design. Explore the portfolio and play our demos.">
 <meta property="og:url" content="https://zinzinstudios.com/">
 <meta property="og:image" content="https://zinzinstudios.com/banner-poster.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ZinZin Studios | Slot Game Art & iGaming Design Studio">
-<meta name="twitter:description" content="An art-driven iGaming studio crafting original slot game art, animation and game design.">
+<meta name="twitter:title" content="ZinZin Studios | Slot Game & iGaming Art Studio">
+<meta name="twitter:description" content="An iGaming art studio crafting original slot game art, animation and game design.">
 <meta name="twitter:image" content="https://zinzinstudios.com/banner-poster.jpg">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="preload" href="banner-poster.jpg" as="image" fetchpriority="high">
@@ -26,7 +26,7 @@
   "name": "ZinZin Studios",
   "url": "https://zinzinstudios.com/",
   "logo": "https://zinzinstudios.com/logo/zinzin_studios_logo.png",
-  "description": "ZinZin Studios is an independent, art-driven iGaming studio crafting original 2D illustration, animation and game design for slot, crash and instant-win games.",
+  "description": "ZinZin Studios is an independent igaming art studio crafting original slot game art, 2D illustration, animation and game design for slot, crash and instant-win games.",
   "sameAs": [
     "https://www.instagram.com/zinzin_studios/",
     "https://www.behance.net/zinzinstudio",
@@ -173,9 +173,11 @@ nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:900;
   background:linear-gradient(to bottom,rgba(6,6,14,.40) 0%,rgba(6,6,14,.20) 30%,rgba(6,6,14,.75) 70%,rgba(6,6,14,.96) 100%)}
 .hero-content{position:relative;z-index:2;text-align:center;padding:0 20px;max-width:860px}
 .hero-h1{font-family:'Barlow',sans-serif;font-size:clamp(40px,6.5vw,88px);
-         font-weight:800;line-height:.92;margin-bottom:36px;
+         font-weight:800;line-height:.92;margin-bottom:20px;
          text-transform:uppercase;color:#fff;letter-spacing:-2px}
 .hero-h1 .gold{color:var(--gold)}
+.hero-sub{font-size:clamp(14px,1.6vw,17px);color:var(--muted);max-width:560px;
+          margin:0 auto 32px;line-height:1.5}
 .hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 .btn-pri{padding:16px 40px;border-radius:3px;background:var(--gold);color:#000;
          font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;
@@ -475,6 +477,7 @@ footer{position:relative;overflow:hidden;background:var(--s1);border-top:1px sol
 
 /* ── Hero text entrance ── */
 .hero-h1{animation:slideUp .8s cubic-bezier(.22,1,.36,1) .2s both}
+.hero-sub{animation:slideUp .8s cubic-bezier(.22,1,.36,1) .32s both}
 .hero-btns{animation:slideUp .8s cubic-bezier(.22,1,.36,1) .45s both}
 
 @media(max-width:768px){
@@ -541,7 +544,8 @@ footer{position:relative;overflow:hidden;background:var(--s1);border-top:1px sol
   </script>
   <div class="hero-overlay"></div>
   <div class="hero-content">
-    <h1 class="hero-h1">Original<br><span class="gold">Slot Game</span><br>Art Studio</h1>
+    <h1 class="hero-h1">Original<br><span class="gold">Slot Game</span><br>&amp; iGaming Art Studio</h1>
+    <p class="hero-sub">ZinZin Studios is an igaming art studio designing original slot games — concept art, animation and playable demos.</p>
     <div class="hero-btns">
       <a href="#games" class="btn-pri">Explore Games</a>
       <a href="#contact" class="btn-sec">Get in Touch</a>
@@ -590,7 +594,183 @@ footer{position:relative;overflow:hidden;background:var(--s1);border-top:1px sol
       </div>
     </div>
   </div>
-  <div class="games-grid" id="gamesGrid"></div>
+  <div class="games-grid" id="gamesGrid">
+    <div class="gc" onclick="openModal(10)">
+      <div class="gc-img">
+        <img src="assets/bullet_hole.jpg" alt="Bullet Hole" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        <span class="gc-badge gold">New</span>
+        <div class="gc-foot">
+          <span class="gc-cat">slot</span>
+          <a class="gc-name" href="/games/bullet-hole/" onclick="event.stopPropagation()">Bullet Hole</a>
+        </div>
+      </div>
+    </div>
+  
+    <div class="gc" onclick="openModal(9)">
+      <div class="gc-img">
+        <img src="assets/saga_of_valhalla.jpg" alt="Saga of Valhalla" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        <span class="gc-badge gold">New</span>
+        <div class="gc-foot">
+          <span class="gc-cat">slot</span>
+          <a class="gc-name" href="/games/saga-of-valhalla/" onclick="event.stopPropagation()">Saga of Valhalla</a>
+        </div>
+      </div>
+    </div>
+  
+    <div class="gc" onclick="openModal(0)">
+      <div class="gc-img">
+        <img src="assets/bakery-bonanza.jpg" alt="Bakery Bonanza" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        <span class="gc-badge ">New</span>
+        <div class="gc-foot">
+          <span class="gc-cat">slot</span>
+          <a class="gc-name" href="/games/bakery-bonanza/" onclick="event.stopPropagation()">Bakery Bonanza</a>
+        </div>
+      </div>
+    </div>
+  
+    <div class="gc" onclick="openModal(1)">
+      <div class="gc-img">
+        <img src="assets/blackhearts-booty.jpg" alt="Blackheart's Booty" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        <span class="gc-badge gold">New</span>
+        <div class="gc-foot">
+          <span class="gc-cat">slot</span>
+          <a class="gc-name" href="/games/blackhearts-booty/" onclick="event.stopPropagation()">Blackheart's Booty</a>
+        </div>
+      </div>
+    </div>
+  
+    <div class="gc" onclick="openModal(5)">
+      <div class="gc-img">
+        <img src="assets/arena-of-blood-colosseum.jpg" alt="Arena Of Blood Colosseum" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        <span class="gc-badge gold">New</span>
+        <div class="gc-foot">
+          <span class="gc-cat">slot</span>
+          <a class="gc-name" href="/games/arena-of-blood/" onclick="event.stopPropagation()">Arena Of Blood Colosseum</a>
+        </div>
+      </div>
+    </div>
+  
+    <div class="gc" onclick="openModal(8)">
+      <div class="gc-img">
+        <img src="assets/nordic-raiders.png" alt="Nordic Raiders" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        <span class="gc-badge gold">Exclusive</span>
+        <div class="gc-foot">
+          <span class="gc-cat">slot</span>
+          <a class="gc-name" href="/games/nordic-raiders/" onclick="event.stopPropagation()">Nordic Raiders</a>
+        </div>
+      </div>
+    </div>
+  
+    <div class="gc" onclick="openModal(2)">
+      <div class="gc-img">
+        <img src="assets/quack_rush.png" alt="Quack Rush" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        <span class="gc-badge red">Hot</span>
+        <div class="gc-foot">
+          <span class="gc-cat">instant</span>
+          <a class="gc-name" href="/games/quack-rush/" onclick="event.stopPropagation()">Quack Rush</a>
+        </div>
+      </div>
+    </div>
+  
+    <div class="gc" onclick="openModal(3)">
+      <div class="gc-img">
+        <img src="assets/crystal-plinko.jpg" alt="Crystal Plinko" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        <span class="gc-badge gold">New</span>
+        <div class="gc-foot">
+          <span class="gc-cat">instant</span>
+          <a class="gc-name" href="/games/crystal-plinko/" onclick="event.stopPropagation()">Crystal Plinko</a>
+        </div>
+      </div>
+    </div>
+  
+    <div class="gc" onclick="openModal(4)">
+      <div class="gc-img">
+        <img src="assets/altitude-x.jpg" alt="Altitude X" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        <span class="gc-badge ">Exclusive</span>
+        <div class="gc-foot">
+          <span class="gc-cat">crash</span>
+          <a class="gc-name" href="/games/altitude-x/" onclick="event.stopPropagation()">Altitude X</a>
+        </div>
+      </div>
+    </div>
+  
+    <div class="gc" onclick="openModal(6)">
+      <div class="gc-img">
+        <img src="assets/poseidon-fortunes.jpg" alt="Poseidon Fortunes" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        <span class="gc-badge gold">Exclusive</span>
+        <div class="gc-foot">
+          <span class="gc-cat">slot</span>
+          <a class="gc-name" href="/games/poseidon-fortunes/" onclick="event.stopPropagation()">Poseidon Fortunes</a>
+        </div>
+      </div>
+    </div>
+  
+    <div class="gc" onclick="openModal(7)">
+      <div class="gc-img">
+        <img src="assets/book-of-amon.png" alt="Book of Amon" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        <span class="gc-badge ">Exclusive</span>
+        <div class="gc-foot">
+          <span class="gc-cat">slot</span>
+          <a class="gc-name" href="/games/book-of-amon/" onclick="event.stopPropagation()">Book of Amon</a>
+        </div>
+      </div>
+    </div>
+  </div>
   <div style="max-width:1400px;margin:40px auto 0;text-align:center">
     <a href="#" style="font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;
        letter-spacing:2px;text-transform:uppercase;color:var(--gold);text-decoration:none;
