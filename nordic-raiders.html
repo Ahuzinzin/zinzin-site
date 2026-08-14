@@ -18,7 +18,7 @@ html, body { width:100%; height:100%; background:#050a14; overflow:hidden; font-
 #shell { position:relative; z-index:1; width:1480px; height:900px; min-width:1480px; min-height:900px; flex-shrink:0; transform-origin:center center; }
 canvas#pixi-canvas { position:absolute; left:0; top:0; }
 
-.logo-corner { position:absolute; left:1148px; top:6px; height:155px; pointer-events:none; z-index:5; }
+.logo-corner { position:absolute; left:88px; top:6px; height:155px; pointer-events:none; z-index:5; }
 .logo-corner img { height:100%; width:auto; }
 
 @keyframes spin { to { transform:rotate(360deg); } }
@@ -229,12 +229,12 @@ canvas#pixi-canvas { position:absolute; left:0; top:0; }
     <button id="modal-close">&times;</button>
     <h2>Nordic Raiders — Paytable &amp; Rules</h2>
     <div class="stat-row">
-      <div>RTP 96.5%</div><div>Volatility: High</div><div>Max Win: 5,000x</div>
+      <div>RTP 96.0%</div><div>Volatility: High</div><div>Max Win: 5,000x</div>
     </div>
     <p>5 reels × 3 rows. Symbols pay anywhere on the grid — the total count of a symbol on screen at the end of a spin determines the win, multiplied by your total bet. 5-7 = tier 1, 8-10 = tier 2, 11+ = tier 3.</p>
     <h3>Special symbols</h3>
     <p><b>Raider Champion (Wild)</b> substitutes for every paying symbol when counting matches, and appears more often during Free Spins.</p>
-    <p><b>Shieldmaiden (Scatter)</b> pays anywhere and triggers Free Spins: 3 = 8 Spins, 4 = 12 Spins, 5 = 16 Spins, 6 = 20 Spins. Landing 3+ more during Free Spins retriggers +5 Spins.</p>
+    <p><b>Shieldmaiden (Scatter)</b> pays anywhere and triggers 3 Free Spins on 3+ landing anywhere on the grid. Landing 3+ more during Free Spins retriggers +3 Spins.</p>
     <p><b>Buy Bonus</b> instantly triggers 8 Free Spins for 100× your total bet.</p>
     <h3>Symbol pays (8-9 / 10-11 / 12+ on screen)</h3>
     <div id="pay-list"></div>
@@ -328,15 +328,15 @@ let totalBet = BET_LEVELS[betIdx];
 
 const SYMS = [
   { id:'wild',    label:'Raider Champion',   tier:'special', pays:null, w:{base:3,  fs:8},  img:'symbols_new/wild.png', gl:'glow_purple' },
-  { id:'scatter', label:'Shieldmaiden',      tier:'special', pays:null, w:{base:6,  fs:5}, img:'symbols_new/scatter.png', gl:'glow_green' },
-  { id:'ship',    label:'Longship',          tier:'mid',     pays:[[5,1.4], [8,6.2], [11,41.5]], w:{base:7,  fs:7},  img:'symbols_new/ship.png', gl:'glow_purple' },
-  { id:'hammer',  label:"Thor's Hammer",     tier:'mid',     pays:[[5,1.05],[8,4.85],[11,29]],   w:{base:8,  fs:8},  img:'symbols_new/thor_axe.png', gl:'glow_blue' },
-  { id:'helmet',  label:'Horned Helm',       tier:'mid',     pays:[[5,1.05],[8,4.85],[11,29]],   w:{base:8,  fs:8},  img:'symbols_new/Helmet.png', gl:'glow_blue' },
-  { id:'hook',    label:"Raider's Hook",     tier:'low',     pays:[[5,0.62],[8,2.4], [11,12.5]], w:{base:10, fs:10}, img:'symbols_new/ship_hook.png', gl:'glow_blue' },
-  { id:'horn',    label:'Mead Horn',         tier:'low',     pays:[[5,0.48],[8,1.95],[11,9.7]],  w:{base:11, fs:11}, img:'symbols_new/War%20Horn%20Cup.png', gl:'glow_blue' },
-  { id:'meat',    label:'Roast Leg',         tier:'low',     pays:[[5,0.38],[8,1.5], [11,7.6]],  w:{base:12, fs:12}, img:'symbols_new/meat.png', gl:'glow_blue' },
-  { id:'axe',     label:'War Axe',           tier:'low',     pays:[[5,0.29],[8,1.18],[11,5.9]],  w:{base:13, fs:13}, img:'symbols_new/Axe.png', gl:'glow_blue' },
-  { id:'sword',   label:'Rune Sword',        tier:'low',     pays:[[5,0.22],[8,0.9], [11,4.5]],  w:{base:14, fs:14}, img:'symbols_new/knife.png', gl:'glow_blue' },
+  { id:'scatter', label:'Shieldmaiden',      tier:'special', pays:null, w:{base:2,  fs:3}, img:'symbols_new/scatter.png', gl:'glow_green' },
+  { id:'ship',    label:'Longship',          tier:'mid',     pays:[[5,4.55], [8,20.15],[11,134.9]], w:{base:7,  fs:7},  img:'symbols_new/ship.png', gl:'glow_purple' },
+  { id:'hammer',  label:"Thor's Hammer",     tier:'mid',     pays:[[5,3.41], [8,15.76],[11,94.25]], w:{base:8,  fs:8},  img:'symbols_new/thor_axe.png', gl:'glow_blue' },
+  { id:'helmet',  label:'Horned Helm',       tier:'mid',     pays:[[5,3.41], [8,15.76],[11,94.25]], w:{base:8,  fs:8},  img:'symbols_new/Helmet.png', gl:'glow_blue' },
+  { id:'hook',    label:"Raider's Hook",     tier:'low',     pays:[[5,2.02], [8,7.8],  [11,40.63]], w:{base:10, fs:10}, img:'symbols_new/ship_hook.png', gl:'glow_blue' },
+  { id:'horn',    label:'Mead Horn',         tier:'low',     pays:[[5,1.56], [8,6.34], [11,31.53]], w:{base:11, fs:11}, img:'symbols_new/War%20Horn%20Cup.png', gl:'glow_blue' },
+  { id:'meat',    label:'Roast Leg',         tier:'low',     pays:[[5,1.24], [8,4.88], [11,24.7]],  w:{base:12, fs:12}, img:'symbols_new/meat.png', gl:'glow_blue' },
+  { id:'axe',     label:'War Axe',           tier:'low',     pays:[[5,0.94], [8,3.84], [11,19.18]], w:{base:13, fs:13}, img:'symbols_new/Axe.png', gl:'glow_blue' },
+  { id:'sword',   label:'Rune Sword',        tier:'low',     pays:[[5,0.72], [8,2.93], [11,14.63]], w:{base:14, fs:14}, img:'symbols_new/knife.png', gl:'glow_blue' },
 ];
 const SYM_BY_ID = Object.fromEntries(SYMS.map(s=>[s.id,s]));
 
@@ -652,7 +652,20 @@ function evalClusters(g, bet){
   return { total, winners, wildCount };
 }
 
-function fsSpinsFor(c){ if(c>=6) return 20; if(c===5) return 16; if(c===4) return 12; if(c>=3) return 8; return 0; }
+function fsSpinsFor(c){ return c>=3 ? 3 : 0; }
+
+/* Demo aid: guarantee the Free Spins feature shows up quickly once per
+   session if it hasn't landed naturally by the Nth base spin. After
+   that single freebie, frequency is fully natural (real odds). */
+const DEMO_FORCE_FS_BY_SPIN = 4;
+let baseSpinCount = 0;
+let demoFsGranted = false;
+function forceScatters(g, count){
+  const cells = [];
+  for(let c=0;c<REELS;c++) for(let r=0;r<ROWS;r++) cells.push([c,r]);
+  for(let i=cells.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [cells[i],cells[j]]=[cells[j],cells[i]]; }
+  for(let i=0;i<count;i++){ const [c,r] = cells[i]; g[c][r] = 'scatter'; }
+}
 
 function drawDashedSegment(g, x1, y1, x2, y2, dash, gap, phase){
   const dx = x2-x1, dy = y2-y1;
@@ -667,6 +680,8 @@ function drawDashedSegment(g, x1, y1, x2, y2, dash, gap, phase){
     d += dash+gap;
   }
 }
+
+let activeWinFx = null;
 
 function highlightWinners(winners, wildCount){
   if(!winners.length) return;
@@ -683,6 +698,10 @@ function highlightWinners(winners, wildCount){
   });
   if(!glowed.length) return;
   glowed.sort((a,b)=> a.c-b.c || a.r-b.r);
+
+  if(activeWinFx) activeWinFx.cancelled = true;
+  const fxState = { cancelled: false };
+  activeWinFx = fxState;
 
   const lineG = new PIXI.Graphics();
   reelsContainer.addChildAt(lineG, 0);
@@ -704,6 +723,7 @@ function highlightWinners(winners, wildCount){
   const life = 2600;
   let elapsed = 0, last = performance.now();
   function pulse(now){
+    if(fxState.cancelled){ fx.destroy({children:true}); lineG.destroy(); return; }
     elapsed += now-last; last = now;
     const alpha = Math.max(0, 0.55 + Math.sin(elapsed*0.008)*0.45);
     glowSprites.forEach(g=> g.alpha = alpha);
@@ -717,7 +737,7 @@ function highlightWinners(winners, wildCount){
     }
 
     if(elapsed < life) requestAnimationFrame(pulse);
-    else { fx.destroy({children:true}); lineG.destroy(); }
+    else { fx.destroy({children:true}); lineG.destroy(); if(activeWinFx===fxState) activeWinFx=null; }
   }
   requestAnimationFrame(pulse);
 }
@@ -926,6 +946,14 @@ async function doSpin(){
   const mode = inFreeSpins? 'fs':'base';
   const raw = genGrid(mode);
 
+  if(mode==='base'){
+    baseSpinCount++;
+    if(!demoFsGranted && baseSpinCount>=DEMO_FORCE_FS_BY_SPIN && scatterCount(raw)<3){
+      forceScatters(raw, 3);
+    }
+    if(scatterCount(raw)>=3) demoFsGranted = true;
+  }
+
   animateSpin(raw, async ()=>{
     fillStatic(raw);
 
@@ -1049,11 +1077,11 @@ document.getElementById('buy-btn').addEventListener('click', ()=>{
   if(balance<cost) return;
   askConfirm('Buy Free Spins for $'+cost.toFixed(2)+'?', ()=>{
     balance -= cost; setBetUI();
-    inFreeSpins = true; freeSpinsLeft = 8; freeSpinsTotalWin = 0;
+    inFreeSpins = true; freeSpinsLeft = 3; freeSpinsTotalWin = 0;
     bgSprite.texture = TEX.bg_fs;
     setCharTexture(TEX.char_fs);
     document.getElementById('gw').classList.add('fs-mode');
-    showFsBanner('8 FREE SPINS!', 'Bonus purchased', ()=>doSpin());
+    showFsBanner('3 FREE SPINS!', 'Bonus purchased', ()=>doSpin());
   });
 });
 
