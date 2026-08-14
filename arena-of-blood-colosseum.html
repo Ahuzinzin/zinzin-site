@@ -400,12 +400,8 @@ window.addEventListener('keydown',e=>{
   if(e.code==='Space'){
     e.preventDefault();
     if(e.repeat)return;
-    turboKeyHeld=true;updateTurboState();
     handleSpin();
   }
-});
-window.addEventListener('keyup',e=>{
-  if(e.code==='Space'){turboKeyHeld=false;updateTurboState();}
 });
 let winLines=[],totalWin=0,winFlash=0;
 let particles=[],bigWin={a:0,v:0},lastTS=0;

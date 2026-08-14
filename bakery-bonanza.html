@@ -506,7 +506,7 @@ html,body{
       <button class="bet-step" onclick="changeBet(-1)"><img src="/Bakerybonanza/UI/Minus_Normal.webp" alt="−"></button>
     </div>
 
-    <div class="hud-hint">Hold <b>spacebar</b> for turbo spin</div>
+    <div class="hud-hint">Press <b>spacebar</b> to spin</div>
   </div>
 
   <!-- SUPER WIN OVERLAY — no button: pure timed popup like the small win
@@ -1671,16 +1671,12 @@ function toast(msg) {
 
 // ── KEYBOARD ─────────────────────────────────────────────
 document.addEventListener('keydown', e => {
-  if (e.code === 'Space') {
+  if (e.code === 'Space' && !e.repeat) {
     e.preventDefault();
-    if (!turboKeyHeld) { turboKeyHeld = true; updateTurboState(); }
     spin();
   }
   if (e.code === 'ArrowUp')   changeBet(1);
   if (e.code === 'ArrowDown') changeBet(-1);
-});
-document.addEventListener('keyup', e => {
-  if (e.code === 'Space') { turboKeyHeld = false; updateTurboState(); }
 });
 
 // ── CHARACTER MASCOT INTERACTION ──────────────────────────

@@ -791,6 +791,9 @@ document.getElementById('turbo-btn').addEventListener('click', (e)=>{
   turbo = !turbo; e.target.classList.toggle('on', turbo); SFX.click();
 });
 document.getElementById('auto-btn').addEventListener('click', ()=>{ SFX.click(); setAutoplay(!autoplay); });
+window.addEventListener('keydown',e=>{
+  if(e.code==='Space' && !e.repeat){ e.preventDefault(); doSpin(); }
+});
 function askConfirm(text, onYes){
   document.getElementById('confirm-text').textContent = text;
   document.getElementById('confirm-overlay').classList.add('show');
