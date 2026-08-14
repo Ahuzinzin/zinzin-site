@@ -2,6 +2,8 @@
 /bakery-bonanza     /bakery-bonanza.html    200
 /crystal-plinko     /crystal-plinko.html    200
 /altitude-x         /altitude-x.html        200
+/blackhearts-booty  /blackhearts-booty.html 200
+/nordic-raiders     /nordic-raiders.html    200
 
 # Trailing slash normalisation for game folders
 /saga_of_valhalla   /saga_of_valhalla/      301

@@ -522,11 +522,23 @@ footer{position:relative;overflow:hidden;background:var(--s1);border-top:1px sol
 
 <!-- HERO -->
 <section id="hero">
-  <video class="hero-video" autoplay muted loop playsinline
+  <video class="hero-video" id="hero-video" autoplay muted playsinline
          poster="banner-poster.jpg"
          preload="auto">
     <source src="banner.mp4" type="video/mp4">
   </video>
+  <script>
+  (function(){
+    var vids=['banner.mp4','banner2.mp4'];
+    var i=0;
+    var v=document.getElementById('hero-video');
+    v.addEventListener('ended',function(){
+      i=(i+1)%vids.length;
+      v.src=vids[i];
+      v.play();
+    });
+  })();
+  </script>
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <h1 class="hero-h1">Original<br><span class="gold">Slot Game</span><br>Art Studio</h1>
@@ -838,21 +850,54 @@ const games=[
   {
     id:1,name:"Blackheart's Booty",slug:"blackhearts-booty",category:"slot",
     image:"assets/blackhearts-booty.jpg",
-    badge:"Exclusive",badgeClass:"gold",
+    demoUrl:"blackhearts-booty",
+    badge:"New",badgeClass:"gold",
     short:"Plunder the seas. Uncover the jackpot.",
-    desc:"Set sail with the infamous pirate Blackheart on a 6-reel treasure hunt across treacherous waters. Cascading wins, an expanding wild kraken, and a 3-level free spins bonus with increasing multipliers make this slot a blockbuster.",
-    tags:["Slot","6-Reel","Cascading","Free Spins"],
-    specs:[{val:"6×5",lbl:"Grid"},{val:"RTP 96.4%",lbl:"Return to Player"},{val:"High",lbl:"Volatility"},{val:"10,000x",lbl:"Max Win"}],
+    desc:"Set sail with the infamous Captain Blackheart on a 5×3, 20-payline treasure hunt across treacherous waters. His Wild expands to cover a full reel on landing, while first mate Anne Bonny's Scatter unlocks a Free Spins voyage to a moonlit pirate cove with a hungrier Wild frequency, or skip straight there with Buy Bonus.",
+    tags:["Slot","5×3 Grid","Expanding Wild","Free Spins"],
+    specs:[{val:"5×3",lbl:"Grid"},{val:"RTP 96.4%",lbl:"Return to Player"},{val:"High",lbl:"Volatility"},{val:"5,000x",lbl:"Max Win"}],
     features:[
-      {icon:"🐙",title:"Expanding wild",desc:"Kraken wild expands to cover full reels"},
-      {icon:"💰",title:"Treasure bonus",desc:"Pick-and-click chest feature"},
-      {icon:"🌊",title:"Cascading wins",desc:"Symbols fall and chain for big wins"},
-      {icon:"🎭",title:"Character-driven",desc:"Unique pirate cast with win animations"}
+      {icon:"🏴‍☠️",title:"Expanding Wild",desc:"Captain Blackheart covers the full reel when he lands"},
+      {icon:"🗺️",title:"Scatter Free Spins",desc:"3+ Anne Bonny scatters trigger 10-20 spins with retriggers"},
+      {icon:"💰",title:"Buy Bonus",desc:"Skip straight to Free Spins for 100x your bet"},
+      {icon:"🎻",title:"Original score",desc:"Custom sea-shanty theme & moonlit cove bonus music"}
+    ]
+  },
+  {
+    id:5,name:"Arena Of Blood Colosseum",slug:"arena-of-blood",category:"slot",
+    image:"assets/arena-of-blood-colosseum.jpg",
+    demoUrl:"arena-of-blood-colosseum",
+    badge:"New",badgeClass:"gold",
+    short:"Enter the Colosseum. Fight for glory.",
+    desc:"Arena Of Blood Colosseum drops you into a blood-soaked Roman amphitheater on a 5×3, 20-payline reel set. The Aquila Standard Wild substitutes for every paying symbol, while gladiator champion Valeria's Scatter unlocks a 10-spin Free Spins bout, retriggering +5 spins for every extra Scatter that lands.",
+    tags:["Slot","5×3 Grid","Free Spins","Roman"],
+    specs:[{val:"5×3",lbl:"Grid"},{val:"RTP 96.0%",lbl:"Return to Player"},{val:"High",lbl:"Volatility"},{val:"500x",lbl:"Max Win"}],
+    features:[
+      {icon:"🦅",title:"Aquila Standard Wild",desc:"The golden eagle standard substitutes for every paying symbol"},
+      {icon:"🛡️",title:"Scatter Free Spins",desc:"2+ Valeria scatters trigger 10 free spins with retriggers"},
+      {icon:"🦁",title:"Colosseum Lion",desc:"Top-paying symbol, a caged lion straight from the arena floor"},
+      {icon:"🏛️",title:"Original Roman art",desc:"Hand-painted gladiator & Colosseum artwork with a living champion beside the reels"}
+    ]
+  },
+  {
+    id:8,name:"Nordic Raiders",slug:"nordic-raiders",category:"slot",
+    image:"assets/nordic-raiders.png",
+    demoUrl:"nordic-raiders",
+    badge:"Exclusive",badgeClass:"gold",
+    short:"Raid the frozen north. Claim the hoard.",
+    desc:"Nordic Raiders sends players deep into a snowbound Viking stronghold on a 5×3 reel set where every symbol pays anywhere on the grid. The Raider Champion Wild substitutes for every paying symbol, while the Shieldmaiden Scatter unlocks a Free Spins raid with retriggers. Original longship & rune artwork, a living viking guardian beside the reels, and animated glow win effects bring the whole board to life.",
+    tags:["Slot","5×3 Grid","Free Spins","Norse"],
+    specs:[{val:"5×3",lbl:"Grid"},{val:"RTP 96.5%",lbl:"Return to Player"},{val:"High",lbl:"Volatility"},{val:"5,000x",lbl:"Max Win"}],
+    features:[
+      {icon:"⚔️",title:"Raider Champion Wild",desc:"Substitutes for every paying symbol on the grid"},
+      {icon:"🛡️",title:"Shieldmaiden Free Spins",desc:"3+ scatters unlock free spins with retriggers"},
+      {icon:"✨",title:"Animated glow wins",desc:"Winning symbols glow and connect with an animated gold line"},
+      {icon:"🏔️",title:"Original Norse art",desc:"Hand-painted frozen stronghold artwork with a living viking guardian"}
     ]
   },
   {
     id:2,name:"Quack Rush",slug:"quack-rush",category:"instant",
-    image:"assets/quack_rush.jpg",
+    image:"assets/quack_rush.png",
     demoUrl:"quack_rush_crash/",
     badge:"Hot",badgeClass:"red",
     short:"Guide the ducks. Dodge the hazards. Cash out.",
@@ -899,21 +944,6 @@ const games=[
     ]
   },
   {
-    id:5,name:"Arena Of Blood",slug:"arena-of-blood",category:"slot",
-    image:"assets/arena-of-blood.jpg",
-    badge:"Exclusive",badgeClass:"gold",
-    short:"Fight for glory. Spin for gold.",
-    desc:"Step into the blood-soaked Colosseum where gladiators clash for massive multipliers. Arena Of Blood is a high-volatility slot set in ancient Rome with 5 reels of brutal action.",
-    tags:["Slot","5-Reel","Free Spins","High Volatility"],
-    specs:[{val:"5×4",lbl:"Grid"},{val:"RTP 96.1%",lbl:"Return to Player"},{val:"Very High",lbl:"Volatility"},{val:"20,000x",lbl:"Max Win"}],
-    features:[
-      {icon:"⚔️",title:"Gladiator wilds",desc:"Stacking warrior wilds dominate the reels"},
-      {icon:"🏟️",title:"Colosseum Rage",desc:"Crowd meter activates 3x multiplier mode"},
-      {icon:"🩸",title:"Battle free spins",desc:"Choose your fighter for bonus type"},
-      {icon:"🎨",title:"Epic art direction",desc:"Cinematic hand-painted Roman visuals"}
-    ]
-  },
-  {
     id:6,name:"Poseidon Fortunes",slug:"poseidon-fortunes",category:"slot",
     image:"assets/poseidon-fortunes.jpg",
     badge:"Exclusive",badgeClass:"gold",
@@ -930,7 +960,7 @@ const games=[
   },
   {
     id:7,name:"Book of Amon",slug:"book-of-amon",category:"slot",
-    image:"assets/book-of-amon.jpg",
+    image:"assets/book-of-amon.png",
     badge:"Exclusive",badgeClass:"",
     short:"Open the book. Unleash ancient power.",
     desc:"Book of Amon is our definitive Egyptian mystery slot. The enchanted Book of Amon is both wild and scatter — 3 books trigger a free spins round where one expanding symbol is chosen at random.",

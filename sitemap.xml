@@ -49,10 +49,22 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://zinzinstudios.com/games/claws-and-crumbs/</loc>
+    <lastmod>2026-07-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://zinzinstudios.com/games/arena-of-blood/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://zinzinstudios.com/games/nordic-raiders/</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zinzinstudios.com/games/poseidon-fortunes/</loc>
@@ -75,6 +87,12 @@
   <url>
     <loc>https://zinzinstudios.com/saga_of_valhalla/</loc>
     <lastmod>2026-07-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://zinzinstudios.com/nordic-raiders</loc>
+    <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Claws &amp; Crumbs — ZinZin Studio</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
+html, body { width:100%; height:100%; background:#0d0714; overflow:hidden; font-family:'Baloo 2','Segoe UI',sans-serif; }
+
+#viewport { width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; background:radial-gradient(ellipse at 50% 30%, #241533 0%, #0d0714 70%); }
+
+#shell { position:relative; width:1480px; height:900px; min-width:1480px; min-height:900px; flex-shrink:0; transform-origin:center center; }
+
+canvas#pixi-canvas { position:absolute; left:0; top:0; }
+
+.ui-layer { position:absolute; left:0; top:0; width:1480px; height:900px; pointer-events:none; }
+.ui-layer button, .ui-layer .clickable { pointer-events:auto; }
+
+/* ── LOADING ── */
+#loading { position:fixed; inset:0; background:#0d0714; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:999; gap:18px; }
+#loading .logo { font-size:38px; font-weight:800; color:#ffd24c; text-shadow:0 3px 0 #7a4a12; letter-spacing:1px; }
+#loading .logo span { color:#ff8fb8; }
+.spinner { width:52px; height:52px; border-radius:50%; border:6px solid rgba(255,210,76,0.2); border-top-color:#ffd24c; animation:spin 0.9s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+#loading .pct { color:#cbb8e0; font-size:13px; letter-spacing:2px; }
+.hidden { display:none !important; }
+
+/* ── TOP BAR ── */
+.topbar { position:absolute; left:0; top:0; width:100%; height:64px; display:flex; align-items:center; justify-content:space-between; padding:0 22px; }
+.title { color:#ffe9b0; font-size:24px; font-weight:800; text-shadow:0 2px 0 #6d3e12; letter-spacing:0.5px; }
+.title span { color:#ff9ec4; }
+.icon-btn { width:46px; height:46px; border:none; background:url('Claws-and-Crumbs/ui/Menu_Normal.png') center/contain no-repeat; cursor:pointer; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+.icon-btn:active { transform:scale(0.92); }
+
+/* ── FEATURE STRIP (turbo / autoplay / bonus buy) ── */
+.feat-strip { position:absolute; left:50%; top:702px; transform:translateX(-50%); display:flex; gap:10px; }
+.pill { border:1px solid rgba(255,255,255,0.18); background:rgba(30,16,46,0.75); color:#e9d9f5; font-size:12px; font-weight:700; padding:6px 14px; border-radius:999px; cursor:pointer; letter-spacing:0.5px; }
+.pill.on { background:#ffd24c; color:#3a2205; border-color:#ffd24c; }
+.pill:active { transform:scale(0.95); }
+
+/* ── BOTTOM BAR ── */
+.bottombar { position:absolute; left:50%; bottom:8px; transform:translateX(-50%); width:1300px; height:150px; background:url('Claws-and-Crumbs/ui/Rectangle_2.png') center/100% 100% no-repeat; display:flex; align-items:center; justify-content:space-between; padding:0 40px; }
+.bet-group { display:flex; align-items:center; gap:12px; }
+.bet-btn { width:40px; height:40px; border:none; cursor:pointer; background-size:contain; background-repeat:no-repeat; background-position:center; }
+.bet-btn.minus { background-image:url('Claws-and-Crumbs/ui/Minus_Normal.png'); }
+.bet-btn.plus { background-image:url('Claws-and-Crumbs/ui/Plus_Normal.png'); }
+.bet-btn:active { transform:scale(0.88); }
+.bet-readout { text-align:center; min-width:100px; }
+.bet-readout .lbl { color:#cbb8e0; font-size:11px; letter-spacing:2px; }
+.bet-readout .val { color:#fff; font-size:20px; font-weight:800; }
+
+.spin-wrap { position:relative; width:118px; height:118px; }
+#spin-btn { position:absolute; inset:0; border:none; border-radius:50%; background:url('Claws-and-Crumbs/ui/Ellipse_1.png') center/contain no-repeat; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+#spin-btn svg { width:44px; height:44px; }
+#spin-btn:active { transform:scale(0.94); }
+#spin-btn.spinning svg { animation:spin 1s linear infinite; }
+#spin-btn:disabled { opacity:0.55; cursor:default; }
+
+.money-group { display:flex; gap:14px; }
+.money-panel { width:190px; height:70px; background:url('Claws-and-Crumbs/ui/Rectangle_2_copy.png') center/100% 100% no-repeat; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.money-panel .lbl { color:#cbb8e0; font-size:10px; letter-spacing:2px; }
+.money-panel .val { color:#ffe9b0; font-size:18px; font-weight:800; }
+
+/* ── ROTATE PROMPT ── */
+#rotate-prompt { position:fixed; inset:0; background:#0d0714; z-index:998; display:none; flex-direction:column; align-items:center; justify-content:center; gap:16px; color:#ffe9b0; font-size:16px; text-align:center; padding:20px; }
+#rotate-prompt img { width:110px; height:110px; }
+@media (max-width:900px) and (orientation:portrait) { #rotate-prompt.active { display:flex; } }
+
+/* ── MODAL ── */
+#modal-overlay { position:fixed; inset:0; background:rgba(5,2,10,0.86); z-index:500; display:none; align-items:center; justify-content:center; }
+#modal-overlay.show { display:flex; }
+#modal-panel { width:min(640px,92vw); max-height:82vh; overflow-y:auto; background:#1c1128; border:2px solid #ffd24c; border-radius:16px; padding:26px 26px 30px; color:#eee0f5; }
+#modal-panel h2 { color:#ffd24c; margin-bottom:14px; font-size:22px; }
+#modal-panel h3 { color:#ff9ec4; margin:18px 0 8px; font-size:15px; }
+#modal-panel p { font-size:13px; line-height:1.6; color:#cbb8e0; margin-bottom:6px; }
+.pay-row { display:flex; align-items:center; gap:12px; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.08); }
+.pay-row img { width:44px; height:44px; object-fit:contain; }
+.pay-row .pn { flex:1; font-size:13px; font-weight:700; }
+.pay-row .pv { font-size:12px; color:#ffd24c; text-align:right; }
+#modal-close { position:absolute; top:14px; right:18px; background:none; border:none; color:#ffe9b0; font-size:26px; cursor:pointer; }
+.stat-row { display:flex; gap:18px; margin-bottom:10px; }
+.stat-row div { background:rgba(255,255,255,0.06); border-radius:10px; padding:8px 14px; font-size:12px; color:#ffe9b0; }
+
+/* ── CONFIRM DIALOG ── */
+#confirm-overlay { position:fixed; inset:0; background:rgba(5,2,10,0.86); z-index:600; display:none; align-items:center; justify-content:center; }
+#confirm-overlay.show { display:flex; }
+#confirm-panel { width:min(360px,88vw); background:#1c1128; border:2px solid #ffd24c; border-radius:16px; padding:24px; text-align:center; color:#eee0f5; }
+#confirm-panel p { font-size:15px; line-height:1.5; margin-bottom:20px; }
+#confirm-panel .row { display:flex; gap:12px; }
+#confirm-panel button { flex:1; border:none; border-radius:10px; padding:11px 0; font-size:14px; font-weight:800; cursor:pointer; }
+#confirm-yes { background:#ffd24c; color:#3a2205; }
+#confirm-no { background:rgba(255,255,255,0.1); color:#eee0f5; }
+#confirm-panel button:active { transform:scale(0.96); }
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="logo">Claws <span>&amp;</span> Crumbs</div>
+  <div class="spinner"></div>
+  <div class="pct" id="load-pct">LOADING 0%</div>
+</div>
+
+<div id="rotate-prompt">
+  <img src="Claws-and-Crumbs/ui/rotate-512.png" alt="Rotate device">
+  <div>Please rotate your device to landscape<br>to play Claws &amp; Crumbs.</div>
+</div>
+
+<div id="confirm-overlay">
+  <div id="confirm-panel">
+    <p id="confirm-text">Buy Free Spins?</p>
+    <div class="row">
+      <button id="confirm-no">CANCEL</button>
+      <button id="confirm-yes">CONFIRM</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-overlay">
+  <div id="modal-panel">
+    <button id="modal-close">&times;</button>
+    <h2>Claws &amp; Crumbs — Paytable &amp; Rules</h2>
+    <div class="stat-row">
+      <div>RTP 96.3%</div><div>Volatility: High</div><div>Max Win: 12,500x</div>
+    </div>
+    <p>5×5 grid, 19 fixed paylines. Left-to-right consecutive matches on a payline pay the amount shown, multiplied by your bet-per-line (total bet ÷ 19).</p>
+    <h3>Special symbols</h3>
+    <p><b>Wild Cat</b> substitutes for all paying symbols. When a Wild lands on a reel, it expands to fill the entire reel. Extra Wilds already on that reel become a multiplier applied to it. Land Wild Cats across the whole top row and the entire grid turns Wild for a monster win!</p>
+    <p><b>Scatter</b> pays anywhere on the grid and triggers Free Spins: 3 = 10 Spins, 4 = 15 Spins, 5 = 20 Spins. Extra Scatters during Free Spins add +5 Spins. During Free Spins, Wild Cats appear more often.</p>
+    <p><b>Buy Bonus</b> instantly triggers Free Spins for 100× your total bet.</p>
+    <h3>Symbol pays (3 / 4 / 5 of a kind)</h3>
+    <div id="pay-list"></div>
+    <p style="margin-top:14px;opacity:0.7">Demo for portfolio purposes only. No real-money play. ZinZin Studios — slot game art &amp; iGaming design.</p>
+  </div>
+</div>
+
+<div id="viewport">
+  <div id="shell">
+    <canvas id="pixi-canvas"></canvas>
+
+    <div class="ui-layer">
+      <div class="topbar">
+        <div class="title">Claws <span>&amp;</span> Crumbs</div>
+        <button class="icon-btn" id="menu-btn" aria-label="Paytable"></button>
+      </div>
+
+      <div class="feat-strip">
+        <button class="pill" id="turbo-btn">TURBO</button>
+        <button class="pill" id="auto-btn">AUTOPLAY</button>
+        <button class="pill" id="buy-btn">BUY BONUS</button>
+      </div>
+
+      <div class="bottombar">
+        <div class="bet-group">
+          <button class="bet-btn minus" id="bet-minus" aria-label="Decrease bet"></button>
+          <div class="bet-readout"><div class="lbl">TOTAL BET</div><div class="val" id="bet-val">1.00</div></div>
+          <button class="bet-btn plus" id="bet-plus" aria-label="Increase bet"></button>
+        </div>
+
+        <div class="spin-wrap">
+          <button id="spin-btn" aria-label="Spin">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#3a2205" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 4 20 12 6 20 6 4" fill="#3a2205" stroke="none"/></svg>
+          </button>
+        </div>
+
+        <div class="money-group">
+          <div class="money-panel"><div class="lbl">BALANCE</div><div class="val" id="balance-val">1000.00</div></div>
+          <div class="money-panel"><div class="lbl">WIN</div><div class="val" id="win-val">0.00</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================= CONFIG ============================= */
+const STAGE_W = 1480, STAGE_H = 900;
+const REELS = 5, ROWS = 5;
+const ASSET_BASE = 'Claws-and-Crumbs/';
+const MAX_WIN_X = 12500;
+
+const BET_LEVELS = [0.20,0.40,0.60,1.00,2.00,5.00,10.00,20.00,50.00,100.00];
+let betIdx = 3;
+let balance = 1000;
+let totalBet = BET_LEVELS[betIdx];
+
+const SYMS = [
+  { id:'wild',   label:'Wild Cat',     tier:'special', pays:[[3,2],[4,8],[5,25]],           w:{base:3,  fs:9} },
+  { id:'scatter',label:'Scatter',      tier:'special', pays:[[3,2],[4,8],[5,25]],           w:{base:2,  fs:2} },
+  { id:'ham',    label:'Ham Hock',     tier:'premium', pays:[[3,1],[4,3],[5,10]],           w:{base:5,  fs:5}, img:'symbols/ham.png' },
+  { id:'fish',   label:'Canned Fish',  tier:'premium', pays:[[3,0.8],[4,2.5],[5,8]],        w:{base:5,  fs:5}, img:'symbols/canned_fish.png' },
+  { id:'cheese', label:'Cheese',       tier:'mid',     pays:[[3,0.3],[4,1],[5,3]],          w:{base:8,  fs:8}, img:'symbols/cheese.png' },
+  { id:'jelly',  label:'Jelly',        tier:'mid',     pays:[[3,0.3],[4,1],[5,3]],          w:{base:8,  fs:8}, img:'symbols/jelly.png' },
+  { id:'bone',   label:'Fishbone',     tier:'mid',     pays:[[3,0.25],[4,0.8],[5,2.5]],     w:{base:8,  fs:8}, img:'symbols/fishbone.png' },
+  { id:'A',      label:'A',           tier:'low',     pays:[[3,0.2],[4,0.4],[5,0.75]],     w:{base:14, fs:14}, img:'symbols/a.png' },
+  { id:'K',      label:'K',           tier:'low',     pays:[[3,0.15],[4,0.3],[5,0.6]],      w:{base:14, fs:14}, img:'symbols/k.png' },
+  { id:'Q',      label:'Q',           tier:'low',     pays:[[3,0.15],[4,0.3],[5,0.6]],      w:{base:14, fs:14}, img:'symbols/q.png' },
+  { id:'J',      label:'J',           tier:'low',     pays:[[3,0.1],[4,0.25],[5,0.5]],      w:{base:14, fs:14}, img:'symbols/J.png' },
+  { id:'10',     label:'10',          tier:'low',     pays:[[3,0.1],[4,0.25],[5,0.5]],      w:{base:14, fs:14}, img:'symbols/10.png' },
+];
+const SYM_BY_ID = Object.fromEntries(SYMS.map(s=>[s.id,s]));
+
+// 19 fixed paylines — row index (0..4) per reel
+const LINES = [
+  [0,0,0,0,0],[1,1,1,1,1],[2,2,2,2,2],[3,3,3,3,3],[4,4,4,4,4],
+  [0,1,2,3,4],[4,3,2,1,0],[0,1,2,1,0],[4,3,2,3,4],[1,2,3,2,1],
+  [3,2,1,2,3],[0,0,1,2,2],[4,4,3,2,2],[1,0,0,0,1],[3,4,4,4,3],
+  [2,1,1,1,2],[2,3,3,3,2],[0,1,1,2,3],[4,3,3,2,1],
+];
+
+function payFor(sym, count){
+  const row = sym.pays.find(p=>p[0]===count) || sym.pays.filter(p=>p[0]<=count).sort((a,b)=>b[0]-a[0])[0];
+  return row ? row[1] : 0;
+}
+
+/* ============================= PIXI SETUP ============================= */
+const app = new PIXI.Application({ view: document.getElementById('pixi-canvas'), width: STAGE_W, height: STAGE_H, antialias:true, backgroundAlpha:0 });
+
+const FRAME = { w:860, h:644, x:(STAGE_W-860)/2, y:78 };
+const INNER = {
+  x: FRAME.x + FRAME.w*0.036,
+  y: FRAME.y + FRAME.h*0.067,
+  w: FRAME.w*(1-0.036-0.035),
+  h: FRAME.h*(1-0.067-0.044),
+};
+const CELL_W = INNER.w/REELS, CELL_H = INNER.h/ROWS;
+
+const bgSprite = new PIXI.Sprite();
+bgSprite.width = STAGE_W; bgSprite.height = STAGE_H;
+app.stage.addChild(bgSprite);
+
+const carpetSprite = new PIXI.Sprite();
+carpetSprite.anchor.set(0.5);
+carpetSprite.x = STAGE_W/2; carpetSprite.y = FRAME.y+FRAME.h-10;
+app.stage.addChild(carpetSprite);
+
+const frameSprite = new PIXI.Sprite();
+frameSprite.x = FRAME.x; frameSprite.y = FRAME.y; frameSprite.width = FRAME.w; frameSprite.height = FRAME.h;
+// drawn after reels so its border sits above the reel edges; window fill area matches INNER exactly so it never covers symbols
+
+app.stage.addChild(frameSprite);
+
+const reelsContainer = new PIXI.Container();
+reelsContainer.x = INNER.x; reelsContainer.y = INNER.y;
+const reelMask = new PIXI.Graphics();
+reelMask.beginFill(0xffffff).drawRect(INNER.x, INNER.y, INNER.w, INNER.h).endFill();
+reelsContainer.mask = reelMask;
+app.stage.addChild(reelsContainer);
+
+const lineFx = new PIXI.Graphics();
+app.stage.addChild(lineFx);
+
+const fsBanner = new PIXI.Container(); fsBanner.visible = false;
+app.stage.addChild(fsBanner);
+
+const winPopup = new PIXI.Container(); winPopup.visible = false; winPopup.eventMode='static';
+app.stage.addChild(winPopup);
+
+const multBadges = new PIXI.Container();
+app.stage.addChild(multBadges);
+
+/* ============================= PROCEDURAL TEXTURES (Wild / Scatter) ============================= */
+function buildWildTexture(){
+  const c = new PIXI.Container();
+  const g = new PIXI.Graphics();
+  g.beginFill(0x2a1a3a).drawRoundedRect(-100,-100,200,200,26).endFill();
+  g.lineStyle(6,0xffd24c,1).drawRoundedRect(-100,-100,200,200,26);
+  g.beginFill(0xffd24c).drawCircle(0,-18,70).endFill();
+  g.lineStyle(4,0xb5790e,1).drawCircle(0,-18,70);
+  // paw print
+  g.beginFill(0xb5790e);
+  g.drawEllipse(0,10,34,26);
+  const toe=[[-24,-32],[-9,-42],[9,-42],[24,-32]];
+  toe.forEach(([ox,oy])=>g.drawCircle(ox,oy,13));
+  g.endFill();
+  c.addChild(g);
+  const t = new PIXI.Text('WILD',{ fontFamily:'Arial Black,Arial', fontSize:30, fontWeight:'900', fill:0xffd24c, stroke:0x5c2e00, strokeThickness:6 });
+  t.anchor.set(0.5); t.y = 76;
+  c.addChild(t);
+  return app.renderer.generateTexture(c, { resolution:2 });
+}
+function buildScatterTexture(){
+  const c = new PIXI.Container();
+  const g = new PIXI.Graphics();
+  g.beginFill(0x3a1a42).drawRoundedRect(-100,-100,200,200,26).endFill();
+  g.lineStyle(6,0xb98cff,1).drawRoundedRect(-100,-100,200,200,26);
+  function star(cx,cy,r1,r2,pts){
+    g.beginFill(0xffd24c); g.lineStyle(3,0xb5790e,1);
+    let path=[];
+    for(let i=0;i<pts*2;i++){
+      const r = i%2===0? r1:r2;
+      const a = Math.PI*i/pts - Math.PI/2;
+      path.push(cx+Math.cos(a)*r, cy+Math.sin(a)*r);
+    }
+    g.drawPolygon(path); g.endFill();
+  }
+  star(0,-14,66,30,10);
+  g.beginFill(0xb5790e);
+  g.drawEllipse(0,4,22,16);
+  [[-16,-18],[-6,-24],[6,-24],[16,-18]].forEach(([ox,oy])=>g.drawCircle(ox,oy,8));
+  g.endFill();
+  c.addChild(g);
+  const t = new PIXI.Text('SCATTER',{ fontFamily:'Arial Black,Arial', fontSize:22, fontWeight:'900', fill:0xffd24c, stroke:0x4a1a52, strokeThickness:5 });
+  t.anchor.set(0.5); t.y = 78;
+  c.addChild(t);
+  return app.renderer.generateTexture(c, { resolution:2 });
+}
+
+/* ============================= ASSET LOADING ============================= */
+const IMG_ASSETS = {
+  bg_base: ASSET_BASE+'base_background.jpg',
+  bg_fs: ASSET_BASE+'freespin_background.jpg',
+  carpet: ASSET_BASE+'carpet.png',
+  frame: ASSET_BASE+'slot_reel_frame.png',
+  pop_win: ASSET_BASE+'popups/win.png',
+  pop_big: ASSET_BASE+'popups/big.png',
+  pop_super: ASSET_BASE+'popups/super.png',
+  pop_mega: ASSET_BASE+'popups/mega.png',
+  pop_grand: ASSET_BASE+'popups/grand.png',
+  burst_sm: ASSET_BASE+'popups/Asset_9.png',
+  burst_md: ASSET_BASE+'popups/Asset_8.png',
+  burst_lg: ASSET_BASE+'popups/Asset_7.png',
+  burst_xl: ASSET_BASE+'popups/Asset_6.png',
+  fs_text: ASSET_BASE+'popups/freespin_text.png',
+};
+SYMS.forEach(s=>{ if(s.img) IMG_ASSETS['sym_'+s.id] = ASSET_BASE+s.img; });
+
+const TEX = {};
+let loadedCount = 0;
+const totalToLoad = Object.keys(IMG_ASSETS).length;
+
+function loadAll(cb){
+  const entries = Object.entries(IMG_ASSETS);
+  entries.forEach(([key,url])=>{
+    const base = PIXI.BaseTexture.from(url);
+    if (base.valid) { onOne(key, base); } else {
+      base.once('loaded', ()=>onOne(key, base));
+      base.once('error', ()=>onOne(key, base));
+    }
+  });
+  function onOne(key, base){
+    TEX[key] = new PIXI.Texture(base);
+    loadedCount++;
+    const pct = Math.round(loadedCount/totalToLoad*100);
+    const pctEl = document.getElementById('load-pct');
+    if (pctEl) pctEl.textContent = 'LOADING '+pct+'%';
+    if (loadedCount>=totalToLoad) cb();
+  }
+}
+
+/* ============================= GAME STATE ============================= */
+let grid = []; // grid[reel][row] = symbol id
+let colMult = [1,1,1,1,1]; // expansion multiplier per reel
+let inFreeSpins = false;
+let freeSpinsLeft = 0;
+let freeSpinsTotalWin = 0;
+let turbo = false;
+let autoplay = false;
+let autoplayLeft = 0;
+let spinning = false;
+
+const reelContainers = [];
+
+function weightedPick(mode){
+  const pool = SYMS.map(s=>({s, w: mode==='fs'? s.w.fs : s.w.base}));
+  const total = pool.reduce((a,p)=>a+p.w,0);
+  let r = Math.random()*total;
+  for(const p of pool){ r-=p.w; if(r<=0) return p.s.id; }
+  return pool[pool.length-1].s.id;
+}
+
+function makeSymbolSprite(id){
+  const tex = id==='wild' ? TEX.wildTex : id==='scatter' ? TEX.scatterTex : TEX['sym_'+id];
+  const spr = new PIXI.Sprite(tex);
+  spr.anchor.set(0.5);
+  const pad = 14;
+  const maxW = CELL_W-pad*2, maxH = CELL_H-pad*2;
+  const scale = Math.min(maxW/tex.width, maxH/tex.height);
+  spr.scale.set(scale);
+  spr.symId = id;
+  return spr;
+}
+
+function buildReels(){
+  for(let r=0;r<REELS;r++){
+    const col = new PIXI.Container();
+    col.x = r*CELL_W;
+    reelsContainer.addChild(col);
+    reelContainers.push(col);
+  }
+}
+
+function fillStatic(initialGrid){
+  reelContainers.forEach((col,r)=>{
+    col.removeChildren();
+    col.y = 0;
+    for(let row=0; row<ROWS; row++){
+      const spr = makeSymbolSprite(initialGrid[r][row]);
+      spr.x = CELL_W/2; spr.y = row*CELL_H + CELL_H/2;
+      col.addChild(spr);
+    }
+  });
+}
+
+/* ============================= SOUND (procedural WebAudio) ============================= */
+const Sound = { ctx:null };
+function ensureAudio(){ if(!Sound.ctx) Sound.ctx = new (window.AudioContext||window.webkitAudioContext)(); }
+function tone({freq=440,to=null,dur=0.18,type='sine',vol=0.18,delay=0}={}){
+  ensureAudio();
+  const t0 = Sound.ctx.currentTime+delay;
+  const osc = Sound.ctx.createOscillator(); const gain = Sound.ctx.createGain();
+  osc.type=type; osc.frequency.setValueAtTime(freq,t0);
+  if(to) osc.frequency.exponentialRampToValueAtTime(to, t0+dur);
+  gain.gain.setValueAtTime(vol,t0);
+  gain.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+  osc.connect(gain).connect(Sound.ctx.destination);
+  osc.start(t0); osc.stop(t0+dur+0.02);
+}
+function noiseBurst({dur=0.12,vol=0.15,delay=0}={}){
+  ensureAudio();
+  const t0 = Sound.ctx.currentTime+delay;
+  const buf = Sound.ctx.createBuffer(1, Sound.ctx.sampleRate*dur, Sound.ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for(let i=0;i<data.length;i++) data[i]=(Math.random()*2-1)*(1-i/data.length);
+  const src = Sound.ctx.createBufferSource(); src.buffer=buf;
+  const gain = Sound.ctx.createGain(); gain.gain.setValueAtTime(vol,t0);
+  src.connect(gain).connect(Sound.ctx.destination);
+  src.start(t0);
+}
+const SFX = {
+  click: ()=>tone({freq:700,to:500,dur:0.06,type:'triangle',vol:0.12}),
+  spin: ()=>noiseBurst({dur:0.2,vol:0.14}),
+  stop: (i)=>tone({freq:220+i*20,to:140,dur:0.09,type:'square',vol:0.14,delay:0}),
+  win: ()=>{ [523,659,784].forEach((f,i)=>tone({freq:f,dur:0.2,type:'sine',vol:0.16,delay:i*0.09})); },
+  bigwin: ()=>{ [392,523,659,784,988].forEach((f,i)=>tone({freq:f,dur:0.3,type:'triangle',vol:0.18,delay:i*0.1})); },
+  expand: ()=>tone({freq:110,to:60,dur:0.35,type:'sawtooth',vol:0.2}),
+  fanfare: ()=>{ [523,659,784,1046,1318].forEach((f,i)=>tone({freq:f,dur:0.28,type:'square',vol:0.15,delay:i*0.12})); },
+};
+
+/* ============================= SPIN LOGIC ============================= */
+function genGrid(mode){
+  const g = [];
+  for(let r=0;r<REELS;r++){
+    g.push([]);
+    for(let row=0; row<ROWS; row++) g[r].push(weightedPick(mode));
+  }
+  return g;
+}
+
+function expandWilds(g){
+  const mult = [1,1,1,1,1];
+  const expanded = g.map(col=>col.slice());
+  for(let r=0;r<REELS;r++){
+    const wildCount = g[r].filter(id=>id==='wild').length;
+    if(wildCount>0){
+      for(let row=0; row<ROWS; row++) expanded[r][row] = 'wild';
+      if(wildCount>1){
+        const table = [2,3,5];
+        let m = 1;
+        for(let k=1;k<wildCount;k++) m *= table[Math.min(k-1,table.length-1)];
+        mult[r] = m;
+      }
+    }
+  }
+  return { expanded, mult };
+}
+
+function evalLines(g, mult, bet){
+  let total = 0;
+  const winningLines = [];
+  const betPerLine = bet/LINES.length;
+  LINES.forEach((line, li)=>{
+    const seq = line.map((row,r)=>g[r][row]);
+    let base = seq[0];
+    if(base==='scatter') return;
+    if(base==='wild'){
+      const firstNonWild = seq.find(s=>s!=='wild');
+      base = firstNonWild || 'wild';
+    }
+    let count=1;
+    for(let i=1;i<seq.length;i++){
+      if(seq[i]===base || seq[i]==='wild') count++; else break;
+    }
+    if(count<3) return;
+    const sym = SYM_BY_ID[base];
+    const payMult = payFor(sym, count);
+    if(!payMult) return;
+    let lineMult = 1;
+    for(let i=0;i<count;i++) lineMult *= mult[i]||1;
+    const win = betPerLine*payMult*lineMult;
+    if(win>0){ total += win; winningLines.push({line, li, count}); }
+  });
+  return { total, winningLines };
+}
+
+function scatterPay(g, bet){
+  let cnt=0; g.forEach(col=>col.forEach(id=>{ if(id==='scatter') cnt++; }));
+  if(cnt<3) return { count:cnt, win:0 };
+  const sym = SYM_BY_ID.scatter;
+  return { count:cnt, win: bet*payFor(sym,Math.min(cnt,5)) };
+}
+
+function drawLineFx(winningLines){
+  lineFx.clear();
+  winningLines.slice(0,6).forEach(({line})=>{
+    lineFx.lineStyle(4, 0xffd24c, 0.85);
+    line.forEach((row,r)=>{
+      const x = INNER.x + r*CELL_W + CELL_W/2, y = INNER.y + row*CELL_H + CELL_H/2;
+      if(r===0) lineFx.moveTo(x,y); else lineFx.lineTo(x,y);
+    });
+  });
+  setTimeout(()=>lineFx.clear(), 1200);
+}
+
+function showMultBadges(mult){
+  multBadges.removeChildren();
+  mult.forEach((m,r)=>{
+    if(m>1){
+      const t = new PIXI.Text('×'+m, { fontFamily:'Arial Black,Arial', fontSize:26, fontWeight:'900', fill:0xffe9b0, stroke:0x5c1a2e, strokeThickness:5 });
+      t.anchor.set(0.5);
+      t.x = INNER.x + r*CELL_W + CELL_W/2;
+      t.y = INNER.y - 22;
+      multBadges.addChild(t);
+    }
+  });
+  setTimeout(()=>multBadges.removeChildren(), 1600);
+}
+
+function popupTierFor(x){
+  if(x>=100) return {tierWord:'pop_grand', burst:'burst_xl', label:'GRAND WIN'};
+  if(x>=50) return {tierWord:'pop_mega', burst:'burst_lg', label:'MEGA WIN'};
+  if(x>=25) return {tierWord:'pop_super', burst:'burst_md', label:'SUPER WIN'};
+  if(x>=10) return {tierWord:'pop_big', burst:'burst_sm', label:'BIG WIN'};
+  return {tierWord:null, burst:'burst_sm', label:'WIN'};
+}
+
+function showWinPopup(amount, betRef, done){
+  const xBet = amount/betRef;
+  const tier = popupTierFor(xBet);
+  winPopup.removeChildren();
+  const dim = new PIXI.Graphics(); dim.beginFill(0x000000,0.55).drawRect(0,0,STAGE_W,STAGE_H).endFill();
+  dim.eventMode='static';
+  winPopup.addChild(dim);
+  const burst = new PIXI.Sprite(TEX[tier.burst]); burst.anchor.set(0.5); burst.x=STAGE_W/2; burst.y=STAGE_H/2-20;
+  burst.width = 620; burst.height = 620*(TEX[tier.burst].height/TEX[tier.burst].width);
+  winPopup.addChild(burst);
+
+  // stack the tier word (BIG/SUPER/MEGA/GRAND) above the WIN word when present;
+  // plain "WIN" tier just shows the WIN word alone, centered
+  const winImg = new PIXI.Sprite(TEX.pop_win); winImg.anchor.set(0.5); winImg.x=STAGE_W/2;
+  if(tier.tierWord){
+    const tierImg = new PIXI.Sprite(TEX[tier.tierWord]); tierImg.anchor.set(0.5); tierImg.x=STAGE_W/2;
+    const ts = Math.min(380/tierImg.texture.width, 170/tierImg.texture.height); tierImg.scale.set(ts);
+    tierImg.y = STAGE_H/2 - 120;
+    winImg.y = STAGE_H/2 - 10;
+    const ws = Math.min(340/winImg.texture.width, 150/winImg.texture.height); winImg.scale.set(ws);
+    winPopup.addChild(tierImg, winImg);
+  } else {
+    winImg.y = STAGE_H/2 - 50;
+    const ws = Math.min(420/winImg.texture.width, 190/winImg.texture.height); winImg.scale.set(ws);
+    winPopup.addChild(winImg);
+  }
+
+  const amt = new PIXI.Text('$'+amount.toFixed(2), { fontFamily:'Arial Black,Arial', fontSize:44, fontWeight:'900', fill:0xffffff, stroke:0x000000, strokeThickness:6 });
+  amt.anchor.set(0.5); amt.x=STAGE_W/2; amt.y=STAGE_H/2+100;
+  winPopup.addChild(amt);
+  winPopup.visible = true;
+  burst.rotation = 0;
+  app.ticker.add(spinBurst);
+  function spinBurst(){ burst.rotation += 0.004; }
+  (xBet>=25? SFX.bigwin: SFX.win)();
+  let count = 0; const steps=30;
+  const timer = setInterval(()=>{
+    count++; amt.text = '$'+(amount*count/steps).toFixed(2);
+    if(count>=steps) clearInterval(timer);
+  }, 25);
+  const dismiss = ()=>{ app.ticker.remove(spinBurst); winPopup.visible=false; winPopup.removeChildren(); done && done(); };
+  dim.on('pointertap', dismiss);
+  const auto = Math.min(4500, 1800+xBet*20);
+  setTimeout(dismiss, auto);
+}
+
+function showFsBanner(text, sub, cb){
+  fsBanner.removeChildren();
+  const dim = new PIXI.Graphics(); dim.beginFill(0x000000,0.6).drawRect(0,0,STAGE_W,STAGE_H).endFill();
+  fsBanner.addChild(dim);
+  const img = new PIXI.Sprite(TEX.fs_text); img.anchor.set(0.5); img.x=STAGE_W/2; img.y=STAGE_H/2-40;
+  const s = Math.min(560/img.texture.width, 200/img.texture.height); img.scale.set(s);
+  fsBanner.addChild(img);
+  const t = new PIXI.Text(text, { fontFamily:'Arial Black,Arial', fontSize:30, fontWeight:'900', fill:0xffd24c, stroke:0x3a1a10, strokeThickness:5 });
+  t.anchor.set(0.5); t.x=STAGE_W/2; t.y=STAGE_H/2+70;
+  fsBanner.addChild(t);
+  if(sub){
+    const st = new PIXI.Text(sub, { fontFamily:'Arial', fontSize:16, fill:0xe9d9f5 });
+    st.anchor.set(0.5); st.x=STAGE_W/2; st.y=STAGE_H/2+108;
+    fsBanner.addChild(st);
+  }
+  fsBanner.visible = true;
+  SFX.fanfare();
+  setTimeout(()=>{ fsBanner.visible=false; cb && cb(); }, 1900);
+}
+
+/* ── reel spin animation ── */
+function easeOutCubic(t){ return 1-Math.pow(1-t,3); }
+
+function animateSpin(finalGrid, onDone){
+  const stagger = turbo? 60 : 140;
+  const dur = turbo? 380 : 720;
+  const BUFFER = 10;
+  let doneCount = 0;
+
+  reelContainers.forEach((col, r)=>{
+    col.removeChildren();
+    const stripLen = BUFFER+ROWS;
+    const ids = [];
+    for(let i=0;i<BUFFER;i++) ids.push(weightedPick(inFreeSpins?'fs':'base'));
+    for(let i=0;i<ROWS;i++) ids.push(finalGrid[r][i]);
+    ids.forEach((id,i)=>{
+      const spr = makeSymbolSprite(id);
+      spr.x = CELL_W/2; spr.y = i*CELL_H + CELL_H/2;
+      col.addChild(spr);
+    });
+    col.y = -(BUFFER*CELL_H);
+
+    const startDelay = r*stagger;
+    const t0 = performance.now()+startDelay;
+    const endY = 0;
+    const startY = col.y;
+    SFX.spin();
+    function step(now){
+      if(now<t0){ requestAnimationFrame(step); return; }
+      const p = Math.min(1, (now-t0)/dur);
+      col.y = startY + (endY-startY)*easeOutCubic(p);
+      if(p<1) requestAnimationFrame(step);
+      else {
+        col.y = 0;
+        SFX.stop(r);
+        doneCount++;
+        if(doneCount===REELS) onDone();
+      }
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+function setBetUI(){
+  document.getElementById('bet-val').textContent = totalBet.toFixed(2);
+  document.getElementById('balance-val').textContent = balance.toFixed(2);
+}
+function setWinUI(v){ document.getElementById('win-val').textContent = v.toFixed(2); }
+
+function buildPaytableUI(){
+  const list = document.getElementById('pay-list');
+  list.innerHTML = '';
+  const order = ['wild','scatter','ham','fish','cheese','jelly','bone','A','K','Q','J','10'];
+  order.forEach(id=>{
+    const s = SYM_BY_ID[id];
+    const row = document.createElement('div'); row.className='pay-row';
+    row.innerHTML = `<div class="pn">${s.label}</div><div class="pv">${s.pays.map(p=>p[0]+':'+p[1]+'x').join(' · ')}</div>`;
+    let imgSrc = s.img ? ASSET_BASE+s.img : null;
+    if(!imgSrc && (id==='wild' || id==='scatter')){
+      const tex = id==='wild'? TEX.wildTex : TEX.scatterTex;
+      imgSrc = app.renderer.extract.canvas(new PIXI.Sprite(tex)).toDataURL();
+    }
+    if(imgSrc){
+      const im = document.createElement('img'); im.src = imgSrc;
+      row.prepend(im);
+    }
+    list.appendChild(row);
+  });
+}
+
+/* ============================= SPIN FLOW ============================= */
+async function doSpin(){
+  if(spinning) return;
+  if(!inFreeSpins){
+    if(balance<totalBet){ return; }
+    balance -= totalBet; setBetUI();
+  }
+  spinning = true;
+  document.getElementById('spin-btn').classList.add('spinning');
+  document.getElementById('spin-btn').disabled = true;
+  setWinUI(0);
+
+  const bet = inFreeSpins? BET_LEVELS[betIdx] : totalBet;
+  const mode = inFreeSpins? 'fs':'base';
+  const raw = genGrid(mode);
+
+  animateSpin(raw, async ()=>{
+    const { expanded, mult } = expandWilds(raw);
+    const allReelsWild = expanded.every(col=>col[0]==='wild');
+    if(mult.some(m=>m>1)) { showMultBadges(mult); SFX.expand(); }
+    fillStatic(expanded);
+
+    const { total: lineWin, winningLines } = evalLines(expanded, mult, bet);
+    const sc = scatterPay(raw, bet);
+    let spinWin = Math.min(lineWin + sc.win, bet*MAX_WIN_X);
+
+    if(allReelsWild){
+      showFsBanner('MEGA WILD SCREEN!', null, ()=>{});
+    }
+
+    if(winningLines.length) drawLineFx(winningLines);
+
+    if(inFreeSpins){
+      freeSpinsTotalWin += spinWin;
+      freeSpinsTotalWin = Math.min(freeSpinsTotalWin, bet*MAX_WIN_X);
+    } else {
+      balance += spinWin;
+    }
+    setWinUI(spinWin);
+    setBetUI();
+
+    const finishSpin = async ()=>{
+      if(sc.count>=3){
+        const add = sc.count>=5?20: sc.count===4?15:10;
+        if(inFreeSpins){
+          freeSpinsLeft += add;
+          showFsBanner('RETRIGGER! +'+add+' SPINS', freeSpinsLeft+' spins remaining', afterAll);
+        } else {
+          inFreeSpins = true; freeSpinsLeft = add; freeSpinsTotalWin = 0;
+          bgSprite.texture = TEX.bg_fs;
+          showFsBanner(add+' FREE SPINS!', 'Increased Wild frequency', afterAll);
+        }
+      } else afterAll();
+
+      async function afterAll(){
+        if(inFreeSpins){
+          if(freeSpinsLeft>0){
+            freeSpinsLeft--;
+            spinning = false;
+            setTimeout(()=>doSpin(), turbo?250:600);
+            return;
+          } else {
+            const totalFs = freeSpinsTotalWin;
+            inFreeSpins = false;
+            bgSprite.texture = TEX.bg_base;
+            balance += totalFs;
+            setBetUI();
+            if(totalFs>0){
+              showWinPopup(totalFs, bet, endSpin);
+              return;
+            }
+          }
+        }
+        endSpin();
+      }
+    };
+
+    if(spinWin>0 && !inFreeSpins){
+      showWinPopup(spinWin, bet, finishSpin);
+    } else if(spinWin>0 && inFreeSpins){
+      setTimeout(finishSpin, 500);
+    } else {
+      finishSpin();
+    }
+  });
+
+  function endSpin(){
+    spinning = false;
+    document.getElementById('spin-btn').classList.remove('spinning');
+    document.getElementById('spin-btn').disabled = false;
+    if(autoplay && autoplayLeft>0){
+      autoplayLeft--;
+      if(autoplayLeft===0) setAutoplay(false);
+      setTimeout(()=>doSpin(), turbo?200:500);
+    }
+  }
+}
+
+/* ============================= UI WIRING ============================= */
+function setAutoplay(on){
+  autoplay = on;
+  document.getElementById('auto-btn').classList.toggle('on', on);
+  if(on){ autoplayLeft = 50; if(!spinning) doSpin(); }
+}
+
+document.getElementById('bet-minus').addEventListener('click', ()=>{
+  if(spinning) return; SFX.click();
+  betIdx = Math.max(0, betIdx-1); totalBet = BET_LEVELS[betIdx]; setBetUI();
+});
+document.getElementById('bet-plus').addEventListener('click', ()=>{
+  if(spinning) return; SFX.click();
+  betIdx = Math.min(BET_LEVELS.length-1, betIdx+1); totalBet = BET_LEVELS[betIdx]; setBetUI();
+});
+document.getElementById('spin-btn').addEventListener('click', ()=>{ SFX.click(); doSpin(); });
+document.getElementById('turbo-btn').addEventListener('click', (e)=>{
+  turbo = !turbo; e.target.classList.toggle('on', turbo); SFX.click();
+});
+document.getElementById('auto-btn').addEventListener('click', ()=>{ SFX.click(); setAutoplay(!autoplay); });
+function askConfirm(text, onYes){
+  document.getElementById('confirm-text').textContent = text;
+  document.getElementById('confirm-overlay').classList.add('show');
+  const yes = document.getElementById('confirm-yes'), no = document.getElementById('confirm-no');
+  const cleanup = ()=>{ document.getElementById('confirm-overlay').classList.remove('show'); yes.onclick=null; no.onclick=null; };
+  yes.onclick = ()=>{ cleanup(); onYes(); };
+  no.onclick = ()=>{ cleanup(); };
+}
+
+document.getElementById('buy-btn').addEventListener('click', ()=>{
+  if(spinning || inFreeSpins) return;
+  const cost = totalBet*100;
+  if(balance<cost) return;
+  SFX.click();
+  askConfirm('Buy Free Spins for $'+cost.toFixed(2)+'?', ()=>{
+    balance -= cost; setBetUI();
+    inFreeSpins = true; freeSpinsLeft = 10; freeSpinsTotalWin = 0;
+    bgSprite.texture = TEX.bg_fs;
+    showFsBanner('10 FREE SPINS!', 'Bonus purchased', ()=>doSpin());
+  });
+});
+document.getElementById('menu-btn').addEventListener('click', ()=>{
+  document.getElementById('modal-overlay').classList.add('show');
+});
+document.getElementById('modal-close').addEventListener('click', ()=>{
+  document.getElementById('modal-overlay').classList.remove('show');
+});
+document.getElementById('modal-overlay').addEventListener('click', (e)=>{
+  if(e.target.id==='modal-overlay') e.currentTarget.classList.remove('show');
+});
+
+/* ============================= RESPONSIVE SCALE ============================= */
+function updateScale(){
+  const scale = Math.min(window.innerWidth/STAGE_W, window.innerHeight/STAGE_H);
+  document.getElementById('shell').style.transform = 'scale('+scale+')';
+  const portrait = window.innerWidth < 900 && window.innerHeight > window.innerWidth;
+  document.getElementById('rotate-prompt').classList.toggle('active', portrait);
+}
+window.addEventListener('resize', updateScale);
+
+/* ============================= BOOT ============================= */
+loadAll(()=>{
+  TEX.wildTex = buildWildTexture();
+  TEX.scatterTex = buildScatterTexture();
+
+  bgSprite.texture = TEX.bg_base;
+  carpetSprite.texture = TEX.carpet;
+  carpetSprite.width = 620; carpetSprite.height = 620*(TEX.carpet.height/TEX.carpet.width);
+  frameSprite.texture = TEX.frame;
+
+  buildReels();
+  const initial = genGrid('base');
+  fillStatic(initial);
+
+  buildPaytableUI();
+  setBetUI(); setWinUI(0);
+  updateScale();
+
+  document.getElementById('loading').classList.add('hidden');
+});
+</script>
+</body>
+</html>
