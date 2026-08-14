@@ -1,82 +1,134 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://zinzinstudios.com/</loc>
-    <lastmod>2026-07-09</lastmod>
+    <lastmod>2026-08-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://zinzinstudios.com/banner-poster.jpg</image:loc>
+      <image:title>ZinZin Studios — Slot Game &amp; iGaming Art Studio</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://zinzinstudios.com/games/bullet-hole/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://zinzinstudios.com/assets/bullet_hole.jpg</image:loc>
+      <image:title>Bullet Hole — slot game art by ZinZin Studios</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://zinzinstudios.com/games/saga-of-valhalla/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://zinzinstudios.com/assets/saga_of_valhalla.jpg</image:loc>
+      <image:title>Saga of Valhalla — slot game art by ZinZin Studios</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://zinzinstudios.com/games/bakery-bonanza/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://zinzinstudios.com/assets/bakery-bonanza.jpg</image:loc>
+      <image:title>Bakery Bonanza — slot game art by ZinZin Studios</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://zinzinstudios.com/games/blackhearts-booty/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://zinzinstudios.com/assets/blackhearts-booty.jpg</image:loc>
+      <image:title>Blackheart's Booty — slot game art by ZinZin Studios</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://zinzinstudios.com/games/quack-rush/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://zinzinstudios.com/assets/quack_rush.png</image:loc>
+      <image:title>Quack Rush — slot game art by ZinZin Studios</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://zinzinstudios.com/games/crystal-plinko/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://zinzinstudios.com/assets/crystal-plinko.jpg</image:loc>
+      <image:title>Crystal Plinko — slot game art by ZinZin Studios</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://zinzinstudios.com/games/altitude-x/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://zinzinstudios.com/assets/altitude-x.jpg</image:loc>
+      <image:title>Altitude X — slot game art by ZinZin Studios</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://zinzinstudios.com/games/claws-and-crumbs/</loc>
     <lastmod>2026-07-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://zinzinstudios.com/assets/claws-and-crumbs.jpg</image:loc>
+      <image:title>Claws and Crumbs — slot game art by ZinZin Studios</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://zinzinstudios.com/games/arena-of-blood/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://zinzinstudios.com/assets/arena-of-blood-colosseum.jpg</image:loc>
+      <image:title>Arena Of Blood Colosseum — slot game art by ZinZin Studios</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://zinzinstudios.com/games/nordic-raiders/</loc>
     <lastmod>2026-08-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://zinzinstudios.com/assets/nordic-raiders.png</image:loc>
+      <image:title>Nordic Raiders — slot game art by ZinZin Studios</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://zinzinstudios.com/games/poseidon-fortunes/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://zinzinstudios.com/assets/poseidon-fortunes.jpg</image:loc>
+      <image:title>Poseidon Fortunes — slot game art by ZinZin Studios</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://zinzinstudios.com/games/book-of-amon/</loc>
     <lastmod>2026-07-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://zinzinstudios.com/assets/book-of-amon.png</image:loc>
+      <image:title>Book of Amon — slot game art by ZinZin Studios</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://zinzinstudios.com/bullet_hole/</loc>
