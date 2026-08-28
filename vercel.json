@@ -6,7 +6,8 @@
     { "source": "/claws-and-crumbs", "destination": "/claws-and-crumbs.html" },
     { "source": "/blackhearts-booty", "destination": "/blackhearts-booty.html" },
     { "source": "/arena-of-blood-colosseum", "destination": "/arena-of-blood-colosseum.html" },
-    { "source": "/nordic-raiders", "destination": "/nordic-raiders.html" }
+    { "source": "/nordic-raiders", "destination": "/nordic-raiders.html" },
+    { "source": "/hit-me-goblin", "destination": "/hit-me-goblin.html" }
   ],
   "redirects": [
     { "source": "/saga_of_valhalla", "destination": "/saga_of_valhalla/", "permanent": true },
