@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Hit Me, Goblin! — ZinZin Studio</title>
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { width:100%; height:100%; background:#07090f; overflow:hidden; font-family:'Segoe UI',Roboto,Arial,sans-serif; }
+  #wrap { width:100vw; height:100vh; height:100dvh; position:relative;
+    background:#07090f url('/HitMeGoblin/bg.jpg') center center / cover no-repeat; }
+
+  /* ── TOP BAR ── */
+  /* Floats OVER the full-bleed stage (not a sibling row squeezing it) — same
+     layered architecture as the reference game, so the scene renders behind
+     the translucent bars instead of being cropped by them. */
+  #topbar { position:absolute; top:0; left:0; right:0; display:flex; align-items:center; justify-content:space-between; padding:10px 14px; z-index:20; width:100%; max-width:1900px; margin:0 auto; }
+  .pill { display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.1); border-radius:100px; padding:6px 16px 6px 6px; }
+  .coin { width:24px; height:24px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #ffe98a, #f7b733 60%, #c8860a); border:1.5px solid rgba(0,0,0,0.25); flex-shrink:0; }
+  #balanceVal { color:#fff; font-size:14px; font-weight:600; white-space:nowrap; }
+  #topRightBtns { display:flex; gap:8px; }
+  .iconbtn { width:38px; height:38px; border-radius:50%; background:#fff; border:none; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:800; color:#0a0f1a; cursor:pointer; }
+  .iconbtn.muted { color:#0a0f1a; }
+
+  /* ── STAGE ── */
+  /* Fills the ENTIRE screen — the crate's whole asset renders at full size,
+     un-cropped; the HUD bars float on top of it (see #topbar/#hud), so the
+     lower part of the crate is genuinely visible behind/through them. */
+  #stageArea { position:absolute; inset:0; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  #stageArea canvas { display:block; }
+
+  /* Floating toast on stage */
+  #toast { position:absolute; left:50%; top:14%; transform:translate(-50%,-10px); background:rgba(7,9,15,0.85); border:1px solid rgba(255,255,255,0.12); color:#fff; padding:10px 22px; border-radius:14px; font-size:15px; font-weight:700; letter-spacing:.2px; opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; z-index:15; text-align:center; white-space:nowrap; }
+  #toast.show { opacity:1; transform:translate(-50%,0); }
+  #toast.win { color:#a3e635; }
+  #toast.lose { color:#fb7185; }
+
+  /* Big centered "thrown at the camera" crap splat on a miss */
+  #crapOverlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:35; opacity:0; will-change:transform,opacity; }
+  #crapOverlay img { width:min(48vw,560px); max-width:90vw; filter:drop-shadow(0 16px 34px rgba(0,0,0,0.55)); }
+
+  /* ── INTRO OVERLAY ── */
+  #introOverlay { position:absolute; inset:0; background:rgba(4,6,10,0.92); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:40; gap:22px; padding:24px; text-align:center; }
+  #introOverlay img { max-width:min(78vw,420px); filter:drop-shadow(0 10px 30px rgba(0,0,0,0.5)); }
+  #introOverlay p { color:rgba(255,255,255,0.65); font-size:14px; max-width:320px; line-height:1.5; }
+  #playBtn { background:#fde047; color:#1a1400; border:none; padding:16px 46px; border-radius:100px; font-size:18px; font-weight:800; cursor:pointer; box-shadow:0 8px 22px rgba(253,224,71,0.25); }
+  #playBtn:active { transform:scale(0.97); }
+
+  /* ── BOTTOM HUD ── */
+  #hud { position:absolute; bottom:0; left:0; right:0; padding:10px 14px calc(14px + env(safe-area-inset-bottom)); display:flex; flex-direction:column; gap:10px; z-index:20; width:100%; max-width:1900px; margin:0 auto; box-sizing:border-box; }
+  #statusRow { text-align:center; font-size:13px; font-weight:700; color:rgba(255,255,255,0.55); min-height:16px; letter-spacing:.2px; }
+  #statusRow b { color:#fde047; }
+  #controlsRow { display:flex; align-items:center; gap:10px; }
+
+  .ctrlSlot { flex:1 1 0; min-width:0; position:relative; }
+
+  #diffBtn { width:100%; height:50px; border-radius:100px; border:none; background:rgba(3,7,18,0.35); color:#fff; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; }
+  #diffBtn .dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+  #diffMenu { position:absolute; bottom:58px; left:0; right:0; background:#12151e; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:6px; display:none; flex-direction:column; gap:4px; box-shadow:0 12px 30px rgba(0,0,0,0.45); z-index:30; }
+  #diffMenu.open { display:flex; }
+  #diffMenu button { border:none; border-radius:10px; padding:10px 12px; font-size:13px; font-weight:700; text-align:left; cursor:pointer; }
+
+  #collectBtn { width:100%; height:50px; border-radius:100px; border:none; background:#16a34a; color:#fff; font-size:13px; font-weight:800; display:none; flex-direction:column; align-items:center; justify-content:center; line-height:1.15; cursor:pointer; }
+  #collectBtn span { font-size:10px; font-weight:700; opacity:0.85; text-transform:uppercase; letter-spacing:.4px; }
+  #collectBtn.show { display:flex; }
+  #diffBtn.hide, #smashBtnWrap.hide { display:none; }
+
+  #smashBtnWrap { flex:0 0 auto; }
+  #smashBtn { width:112px; height:88px; border-radius:100px; border:none; background:#fde047; color:#1a1400; font-size:18px; font-weight:800; cursor:pointer; box-shadow:0 8px 18px rgba(253,224,71,0.22); transition:transform .1s, filter .15s; }
+  #smashBtn:active { transform:scale(0.96); }
+  #smashBtn:disabled { filter:grayscale(0.6) brightness(0.7); cursor:default; }
+
+  #betStepper { width:100%; height:50px; border-radius:100px; background:rgba(3,7,18,0.35); display:flex; align-items:center; overflow:hidden; }
+  #betStepper button { flex:0 0 40px; height:50px; background:transparent; border:none; color:#fff; font-size:18px; font-weight:800; cursor:pointer; }
+  #betStepper button:disabled { opacity:0.35; cursor:default; }
+  #betVal { flex:1; text-align:center; color:#fff; font-size:14px; font-weight:700; }
+
+  .ctrlLabel { text-align:center; font-size:10px; font-weight:800; letter-spacing:.6px; color:rgba(255,255,255,0.4); text-transform:uppercase; margin-top:5px; }
+
+  @media (max-width:380px){
+    #smashBtn{ width:92px; height:76px; font-size:15px; }
+    .iconbtn{ width:34px; height:34px; }
+  }
+</style>
+</head>
+<body>
+<div id="wrap">
+
+  <div id="topbar">
+    <div class="pill"><div class="coin"></div><span id="balanceVal">1,000.00 FUN</span></div>
+    <div id="topRightBtns">
+      <button class="iconbtn" id="muteBtn" title="Sound">
+        <svg id="iconSoundOn" viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16.3 8.7a5 5 0 0 1 0 6.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18.9 6.2a9 9 0 0 1 0 11.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.55"/></svg>
+        <svg id="iconSoundOff" viewBox="0 0 24 24" width="18" height="18" fill="none" style="display:none"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M15.5 9.5l5 5M20.5 9.5l-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <button class="iconbtn" id="homeBtn" title="Exit">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="stageArea">
+    <div id="toast"></div>
+    <div id="crapOverlay"><img src="/HitMeGoblin/crap.png" alt=""></div>
+  </div>
+
+  <div id="hud">
+    <div id="statusRow">Pick a difficulty and hit SMASH!</div>
+    <div id="controlsRow">
+      <div class="ctrlSlot">
+        <button id="diffBtn"><span class="dot" style="background:#a3e635"></span><span id="diffLabel">Easy</span> ▾</button>
+        <button id="collectBtn"><span>Collect</span><span id="collectAmt">0.00 FUN</span></button>
+        <div id="diffMenu"></div>
+        <div class="ctrlLabel">Difficulty</div>
+      </div>
+      <div id="smashBtnWrap">
+        <button id="smashBtn">SMASH!</button>
+      </div>
+      <div class="ctrlSlot">
+        <div id="betStepper">
+          <button id="betMinus">−</button>
+          <div id="betVal">2.00</div>
+          <button id="betPlus">+</button>
+        </div>
+        <div class="ctrlLabel">Bet</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="introOverlay">
+    <img src="/HitMeGoblin/logo.png" alt="Hit Me, Goblin!">
+    <p>Smash the goblin popping out of the crate to build your multiplier — collect anytime, or push your luck and risk it all.</p>
+    <button id="playBtn">▶ PLAY</button>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ======================= CONFIG ======================= */
+  const STAGE_W = 1920, STAGE_H = 1080;
+  const RTP = 0.97;
+  /* Difficulty model copied 1:1 from the original Ludo "Whack a Goblin" v1.1.0:
+     `targets` goblins are shown each round, `bad` of them end the game, so the
+     survival chance p = (targets-bad)/targets is a clean fraction the player can
+     read off the board. First hit pays RTP/p, later hits ×1/p (see stepGain),
+     matching the reference ladders (Easy 1.29→1.72→2.29…, Master 3.88→15.52→…). */
+  const DIFFICULTIES = [
+    { id:'easy',   label:'Easy',   p:3/4, targets:4, bad:1, bg:'#ECFCCB', dot:'#84cc16', text:'#1A2E05' },
+    { id:'medium', label:'Medium', p:2/3, targets:3, bad:1, bg:'#FEF9C3', dot:'#eab308', text:'#422006' },
+    { id:'hard',   label:'Hard',   p:1/2, targets:2, bad:1, bg:'#FFEDD5', dot:'#f97316', text:'#7C2D12' },
+    { id:'expert', label:'Expert', p:1/3, targets:3, bad:2, bg:'#FEE2E2', dot:'#ef4444', text:'#7F1D1D' },
+    { id:'master', label:'Master', p:1/4, targets:4, bad:3, bg:'#FCE7F3', dot:'#ec4899', text:'#83124a' },
+  ];
+  const CHARACTERS = [
+    { id:'pirate', normal:'/HitMeGoblin/Characters/Pirate.png',  injured:'/HitMeGoblin/Characters/injured/pirate.png' },
+    { id:'mafia',  normal:'/HitMeGoblin/Characters/Mafia.png',   injured:'/HitMeGoblin/Characters/injured/Mafia.png' },
+    { id:'punk',   normal:'/HitMeGoblin/Characters/Punk.png',    injured:'/HitMeGoblin/Characters/injured/Punk.png' },
+    { id:'madam',  normal:'/HitMeGoblin/Characters/madam.png',   injured:'/HitMeGoblin/Characters/injured/madam.png' },
+    { id:'hippie', normal:'/HitMeGoblin/Characters/hippie.png',  injured:'/HitMeGoblin/Characters/injured/hippie.png' },
+    { id:'girl',   normal:'/HitMeGoblin/Characters/girl.png',    injured:'/HitMeGoblin/Characters/injured/girl.png' },
+    { id:'girl2',  normal:'/HitMeGoblin/Characters/girl_2.png',  injured:'/HitMeGoblin/Characters/injured/girl_2.png' },
+    { id:'drunk',  normal:'/HitMeGoblin/Characters/drunk.png',   injured:'/HitMeGoblin/Characters/injured/drunk.png' },
+  ];
+  const COVER_FRAMES = ['/HitMeGoblin/Machine/cover_1.png','/HitMeGoblin/Machine/cover_2.png','/HitMeGoblin/Machine/cover_3.png','/HitMeGoblin/Machine/cover_4.png'];
+  const BET_STEPS = [0.5,1,2,3,5,10,20,50,100,200,500];
+
+  /* ======================= STATE ======================= */
+  const state = {
+    balance: 1000,
+    bet: 2,
+    diffIndex: 0,
+    step: 0,
+    multiplier: 1,
+    active: false,
+    busy: false,
+    awaitingPick: false,
+    activeSlots: [],
+    muted: (localStorage.getItem('hmg_muted') === '1'),
+  };
+
+  function fmt(n){ return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function currentDiff(){ return DIFFICULTIES[state.diffIndex]; }
+  /* Reference ladder: the FIRST successful hit pays RTP/p (the 97% house edge is
+     taken once, up front); every hit after that multiplies the running total by
+     the fair 1/p. So after n hits the multiplier is RTP / p^n — identical to the
+     original game's published ladders. */
+  function stepGain(nextStep){ return (nextStep === 1 ? RTP : 1) / currentDiff().p; }
+
+  /* ======================= AUDIO (WebAudio, procedural) ======================= */
+  const Audio_ = (function(){
+    let ctx = null;
+    function ensure(){ if(!ctx){ try{ ctx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(ctx && ctx.state==='suspended') ctx.resume(); return ctx; }
+    function env(gainNode, t, a, d, sustain, dur){
+      const now = t;
+      gainNode.gain.cancelScheduledValues(now);
+      gainNode.gain.setValueAtTime(0, now);
+      gainNode.gain.linearRampToValueAtTime(1, now+a);
+      gainNode.gain.linearRampToValueAtTime(sustain, now+a+d);
+      gainNode.gain.linearRampToValueAtTime(0, now+dur);
+    }
+    function tone(freq, dur, type, gainMul, t0, glideTo){
+      const c = ensure(); if(!c || state.muted) return;
+      const t = t0!=null? t0 : c.currentTime;
+      const osc = c.createOscillator(); osc.type = type||'sine';
+      osc.frequency.setValueAtTime(freq, t);
+      if(glideTo) osc.frequency.exponentialRampToValueAtTime(Math.max(glideTo,1), t+dur);
+      const g = c.createGain();
+      env(g, t, 0.008, dur*0.25, (gainMul||0.25), dur);
+      osc.connect(g); g.connect(c.destination);
+      osc.start(t); osc.stop(t+dur+0.02);
+    }
+    function noiseBurst(dur, gainMul, filterFreq, t0, type){
+      const c = ensure(); if(!c || state.muted) return;
+      const t = t0!=null? t0 : c.currentTime;
+      const bufferSize = Math.floor(c.sampleRate*dur);
+      const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
+      const data = buffer.getChannelData(0);
+      for(let i=0;i<bufferSize;i++){ data[i] = (Math.random()*2-1) * (1 - i/bufferSize); }
+      const src = c.createBufferSource(); src.buffer = buffer;
+      const filt = c.createBiquadFilter(); filt.type = type||'lowpass'; filt.frequency.value = filterFreq||1800;
+      const g = c.createGain(); g.gain.setValueAtTime((gainMul||0.3), t); g.gain.linearRampToValueAtTime(0, t+dur);
+      src.connect(filt); filt.connect(g); g.connect(c.destination);
+      src.start(t); src.stop(t+dur+0.02);
+    }
+
+    /* ---- looping background soundtrack: a bouncy little swamp/carnival riff,
+       scheduled with a standard lookahead scheduler so it stays tight. ---- */
+    let musicGain = null, musicTimer = null, musicNextTime = 0, musicStepIdx = 0, musicRunning = false;
+    const MUSIC_BPM = 116;
+    const MUSIC_STEP = 60/MUSIC_BPM/2;
+    const MUSIC_BASS = [38,null,45,null, 41,null,43,null];
+    const MUSIC_LEAD = [62,65,69,65, 62,58,62,null];
+    function midiToFreq(n){ return 440*Math.pow(2,(n-69)/12); }
+    function musicNote(freq, t, dur, type, gain){
+      const o = ctx.createOscillator(); o.type = type;
+      o.frequency.setValueAtTime(freq, t);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(gain, t+0.012);
+      g.gain.exponentialRampToValueAtTime(0.0002, t+dur);
+      o.connect(g); g.connect(musicGain);
+      o.start(t); o.stop(t+dur+0.02);
+    }
+    function musicTick(t, loud){
+      const bufferSize = Math.floor(ctx.sampleRate*0.03);
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for(let i=0;i<bufferSize;i++){ data[i] = (Math.random()*2-1) * (1 - i/bufferSize); }
+      const src = ctx.createBufferSource(); src.buffer = buffer;
+      const filt = ctx.createBiquadFilter(); filt.type = 'highpass'; filt.frequency.value = 1500;
+      const g = ctx.createGain(); g.gain.setValueAtTime(loud?0.09:0.032, t); g.gain.linearRampToValueAtTime(0, t+0.03);
+      src.connect(filt); filt.connect(g); g.connect(musicGain);
+      src.start(t);
+    }
+    function musicScheduleStep(t, i){
+      const bassNote = MUSIC_BASS[i % MUSIC_BASS.length];
+      if(bassNote != null) musicNote(midiToFreq(bassNote), t, MUSIC_STEP*1.7, 'triangle', 0.11);
+      const leadNote = MUSIC_LEAD[i % MUSIC_LEAD.length];
+      if(leadNote != null) musicNote(midiToFreq(leadNote), t, MUSIC_STEP*0.85, 'square', 0.045);
+      musicTick(t, i%4===0);
+    }
+    function musicScheduler(){
+      while(musicNextTime < ctx.currentTime + 0.15){
+        musicScheduleStep(musicNextTime, musicStepIdx);
+        musicNextTime += MUSIC_STEP;
+        musicStepIdx++;
+      }
+      musicTimer = setTimeout(musicScheduler, 60);
+    }
+    function startMusic(){
+      const c = ensure(); if(!c || musicRunning) return;
+      musicRunning = true;
+      musicGain = c.createGain();
+      musicGain.gain.value = state.muted ? 0 : 0.55;
+      musicGain.connect(c.destination);
+      musicNextTime = c.currentTime + 0.1;
+      musicStepIdx = 0;
+      musicScheduler();
+    }
+
+    return {
+      unlock(){ ensure(); startMusic(); },
+      setMusicMuted(muted){ if(musicGain && ctx) musicGain.gain.setTargetAtTime(muted?0:0.55, ctx.currentTime, 0.06); },
+      click(){ tone(720,0.06,'square',0.15); },
+      open(){ noiseBurst(0.28,0.18,2400); tone(300,0.22,'sawtooth',0.08,null,520); },
+      /* a meaty hammer-crushing-goblin thwack: bright crack + deep body thud + short squish */
+      hit(){
+        noiseBurst(0.045, 0.55, 3200, null, 'bandpass');
+        tone(95, 0.24, 'sine', 0.55, null, 32);
+        tone(230, 0.12, 'sawtooth', 0.16, null, 65);
+      },
+      success(){ const c=ensure(); if(!c||state.muted) return; const t=c.currentTime; [660,880,1180].forEach((f,i)=> tone(f,0.16,'triangle',0.22,t+i*0.07)); },
+      miss(){ noiseBurst(0.35,0.4,700); tone(180,0.4,'sawtooth',0.25,null,50); },
+      collect(){ const c=ensure(); if(!c||state.muted) return; const t=c.currentTime; [523,659,784,1046].forEach((f,i)=> tone(f,0.2,'triangle',0.22,t+i*0.06)); },
+    };
+  })();
+
+  /* ======================= SFX SAMPLES (custom_goblin_sfx) ======================= */
+  const SFX = {
+    hammer:     ['/HitMeGoblin/Sounds/hammer.mp3'],
+    appear:     ['/HitMeGoblin/Sounds/appear.mp3'],
+    defeated:   ['/HitMeGoblin/Sounds/defeated_1.mp3','/HitMeGoblin/Sounds/defeated_2.mp3'],
+    angry:      ['/HitMeGoblin/Sounds/angry_grunt_1.mp3','/HitMeGoblin/Sounds/angry_grunt_2.mp3','/HitMeGoblin/Sounds/angry_grunt_3.mp3'],
+    shitThrow:  ['/HitMeGoblin/Sounds/shit-throw.mp3'],
+    throwSplat: ['/HitMeGoblin/Sounds/throw_splat.mp3'],
+    win:        ['/HitMeGoblin/Sounds/win_chime.mp3'],
+  };
+  /* goblin one-liners — the spoken "voice_" lines carry all the personality so
+     they lead; the wordless taunts are just occasional seasoning */
+  const VOICE_LINES = [
+    '/HitMeGoblin/Sounds/voice_crack_skull.mp3','/HitMeGoblin/Sounds/voice_did_that_hurt.mp3',
+    '/HitMeGoblin/Sounds/voice_gimme_the_gold.mp3','/HitMeGoblin/Sounds/voice_mine_all_mine.mp3',
+    '/HitMeGoblin/Sounds/voice_more_shinies.mp3','/HitMeGoblin/Sounds/voice_not_in_the_face.mp3',
+    '/HitMeGoblin/Sounds/voice_that_all_you_got.mp3','/HitMeGoblin/Sounds/voice_youll_pay_for_that.mp3',
+  ];
+  const TAUNT_LINES = ['/HitMeGoblin/Sounds/taunt_1.mp3','/HitMeGoblin/Sounds/taunt_2.mp3','/HitMeGoblin/Sounds/taunt_3.mp3'];
+
+  /* Preload every clip up front so the hammer thwack (and everything else)
+     fires the instant it's called, with no first-play network stall. */
+  const sfxCache = {};
+  (function preloadSfx(){
+    const urls = new Set();
+    Object.keys(SFX).forEach(k=> SFX[k].forEach(u=> urls.add(u)));
+    VOICE_LINES.forEach(u=> urls.add(u));
+    TAUNT_LINES.forEach(u=> urls.add(u));
+    urls.forEach(url=>{
+      const a = new Audio();
+      a.preload = 'auto';
+      a.src = url;
+      sfxCache[url] = a;
+    });
+  })();
+  function makeAudio(url){
+    const cached = sfxCache[url];
+    return cached ? cached.cloneNode() : new Audio(url);
+  }
+  function playSfx(key, volume){
+    if(state.muted) return null;
+    const list = SFX[key];
+    if(!list || !list.length) return null;
+    const url = list[Math.floor(Math.random()*list.length)];
+    const a = makeAudio(url);
+    a.volume = volume==null ? 1 : volume;
+    a.play().catch(()=>{});
+    return a;
+  }
+
+  /* ---- goblin voice lines ------------------------------------------------
+     Tied to the goblins being ON SCREEN, not to game state: whenever any goblin
+     is poking out of a hole, one of the spoken "voice_" lines fires shortly
+     after they appear and then again every 5–7s for as long as they stay up.
+     Nothing plays while the board is empty or mid hammer-swing. */
+  let lastVoiceUrl = null, nextVoiceAt = 0, voiceLoopStarted = false;
+  function playVoice(){
+    if(state.muted) return;
+    let idx = Math.floor(Math.random()*VOICE_LINES.length);
+    if(VOICE_LINES.length>1 && VOICE_LINES[idx]===lastVoiceUrl) idx = (idx+1)%VOICE_LINES.length;
+    lastVoiceUrl = VOICE_LINES[idx];
+    const a = makeAudio(VOICE_LINES[idx]);
+    a.volume = 0.9;
+    a.play().catch(()=>{});
+  }
+  function isVoiceIdle(){
+    if(state.muted || state.busy) return false;
+    /* goblins are out of their holes and waiting to be picked — that's exactly
+       state.awaitingPick. Silent otherwise (empty board, or mid hammer-swing). */
+    return state.awaitingPick;
+  }
+  function idleVoiceTick(){
+    const now = performance.now();
+    if(isVoiceIdle()){
+      if(now >= nextVoiceAt){
+        playVoice();
+        nextVoiceAt = now + 5000 + Math.random()*2000; /* 5–7s between lines */
+      }
+    } else {
+      /* board empty or mid-swing — the next line lands soon after goblins reappear */
+      nextVoiceAt = now + 400;
+    }
+    setTimeout(idleVoiceTick, 300);
+  }
+  function startVoiceLoop(){
+    if(voiceLoopStarted) return;
+    voiceLoopStarted = true;
+    nextVoiceAt = performance.now() + 900;
+    idleVoiceTick();
+  }
+
+  /* ======================= PIXI SETUP ======================= */
+  const app = new PIXI.Application({
+    width: STAGE_W, height: STAGE_H, backgroundAlpha:0,
+    resolution: Math.min(window.devicePixelRatio||1, 2), autoDensity:true, antialias:true,
+  });
+  document.getElementById('stageArea').appendChild(app.view);
+
+  const layers = {
+    bg: new PIXI.Container(),
+    crate: new PIXI.Container(),
+    hole: new PIXI.Container(),
+    fx: new PIXI.Container(),
+  };
+  app.stage.addChild(layers.bg, layers.crate, layers.hole, layers.fx);
+
+  let sprites = {};
+
+  function fitStage(){
+    const area = document.getElementById('stageArea');
+    const w = area.clientWidth, h = area.clientHeight;
+    const scale = Math.min(w/STAGE_W, h/STAGE_H);
+    app.view.style.width = (STAGE_W*scale)+'px';
+    app.view.style.height = (STAGE_H*scale)+'px';
+    /* keep the top bar and bottom HUD exactly as wide as the rendered stage,
+       so controls line up with the scene edges at any viewport size */
+    const barW = Math.max(STAGE_W*scale, 300)+'px';
+    document.getElementById('topbar').style.width = barW;
+    document.getElementById('hud').style.width = barW;
+  }
+  window.addEventListener('resize', fitStage);
+
+  const MANIFEST = [
+    '/HitMeGoblin/Machine/Machine_empty.png','/HitMeGoblin/Machine/Hole.png',
+    '/HitMeGoblin/Machine/cover_half.png','/HitMeGoblin/crap.png',
+    '/HitMeGoblin/Stars/star.png','/HitMeGoblin/Stars/star-1.png','/HitMeGoblin/Stars/star-2.png',
+    '/HitMeGoblin/Stars/line-1.png','/HitMeGoblin/Stars/line-2.png','/HitMeGoblin/Stars/line-3.png',
+    '/HitMeGoblin/Hands/hand_1.png','/HitMeGoblin/Hands/hand_2.png','/HitMeGoblin/Hands/hand_3.png','/HitMeGoblin/Hands/hand_okey.png',
+  ].concat(COVER_FRAMES).concat(CHARACTERS.flatMap(c=>[c.normal, c.injured]));
+
+  const HAMMER_FRAMES = ['/HitMeGoblin/Hands/hand_1.png','/HitMeGoblin/Hands/hand_2.png','/HitMeGoblin/Hands/hand_3.png'];
+
+  async function boot(){
+    await PIXI.Assets.load(MANIFEST);
+    buildScene();
+    fitStage();
+    buildDiffMenu();
+    updateHud();
+  }
+
+  function buildScene(){
+    /* The swamp background is a full-viewport CSS layer on #wrap (see <style>),
+       not part of the canvas — it always covers the whole screen regardless of
+       the canvas's own letterboxed aspect. The canvas only draws the crate. */
+    const crate = PIXI.Sprite.from('/HitMeGoblin/Machine/Machine_empty.png');
+    crate.anchor.set(0.5, 1);
+    /* Crate art is portrait — in the wide 1920x1080 desktop stage its size is
+       driven by available height, not stage width. The stage now fills the
+       WHOLE screen (topbar/HUD float on top of it, not beside it), so the
+       full, un-cropped asset is drawn with its natural bottom edge sitting
+       exactly at the screen's bottom (anchor 1.0, y = STAGE_H, zero offset) —
+       its lower half then simply sits *behind* the floating HUD bar. */
+    const crateH = STAGE_H*1.28;
+    const crateScale = crateH / crate.texture.height;
+    crate.scale.set(crateScale);
+    crate.x = STAGE_W/2; crate.y = crateH; /* crate.y = crateH => crateTop = 0, headboard starts exactly at the screen top */
+    layers.crate.addChild(crate);
+
+    const crateW = crate.texture.width * crateScale;
+    const crateTop = crate.y - crateH;
+
+    /* 2x2 hole grid — the cream wood panel of Machine_empty.png runs ~y 0.224–0.538
+       of the image and widens from the headboard down toward the SMASH plank.
+       Rows and columns are pulled in tight so all four purple holes sit well
+       inside that wood, clear of the purple side rails, reading as one cluster. */
+    const rowY = [crateTop + crateH*0.270, crateTop + crateH*0.458];
+    const colXTop = [STAGE_W/2 - crateW*0.143, STAGE_W/2 + crateW*0.143];
+    const colXBot = [STAGE_W/2 - crateW*0.162, STAGE_W/2 + crateW*0.162];
+    const GRID = [
+      { x: colXTop[0], y: rowY[0], front:false },
+      { x: colXTop[1], y: rowY[0], front:false },
+      { x: colXBot[0], y: rowY[1], front:true },
+      { x: colXBot[1], y: rowY[1], front:true },
+    ];
+
+    const holeRingTex = PIXI.Texture.from('/HitMeGoblin/Machine/Hole.png');
+    const holeScale = (crateW*0.185) / holeRingTex.width;
+    const coverScale = (crateW*0.155) / PIXI.Texture.from(COVER_FRAMES[0]).width;
+    const holeW = holeRingTex.width*holeScale;
+
+    const slots = GRID.map((pos, i)=>{
+      /* soft dark shadow so the hole reads as an actual recess cut into the
+         wood, not a flat sticker sitting on top of the panel */
+      const shadow = new PIXI.Graphics();
+      shadow.beginFill(0x000000, 0.4);
+      shadow.drawEllipse(0, 0, holeW*0.56, holeW*0.42);
+      shadow.endFill();
+      shadow.filters = [new PIXI.BlurFilter(6)];
+      shadow.x = pos.x; shadow.y = pos.y + holeW*0.06;
+      layers.hole.addChild(shadow);
+
+      const holeRing = new PIXI.Sprite(holeRingTex);
+      holeRing.anchor.set(0.5); holeRing.scale.set(holeScale);
+      holeRing.x = pos.x; holeRing.y = pos.y;
+      layers.hole.addChild(holeRing);
+
+      const charSprite = PIXI.Sprite.from(CHARACTERS[i%CHARACTERS.length].normal);
+      charSprite.anchor.set(0.5, 0.62);
+      charSprite.x = pos.x; charSprite.y = pos.y + 4;
+      charSprite.visible = false;
+      layers.hole.addChild(charSprite);
+
+      /* Crop mask over the hole mouth — wide enough that it never pinches the
+         goblin's face or body (no squashed-looking characters); it only trims
+         whatever hangs below the hole rim so they read as "popping out of the
+         hole". Front row gets a roomier window to fit its bigger characters. */
+      const maskRX = holeW * (pos.front ? 0.98 : 0.88);
+      const maskRY = holeW * (pos.front ? 1.28 : 1.12);
+      const charMask = new PIXI.Graphics();
+      charMask.beginFill(0xffffff);
+      charMask.drawEllipse(0, 0, maskRX, maskRY);
+      charMask.endFill();
+      charMask.x = pos.x; charMask.y = pos.y + holeW*0.05;
+      layers.hole.addChild(charMask);
+      charSprite.mask = charMask;
+
+      const crapSprite = PIXI.Sprite.from('/HitMeGoblin/crap.png');
+      crapSprite.anchor.set(0.5);
+      crapSprite.x = pos.x; crapSprite.y = pos.y;
+      crapSprite.scale.set((crateW*0.2174)/crapSprite.texture.width);
+      crapSprite.alpha = 0; crapSprite.visible = false;
+      layers.hole.addChild(crapSprite);
+
+      const cover = PIXI.Sprite.from(COVER_FRAMES[0]);
+      cover.anchor.set(0.5); cover.scale.set(coverScale);
+      cover.x = pos.x; cover.y = pos.y;
+      layers.hole.addChild(cover);
+
+      /* invisible clickable zone — the player taps the goblin they want to smash */
+      const hitZone = new PIXI.Graphics();
+      hitZone.beginFill(0xffffff, 0.001);
+      hitZone.drawCircle(0, 0, holeW * (pos.front ? 1.05 : 0.88));
+      hitZone.endFill();
+      hitZone.x = pos.x; hitZone.y = pos.y;
+      hitZone.eventMode = 'none';
+      hitZone.cursor = 'pointer';
+      hitZone.on('pointertap', ()=> onSlotClick(i));
+      layers.fx.addChild(hitZone);
+
+      return { x:pos.x, y:pos.y, front:pos.front, holeRing, charSprite, crapSprite, cover, hitZone };
+    });
+
+    const hammer = PIXI.Sprite.from(HAMMER_FRAMES[0]);
+    hammer.anchor.set(0.18, 0.92); /* pivot near the base of the handle/hand */
+    hammer.visible = false;
+    layers.fx.addChild(hammer);
+
+    const okeyHand = PIXI.Sprite.from('/HitMeGoblin/Hands/hand_okey.png');
+    okeyHand.anchor.set(0.5);
+    okeyHand.visible = false; okeyHand.alpha = 0;
+    layers.fx.addChild(okeyHand);
+
+    sprites = { crate, slots, holeW, coverScale, crateW, hammer, okeyHand };
+  }
+
+  /* ---- particle burst (stars + lines) ---- */
+  const burstTextures = ['/HitMeGoblin/Stars/star.png','/HitMeGoblin/Stars/star-1.png','/HitMeGoblin/Stars/star-2.png'];
+  const lineTextures = ['/HitMeGoblin/Stars/line-1.png','/HitMeGoblin/Stars/line-2.png','/HitMeGoblin/Stars/line-3.png'];
+  function spawnBurst(x,y){
+    const n = 8;
+    for(let i=0;i<n;i++){
+      const tex = burstTextures[i%burstTextures.length];
+      const s = PIXI.Sprite.from(tex);
+      s.anchor.set(0.5);
+      const scale = 0.35 + Math.random()*0.35;
+      s.scale.set(scale);
+      s.x = x; s.y = y; s.alpha = 1;
+      layers.fx.addChild(s);
+      const angle = (Math.PI*2*i/n) + (Math.random()-0.5)*0.4;
+      const dist = 90 + Math.random()*70;
+      const tx = x + Math.cos(angle)*dist, ty = y + Math.sin(angle)*dist - 20;
+      tweenSprite(s, {x:tx, y:ty, alpha:0, rotation:(Math.random()-0.5)*3}, 520, easeOutCubic, ()=> s.destroy());
+    }
+    for(let i=0;i<4;i++){
+      const tex = lineTextures[i%lineTextures.length];
+      const s = PIXI.Sprite.from(tex);
+      s.anchor.set(0.1,0.5);
+      s.x = x; s.y = y; s.alpha = 0.9;
+      s.rotation = Math.random()*Math.PI*2;
+      s.scale.set(0.6+Math.random()*0.4);
+      layers.fx.addChild(s);
+      tweenSprite(s, {alpha:0}, 380, easeOutCubic, ()=> s.destroy());
+    }
+  }
+
+  /* ---- hammer swing (hand_1 → hand_2 → hand_3), lands on the clicked goblin ---- */
+  async function playHammerSwing(x, y){
+    const h = sprites.hammer;
+    const targetW = sprites.holeW*1.5;
+    h.anchor.set(0.45, 0.17); /* keeps the hammer head roughly over (x,y) across frames */
+    h.x = x; h.y = y;
+    h.alpha = 1; h.visible = true;
+    const rotations = [-0.55, -0.18, 0.12];
+    for(let i=0;i<HAMMER_FRAMES.length;i++){
+      h.texture = PIXI.Texture.from(HAMMER_FRAMES[i]);
+      h.scale.set(targetW/h.texture.width);
+      h.rotation = rotations[i];
+      /* last frame = the hammer landing — crack the thwack right then so the
+         sound is locked to the visible impact */
+      if(i === HAMMER_FRAMES.length-1){ playSfx('hammer', 1.0); shakeStage(); }
+      await wait(65);
+    }
+    await wait(90);
+    tweenSprite(h, {alpha:0}, 200, easeOutCubic, ()=>{ h.visible=false; });
+  }
+
+  /* ---- little thumbs-up flourish on a successful hit ---- */
+  function popOkeyHand(x, y){
+    const o = sprites.okeyHand;
+    const targetW = sprites.holeW*0.62;
+    o.scale.set(targetW/o.texture.width);
+    o.rotation = -0.12;
+    o.x = x; o.y = y;
+    o.alpha = 0; o.visible = true;
+    tweenSprite(o, {alpha:1, y:y-18}, 180, easeOutCubic, ()=>{
+      setTimeout(()=> tweenSprite(o, {alpha:0}, 260, easeOutCubic, ()=>{ o.visible=false; }), 420);
+    });
+  }
+
+  /* ======================= TWEEN HELPER ======================= */
+  function easeOutCubic(t){ return 1-Math.pow(1-t,3); }
+  function easeInOutQuad(t){ return t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
+  function tweenSprite(obj, to, durMs, ease, onDone){
+    const from = {}; Object.keys(to).forEach(k=> from[k] = obj[k]);
+    const start = performance.now();
+    function step(now){
+      const t = Math.min(1,(now-start)/durMs);
+      const e = (ease||easeOutCubic)(t);
+      Object.keys(to).forEach(k=> obj[k] = from[k] + (to[k]-from[k])*e );
+      if(t<1) requestAnimationFrame(step); else if(onDone) onDone();
+    }
+    requestAnimationFrame(step);
+  }
+  function wait(ms){ return new Promise(r=> setTimeout(r,ms)); }
+
+  /* ======================= HOLE ANIMATION (per-slot subsets) ======================= */
+  async function playOpenSlots(indices){
+    playSfx('appear', 0.8);
+    for(let i=0;i<COVER_FRAMES.length;i++){
+      const tex = PIXI.Texture.from(COVER_FRAMES[i]);
+      indices.forEach(idx=> sprites.slots[idx].cover.texture = tex);
+      await wait(55);
+    }
+    indices.forEach(idx=> sprites.slots[idx].cover.alpha = 0);
+  }
+  async function playCloseSlots(indices){
+    indices.forEach(idx=> sprites.slots[idx].cover.alpha = 1);
+    for(let i=COVER_FRAMES.length-1;i>=0;i--){
+      const tex = PIXI.Texture.from(COVER_FRAMES[i]);
+      indices.forEach(idx=> sprites.slots[idx].cover.texture = tex);
+      await wait(55);
+    }
+  }
+
+  function showCharacter(slotIdx, charIdx, injured){
+    const slot = sprites.slots[slotIdx];
+    const c = CHARACTERS[charIdx];
+    slot.charSprite.texture = PIXI.Texture.from(injured? c.injured : c.normal);
+    /* front (bottom) row characters are noticeably bigger; scale is uniform so
+       the artwork is never stretched or squashed */
+    const targetW = sprites.holeW * (slot.front ? 1.34 : 1.14);
+    const s = targetW/slot.charSprite.texture.width;
+    slot.charSprite.scale.set(s);
+    slot.charSprite.visible = true;
+    slot.charSprite.alpha = 1;
+    slot.charSprite.y = slot.y + 50;
+    tweenSprite(slot.charSprite, {y: slot.y+4}, 260, easeOutCubic);
+  }
+  function hideAllCharacters(){
+    sprites.slots.forEach(slot=>{
+      if(!slot.charSprite.visible) return;
+      tweenSprite(slot.charSprite, {y: slot.y+70, alpha:0}, 200, easeOutCubic, ()=>{ slot.charSprite.visible=false; });
+    });
+  }
+  async function playMiss(slotIdx){
+    const slot = sprites.slots[slotIdx];
+    slot.charSprite.visible = false;
+    playSfx('angry', 0.9);
+    shakeStage();
+    playSfx('shitThrow', 0.85);
+    showBigCrapSplat();
+    setTimeout(()=> playSfx('throwSplat', 0.9), 150); /* lands right as the splat hits full size */
+    await wait(950);
+  }
+
+  /* The goblin flings crap straight at the camera — a big splat that fills
+     the middle of the SCREEN (not tied to canvas/slot coordinates), so it
+     reads the same at any viewport size. */
+  const crapOverlayEl = document.getElementById('crapOverlay');
+  function showBigCrapSplat(){
+    crapOverlayEl.style.transition = 'none';
+    crapOverlayEl.style.transform = 'scale(0.15) rotate(-14deg)';
+    crapOverlayEl.style.opacity = '0';
+    // force reflow so the next transition actually animates from this start state
+    void crapOverlayEl.offsetWidth;
+    crapOverlayEl.style.transition = 'transform 190ms cubic-bezier(.25,1.6,.4,1), opacity 90ms linear';
+    crapOverlayEl.style.transform = 'scale(1) rotate(3deg)';
+    crapOverlayEl.style.opacity = '1';
+    setTimeout(()=>{
+      crapOverlayEl.style.transition = 'opacity 400ms ease, transform 400ms ease';
+      crapOverlayEl.style.opacity = '0';
+      crapOverlayEl.style.transform = 'scale(1.1) rotate(3deg)';
+    }, 620);
+  }
+  function shakeStage(){
+    const root = app.stage; const ox = root.x, oy = root.y;
+    let t = 0; const dur = 260;
+    const start = performance.now();
+    function step(now){
+      t = (now-start)/dur;
+      if(t>=1){ root.x=ox; root.y=oy; return; }
+      const p = 1-t;
+      root.x = ox + (Math.random()-0.5)*14*p;
+      root.y = oy + (Math.random()-0.5)*14*p;
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  /* ======================= UI ======================= */
+  const diffBtn = document.getElementById('diffBtn');
+  const diffLabel = document.getElementById('diffLabel');
+  const diffMenu = document.getElementById('diffMenu');
+  const collectBtn = document.getElementById('collectBtn');
+  const collectAmt = document.getElementById('collectAmt');
+  const smashBtn = document.getElementById('smashBtn');
+  const smashBtnWrap = document.getElementById('smashBtnWrap');
+  const betMinus = document.getElementById('betMinus');
+  const betPlus = document.getElementById('betPlus');
+  const betVal = document.getElementById('betVal');
+  const statusRow = document.getElementById('statusRow');
+  const balanceVal = document.getElementById('balanceVal');
+  const toast = document.getElementById('toast');
+  const muteBtn = document.getElementById('muteBtn');
+  const homeBtn = document.getElementById('homeBtn');
+
+  function buildDiffMenu(){
+    diffMenu.innerHTML = '';
+    DIFFICULTIES.forEach((d, i)=>{
+      const b = document.createElement('button');
+      b.style.background = d.bg; b.style.color = d.text;
+      b.textContent = d.label;
+      b.addEventListener('click', ()=>{
+        if(state.active) return;
+        state.diffIndex = i; Audio_.click();
+        diffMenu.classList.remove('open');
+        updateHud();
+      });
+      diffMenu.appendChild(b);
+    });
+  }
+  diffBtn.addEventListener('click', ()=>{
+    if(state.active) return;
+    Audio_.click();
+    diffMenu.classList.toggle('open');
+  });
+  document.addEventListener('click', (e)=>{
+    if(!diffMenu.contains(e.target) && e.target!==diffBtn && !diffBtn.contains(e.target)){
+      diffMenu.classList.remove('open');
+    }
+  });
+
+  function betIndex(){ return BET_STEPS.findIndex(v=> Math.abs(v-state.bet)<0.001); }
+  betMinus.addEventListener('click', ()=>{
+    if(state.active) return;
+    const i = betIndex();
+    if(i>0){ state.bet = BET_STEPS[i-1]; Audio_.click(); updateHud(); }
+  });
+  betPlus.addEventListener('click', ()=>{
+    if(state.active) return;
+    const i = betIndex();
+    if(i<BET_STEPS.length-1){ state.bet = BET_STEPS[i+1]; Audio_.click(); updateHud(); }
+  });
+
+  function showToast(msg, cls){
+    toast.textContent = msg;
+    toast.className = 'show' + (cls? ' '+cls : '');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=> toast.classList.remove('show'), 1600);
+  }
+
+  function updateHud(){
+    const d = currentDiff();
+    diffLabel.textContent = d.label;
+    diffBtn.querySelector('.dot').style.background = d.dot;
+    balanceVal.textContent = fmt(state.balance) + ' FUN';
+    betVal.textContent = fmt(state.bet);
+    betMinus.disabled = state.active || betIndex()<=0;
+    betPlus.disabled = state.active || betIndex()>=BET_STEPS.length-1;
+    diffBtn.classList.toggle('hide', state.step>0);
+    collectBtn.classList.toggle('show', state.step>0);
+    if(state.step>0){
+      collectAmt.textContent = fmt(Math.floor(state.bet*state.multiplier*100)/100) + ' FUN';
+    }
+    smashBtnWrap.classList.toggle('hide', state.active);
+    smashBtn.disabled = state.busy || (state.balance < state.bet && !state.active);
+    if(!state.active){
+      statusRow.innerHTML = 'Pick a difficulty and hit <b>SMASH!</b>';
+    } else if(state.awaitingPick){
+      statusRow.innerHTML = 'Pick a goblin to <b>smash</b>!';
+    } else {
+      statusRow.innerHTML = 'Step '+state.step+' &bull; Current multiplier <b>x'+state.multiplier.toFixed(2)+'</b>';
+    }
+  }
+
+  smashBtn.addEventListener('click', onStartRound);
+  collectBtn.addEventListener('click', onCollect);
+  function renderMuteIcon(){
+    document.getElementById('iconSoundOn').style.display = state.muted ? 'none' : '';
+    document.getElementById('iconSoundOff').style.display = state.muted ? '' : 'none';
+  }
+  muteBtn.addEventListener('click', ()=>{
+    state.muted = !state.muted;
+    localStorage.setItem('hmg_muted', state.muted? '1':'0');
+    renderMuteIcon();
+    Audio_.setMusicMuted(state.muted);
+  });
+  renderMuteIcon();
+  homeBtn.addEventListener('click', ()=>{ window.location.href = '/index.html'; });
+
+  function shuffledIndices(n){
+    const arr = Array.from({length:n}, (_,i)=>i);
+    for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+    return arr;
+  }
+
+  function setSlotsInteractive(indices, on){
+    indices.forEach(idx=>{
+      sprites.slots[idx].hitZone.eventMode = on ? 'static' : 'none';
+    });
+  }
+
+  /* Start a round from idle: place the bet, then open this step's holes and
+     wait for the player to tap a goblin. */
+  async function onStartRound(){
+    if(state.busy || state.active) return;
+    if(state.balance < state.bet){ showToast('Not enough balance', 'lose'); return; }
+    state.balance -= state.bet;
+    state.active = true; state.step = 0; state.multiplier = 1;
+    Audio_.click();
+    updateHud();
+    await openRound();
+  }
+
+  /* Open the current step's holes (count depends on difficulty) with random
+     distinct goblins, then arm them for the player to click. */
+  async function openRound(){
+    state.busy = true; updateHud();
+
+    const count = currentDiff().targets;
+    state.activeSlots = shuffledIndices(4).slice(0, count);
+    const charIdxs = shuffledIndices(CHARACTERS.length).slice(0, count);
+    state.slotCharMap = {};
+    state.activeSlots.forEach((slotIdx, i)=> state.slotCharMap[slotIdx] = charIdxs[i]);
+
+    await playOpenSlots(state.activeSlots);
+    state.activeSlots.forEach(slotIdx=> showCharacter(slotIdx, state.slotCharMap[slotIdx], false));
+    await wait(200);
+
+    state.busy = false;
+    state.awaitingPick = true;
+    setSlotsInteractive(state.activeSlots, true);
+    updateHud();
+  }
+
+  /* Player tapped a goblin — resolve win/loss for THAT hole. */
+  async function onSlotClick(slotIdx){
+    if(!state.awaitingPick || state.busy) return;
+    if(state.activeSlots.indexOf(slotIdx) === -1) return;
+    state.awaitingPick = false;
+    state.busy = true;
+    setSlotsInteractive(state.activeSlots, false);
+    updateHud();
+
+    const slot = sprites.slots[slotIdx];
+    const survive = Math.random() < currentDiff().p;
+    await playHammerSwing(slot.x, slot.y - sprites.holeW*0.15);
+    if(survive){
+      showCharacter(slotIdx, state.slotCharMap[slotIdx], true);
+      spawnBurst(slot.x, slot.y-24);
+      Audio_.success();
+      playSfx('defeated', 0.85);
+      state.step += 1;
+      state.multiplier *= stepGain(state.step);
+      updateHud();
+      await wait(600);
+      hideAllCharacters();
+      await wait(180);
+      await playCloseSlots(state.activeSlots);
+      if(state.active){ await openRound(); }
+    } else {
+      await playMiss(slotIdx);
+      hideAllCharacters();
+      await wait(120);
+      await playCloseSlots(state.activeSlots);
+      showToast('Smashed by the goblin! Bet lost.', 'lose');
+      state.active = false; state.step = 0; state.multiplier = 1; state.busy = false;
+      state.activeSlots = [];
+      updateHud();
+    }
+  }
+
+  async function onCollect(){
+    if(state.busy && !state.awaitingPick) return;
+    if(state.step<=0) return;
+    /* reference rule: winnings are rounded DOWN to two decimals */
+    const win = Math.floor(state.bet*state.multiplier*100)/100;
+    if(state.awaitingPick){
+      state.awaitingPick = false;
+      setSlotsInteractive(state.activeSlots, false);
+      state.busy = true; updateHud();
+      hideAllCharacters();
+      await wait(120);
+      await playCloseSlots(state.activeSlots);
+      state.busy = false;
+    }
+    state.balance += win;
+    showToast('Collected +'+fmt(win)+' FUN', 'win');
+    Audio_.collect();
+    playSfx('win', 0.9);
+    state.active = false; state.step = 0; state.multiplier = 1; state.activeSlots = [];
+    updateHud();
+  }
+
+  /* ======================= INTRO ======================= */
+  document.getElementById('playBtn').addEventListener('click', ()=>{
+    Audio_.unlock(); Audio_.click();
+    document.getElementById('introOverlay').style.display = 'none';
+    startVoiceLoop();
+  });
+
+  boot();
+})();
+</script>
+</body>
+</html>
