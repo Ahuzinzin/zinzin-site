@@ -1,6 +1,14 @@
 .vercel
 .DS_Store
 
-# Animation master files (huge ProRes originals) — the site uses the .webm exports
-# (Chrome/Firefox) and the HEVC-with-alpha .mp4 re-encodes (Safari, no WebM alpha support)
+# Raw animation / video masters — the repo tracks only the web exports
+# (.webm, and the stacked-alpha .mp4 re-encodes used by every browser).
 Bakerybonanza/Animation/*.mov
+Joker's Madhouse/
+*.MOV
+banner3.MOV
+banner4.MOV
+
+# Scratch / probe files
+Untitled-*.jpg
+**/_write_test*.txt
