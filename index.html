@@ -169,7 +169,9 @@ nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:900;
 /* ── HERO ── */
 #hero{position:relative;height:100vh;min-height:560px;display:flex;align-items:flex-end;
       justify-content:center;overflow:hidden;padding-bottom:clamp(80px,12vh,160px)}
-.hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+            opacity:0;transition:opacity 1.4s ease;z-index:0}
+.hero-video.active{opacity:1;z-index:1}
 .hero-overlay{position:absolute;inset:0;
   background:linear-gradient(to bottom,rgba(6,6,14,.40) 0%,rgba(6,6,14,.20) 30%,rgba(6,6,14,.75) 70%,rgba(6,6,14,.96) 100%)}
 .hero-content{position:relative;z-index:2;text-align:center;padding:0 20px;max-width:860px}
@@ -330,7 +332,8 @@ footer{position:relative;overflow:hidden;background:var(--s1);border-top:1px sol
              align-items:center;justify-content:center;transition:background .2s;z-index:2}
 .modal-close:hover{background:rgba(255,255,255,.16)}
 .modal-hero{aspect-ratio:16/7;overflow:hidden;border-radius:14px 14px 0 0;position:relative}
-.modal-hero img{width:100%;height:100%;object-fit:cover;display:block}
+.modal-hero>#modalHero{width:100%;height:100%}
+.modal-hero img{width:100%;height:100%;object-fit:cover;object-position:50% 0%;display:block}
 .modal-hero-grad{position:absolute;bottom:0;left:0;right:0;height:60%;
                  background:linear-gradient(transparent,var(--s2))}
 .modal-body{padding:28px 32px 36px}
@@ -535,21 +538,72 @@ footer{position:relative;overflow:hidden;background:var(--s1);border-top:1px sol
 
 <!-- HERO -->
 <section id="hero">
-  <video class="hero-video" id="hero-video" autoplay muted playsinline
+  <video class="hero-video active" id="hero-video-a" autoplay muted playsinline
          poster="banner-poster.jpg"
          preload="auto">
     <source src="banner.mp4" type="video/mp4">
   </video>
+  <video class="hero-video" id="hero-video-b" muted playsinline preload="auto"></video>
   <script>
   (function(){
-    var vids=['banner.mp4','banner2.mp4'];
+    // Two stacked <video> elements crossfade into each other instead of
+    // swapping one element's src (which blanks to black while the new
+    // source loads). The next clip is preloaded into the hidden element
+    // well before it's needed, then faded in only once it has actually
+    // started playing, so the visible video is never blank.
+    // {src, max} — max caps how long the clip plays before crossfading (seconds)
+    var vids=[
+      {src:'banner.mp4'},
+      {src:'banner-joker.mp4'},
+      {src:'banner3.mp4'},
+      {src:'banner2.mp4'}
+    ];
     var i=0;
-    var v=document.getElementById('hero-video');
-    v.addEventListener('ended',function(){
-      i=(i+1)%vids.length;
-      v.src=vids[i];
-      v.play();
-    });
+    var FADE_S=1.4; // must match .hero-video's CSS transition duration
+    var vA=document.getElementById('hero-video-a');
+    var vB=document.getElementById('hero-video-b');
+    var current=vA, next=vB, switching=false;
+    vA._max=vids[0].max||0;
+
+    function preloadNext(){
+      var ni=(i+1)%vids.length;
+      next.src=vids[ni].src;
+      next._max=vids[ni].max||0;
+      next.load();
+    }
+    preloadNext();
+
+    function startCrossfade(){
+      if(switching)return;
+      switching=true;
+      var target=next, outgoing=current;
+      target.currentTime=0;
+      var p=target.play();
+      function afterStart(){
+        target.classList.add('active');
+        outgoing.classList.remove('active');
+        i=(i+1)%vids.length;
+        setTimeout(function(){
+          outgoing.pause();
+          current=target;next=outgoing;
+          switching=false;
+          preloadNext();
+        },FADE_S*1000+80);
+      }
+      if(p&&p.then)p.then(afterStart).catch(afterStart);else afterStart();
+    }
+    function onTimeUpdate(e){
+      var el=e.target;
+      if(el!==current||switching)return;
+      var lim=el.duration||0;
+      if(el._max&&el._max<lim)lim=el._max;
+      if(lim&&el.currentTime>=lim-FADE_S)startCrossfade();
+    }
+    function onEnded(e){ if(e.target===current&&!switching)startCrossfade(); }
+    vA.addEventListener('timeupdate',onTimeUpdate);
+    vB.addEventListener('timeupdate',onTimeUpdate);
+    vA.addEventListener('ended',onEnded);
+    vB.addEventListener('ended',onEnded);
   })();
   </script>
   <div class="hero-overlay"></div>
@@ -605,6 +659,22 @@ footer{position:relative;overflow:hidden;background:var(--s1);border-top:1px sol
     </div>
   </div>
   <div class="games-grid" id="gamesGrid">
+    <div class="gc" onclick="openModal(11)">
+      <div class="gc-img">
+        <img src="assets/jokers-madhouse.jpg" alt="Joker's Madhouse — horror slot game art by ZinZin Studios" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        <span class="gc-badge gold">New</span>
+        <div class="gc-foot">
+          <span class="gc-cat">slot</span>
+          <a class="gc-name" href="/games/jokers-madhouse/" onclick="event.stopPropagation()">Joker's Madhouse</a>
+        </div>
+      </div>
+    </div>
+
     <div class="gc" onclick="openModal(10)">
       <div class="gc-img">
         <img src="assets/bullet_hole.jpg" alt="Bullet Hole — slot game art by ZinZin Studios" loading="lazy">
@@ -993,6 +1063,23 @@ window.addEventListener('scroll',()=>{
 // Games data
 const games=[
   {
+    id:11,name:"Joker's Madhouse",slug:"jokers-madhouse",category:"slot",
+    image:"assets/jokers-madhouse.jpg",
+    heroPos:"50% 38%",
+    demoUrl:"jokers-madhouse/",
+    badge:"New",badgeClass:"gold",
+    short:"Step right up. The show is deranged.",
+    desc:"Joker's Madhouse drags players into a rotting horror carnival where a grinning harlequin runs the show. On a 5×3, 20-payline reel set, the Mad Joker Wild laughs across full reels while the Skull Bell Scatter drops you into the Freakshow Free Spins — a blood-lit big top with sticky wilds and a rising dread meter. Original hand-painted horror-circus art, a living jester who lurches at the frame, and an unsettling calliope score synthesized in the browser.",
+    tags:["Slot","5×3 Grid","Expanding Wild","Free Spins","Horror"],
+    specs:[{val:"5×3",lbl:"Grid"},{val:"RTP 96.2%",lbl:"Return to Player"},{val:"High",lbl:"Volatility"},{val:"10,000x",lbl:"Max Win"}],
+    features:[
+      {icon:"🃏",title:"Mad Joker Wild",desc:"The harlequin expands to cover a full reel and substitutes every paying symbol"},
+      {icon:"💀",title:"Freakshow Free Spins",desc:"3+ Skull Bell scatters unlock free spins with sticky wilds and retriggers"},
+      {icon:"🎪",title:"Dread Meter",desc:"Every win fills the meter for escalating multipliers in the bonus"},
+      {icon:"🎨",title:"Horror-circus art",desc:"Hand-painted rotting carnival with a living jester lurching beside the reels"}
+    ]
+  },
+  {
     id:10,name:"Bullet Hole",slug:"bullet-hole",category:"slot",
     image:"assets/bullet_hole.jpg",
     demoUrl:"bullet_hole/",
@@ -1203,7 +1290,7 @@ function filterGames(cat,btn){
 
 function openModal(id){
   const g=games.find(x=>x.id===id);if(!g)return;
-  document.getElementById('modalHero').innerHTML=`<img src="${g.image}" alt="${g.name} — ${g.category} game art by ZinZin Studios">`;
+  document.getElementById('modalHero').innerHTML=`<img src="${g.image}" alt="${g.name} — ${g.category} game art by ZinZin Studios"${g.heroPos?` style="object-position:${g.heroPos}"`:''}>`;
   document.getElementById('modalTag').textContent=g.category.toUpperCase()+' GAME';
   document.getElementById('modalTitle').textContent=g.name;
   document.getElementById('modalDesc').textContent=g.desc;
