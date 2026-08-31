@@ -471,6 +471,32 @@ window.addEventListener('keydown',e=>{
 let winLines=[],totalWin=0,winFlash=0;
 let particles=[],bigWin={a:0,v:0,img:null,s:0},lastTS=0;
 
+// ── FX: reel glitch — always-on faint TV distortion + micro-flickers + big bursts ──
+const GLITCH_MIN=16, GLITCH_MAX=34;      // seconds between the big glitch bursts
+const GLITCH_BASE=0.12;                  // constant floor — faint scanlines never stop
+let glitch=0, glitchDur=0;               // burst intensity (0..~1.5) and ms remaining
+let glitchTimer=(GLITCH_MIN+Math.random()*(GLITCH_MAX-GLITCH_MIN))*1000;
+let microTimer=(2+Math.random()*4)*1000;
+const _gcv=document.createElement('canvas'), _gtx=_gcv.getContext('2d');
+function triggerGlitch(str,dur,silent){ glitch=str||1; glitchDur=dur||(130+Math.random()*260); if(!silent)glitchSfx(); }
+function glitchSfx(){
+  if(muted)return;
+  try{
+    const a=getAC(),t=a.currentTime;
+    const buf=a.createBuffer(1,(a.sampleRate*0.16)|0,a.sampleRate),d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,1.6);
+    const src=a.createBufferSource();src.buffer=buf;
+    const f=a.createBiquadFilter();f.type='bandpass';f.frequency.value=900+Math.random()*2200;f.Q.value=7;
+    const g=a.createGain();g.gain.value=0.11;
+    src.connect(f);f.connect(g);g.connect(masterGain);src.start(t);
+    tone(70+Math.random()*50,.13,'square',.05,t);
+  }catch(e){}
+}
+// ── FX: "trip" — dreamy immersion. Strong in free spins, rare + mild in base game. ──
+let trip=0, tripTarget=0, tripBurstDur=0;
+let tripBurstTimer=(38+Math.random()*55)*1000;
+const _tcv=document.createElement('canvas'), _ttx=_tcv.getContext('2d');
+
 // ── Ambient motes (rising spores / embers) ─────────────────
 const MOTES=[];
 (function initMotes(){
@@ -575,6 +601,7 @@ function checkWins(){
     winLines.forEach(wl=>{const k=SYMS[wl.sid]&&SYMS[wl.sid].k;if(k&&ANIM_KEYS.indexOf(k)>=0)playWinClip(k);});
     if(winModeSyms.size)winFlash=5500;   // let the symbol win-animation actually show
     const mult=totalWin/bet;
+    if(forceTier||mult>=20)triggerGlitch(1.15);    // reel "breaks up" on a big hit
     burst(RL+RW/2,RT+RH*.5,mult>=20?34:mult>=10?22:12);
     if(forceTier||mult>=10){
       bigWin.a=1;bigWin.v=totalWin;bigWin.s=0;
@@ -606,16 +633,112 @@ function draw(ts){
   const dt=Math.min(ts-lastTS,50);lastTS=ts;
   update(dt);
   ctx.clearRect(0,0,W,H);
+  ctx.save();
+  if(trip>0.02){                          // slow, smooth sway — dreamy, not jitter
+    const n=ts*0.001;
+    const rot=Math.sin(n*0.45)*0.007*trip + Math.sin(n*0.23+1.3)*0.004*trip;
+    const scl=1 + Math.sin(n*0.6)*0.018*trip;
+    const tx=Math.sin(n*0.37)*10*trip, ty=Math.cos(n*0.29)*7*trip;
+    ctx.translate(W/2+tx,H/2+ty);ctx.rotate(rot);ctx.scale(scl*1.03,scl*1.03);ctx.translate(-W/2,-H/2);
+  }
   drawBG();
   drawSpotlights(ts);
   drawMotes(ts);
   drawFrame();
   drawSymbols();
   drawWinFX();
+  drawTrip(ts);
+  drawGlitch();
   drawParticles();
   drawBigWin();
   drawFSBadge();
+  ctx.restore();
   requestAnimationFrame(draw);
+}
+function drawTrip(ts){
+  if(trip<0.02)return;
+  const tr=trip, n=ts*0.001;
+  const x=RL-4, y=RT-CH*0.12, w=RW+8, h=RH+CH*0.24;
+  const W2=Math.ceil(w*DPR), H2=Math.ceil(h*DPR);
+  if(_tcv.width!==W2||_tcv.height!==H2){_tcv.width=W2;_tcv.height=H2;}
+  _ttx.clearRect(0,0,W2,H2);
+  _ttx.drawImage(C, x*DPR,y*DPR,w*DPR,h*DPR, 0,0,W2,H2);         // snapshot the reel
+  ctx.save();
+  ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();
+  // 1. horizontal sine warp — melting / breathing
+  const bands=20, bh=h/bands;
+  const amp=(5+7*Math.sin(n*0.7))*tr;
+  for(let i=0;i<bands;i++){
+    const sy=i*bh;
+    const dx=Math.sin(sy*0.019+n*1.7)*amp + Math.sin(sy*0.006-n*0.9)*amp*0.55;
+    const sc=1 + Math.sin(sy*0.011+n*1.1)*0.02*tr;
+    ctx.drawImage(_tcv, 0,sy*DPR, _tcv.width,bh*DPR+2, x+dx-(w*sc-w)/2, y+sy-1, w*sc, bh+2);
+  }
+  // 2. slow hue drift + saturation pump
+  ctx.globalCompositeOperation='overlay';ctx.globalAlpha=0.20*tr;
+  const gg=ctx.createLinearGradient(x,y,x+w*Math.cos(n*0.3),y+h*Math.sin(n*0.3));
+  gg.addColorStop(0,'hsl('+((n*46)%360)+',95%,55%)');
+  gg.addColorStop(1,'hsl('+((n*46+150)%360)+',95%,50%)');
+  ctx.fillStyle=gg;ctx.fillRect(x,y,w,h);
+  ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
+  // 3. breathing vignette — closes in on you
+  const rad=h*(0.78-0.14*Math.sin(n*1.25));
+  const vg=ctx.createRadialGradient(x+w/2,y+h/2,h*0.18,x+w/2,y+h/2,rad);
+  vg.addColorStop(0,'rgba(0,0,0,0)');
+  vg.addColorStop(1,'rgba(0,0,0,'+(0.42*tr).toFixed(2)+')');
+  ctx.fillStyle=vg;ctx.fillRect(x,y,w,h);
+  ctx.restore();
+}
+function drawGlitch(){
+  if(!started)return;
+  const g=Math.max(GLITCH_BASE,glitch);
+  const x=RL-4, y=RT-CH*0.12, w=RW+8, h=RH+CH*0.24;
+  const slices = g<0.18 ? 0 : 1+Math.floor(Math.random()*Math.max(0,g-0.12)*7);
+  const blocks = g<0.30 ? 0 : Math.floor(Math.random()*4*g);
+  const heavy  = g>0.32;
+  const needSnap = heavy || slices>0 || blocks>0 || g>0.18;
+  if(needSnap){
+    const W2=Math.ceil(w*DPR), H2=Math.ceil(h*DPR);
+    if(_gcv.width!==W2||_gcv.height!==H2){_gcv.width=W2;_gcv.height=H2;}
+    _gtx.clearRect(0,0,W2,H2);
+    _gtx.drawImage(C, x*DPR,y*DPR,w*DPR,h*DPR, 0,0,W2,H2);      // snapshot the rendered reel
+  }
+  ctx.save();
+  ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();
+  if(heavy){                                                    // full chromatic aberration
+    const off=(3+Math.random()*8)*g;
+    ctx.globalCompositeOperation='lighter';ctx.globalAlpha=Math.min(1,0.5*g);
+    ctx.filter='sepia(1) saturate(6) hue-rotate(-40deg) brightness(1.1)';
+    ctx.drawImage(_gcv, x-off, y+(Math.random()*2-1)*2*g, w, h);
+    ctx.filter='sepia(1) saturate(6) hue-rotate(150deg) brightness(1.1)';
+    ctx.drawImage(_gcv, x+off, y+(Math.random()*2-1)*2*g, w, h);
+    ctx.filter='none';ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+  }else if(g>0.18){                                             // cheap micro-flicker ghost
+    ctx.globalCompositeOperation='lighter';ctx.globalAlpha=0.28*g;
+    ctx.drawImage(_gcv, x+(Math.random()<0.5?-1:1)*(1+g*5), y, w, h);
+    ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+  }
+  for(let i=0;i<slices;i++){
+    const bandH=6+Math.random()*h*0.16, from=Math.random()*(h-bandH);
+    const dx=(Math.random()*2-1)*(4+Math.random()*26)*g;
+    ctx.drawImage(_gcv, 0,from*DPR, _gcv.width,bandH*DPR, x+dx, y+from, w, bandH);
+    if(Math.random()<0.4){ctx.fillStyle='rgba(4,2,8,'+(0.4+Math.random()*0.4).toFixed(2)+')';ctx.fillRect(x,y+from+bandH-2,w,2+Math.random()*3);}
+  }
+  for(let i=0;i<blocks;i++){
+    const bw=10+Math.random()*w*0.3, bh=4+Math.random()*14;
+    const bx=x+Math.random()*(w-bw), by=y+Math.random()*(h-bh);
+    if(Math.random()<0.5)ctx.drawImage(_gcv,(bx-x)*DPR,(by-y)*DPR,bw*DPR,bh*DPR, bx+(Math.random()*2-1)*24, by, bw,bh);
+    else{ctx.fillStyle=Math.random()<0.5?'rgba(255,255,255,'+(0.5*g).toFixed(2)+')':'rgba(143,227,77,'+(0.4*g).toFixed(2)+')';ctx.fillRect(bx,by,bw,bh);}
+  }
+  // rolling scanlines — always faintly present, stronger during a burst
+  ctx.globalAlpha=Math.min(0.4, 0.055+0.32*glitch);ctx.fillStyle='#000';
+  for(let yy=y-6+(Date.now()*0.35)%6; yy<y+h; yy+=4)ctx.fillRect(x,yy,w,1.4);
+  ctx.globalAlpha=1;
+  // occasional faint brightness dip so the "screen" feels unstable at rest
+  if(!heavy&&Math.random()<0.09){
+    ctx.globalAlpha=0.04+Math.random()*0.05;ctx.fillStyle='#000';ctx.fillRect(x,y,w,h);ctx.globalAlpha=1;
+  }
+  ctx.restore();
 }
 function drawBG(){
   const b=IMG['bg'];if(!b)return;
@@ -791,6 +914,28 @@ function updateMotes(dt){
   }
 }
 function update(dt){
+  // glitch timers — run whenever the game is up, spinning or idle
+  if(glitchDur>0){glitchDur-=dt;if(glitchDur<=0)glitch=0;}
+  if(started){
+    glitchTimer-=dt;microTimer-=dt;
+    if(glitchTimer<=0){
+      triggerGlitch(0.85+Math.random()*0.55);
+      glitchTimer=(GLITCH_MIN+Math.random()*(GLITCH_MAX-GLITCH_MIN))*1000;
+    }else if(microTimer<=0&&glitchDur<=0){
+      triggerGlitch(0.20+Math.random()*0.16, 45+Math.random()*90, true);   // silent micro-flicker
+      microTimer=(1.6+Math.random()*4.5)*1000;
+    }
+  }
+  // trip ramp: strong & steady in free spins, otherwise rare short swells
+  tripTarget = inFree ? 0.8 : 0;
+  if(tripBurstDur>0){tripBurstDur-=dt;if(!inFree)tripTarget=Math.max(tripTarget,0.26);}
+  else if(started&&!inFree){
+    tripBurstTimer-=dt;
+    if(tripBurstTimer<=0){tripBurstDur=3500+Math.random()*4500;tripBurstTimer=(40+Math.random()*55)*1000;}
+  }
+  trip += (tripTarget-trip)*Math.min(1,dt*0.0016);
+  if(trip<0.004)trip=0;
+
   if(winFlash>0){winFlash-=dt;if(winFlash<=0)winModeSyms.clear();}
   if(expandAnim>0)expandAnim=Math.max(0,expandAnim-dt*.0016);
   updateMotes(dt);
