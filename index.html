@@ -280,14 +280,21 @@ nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:900;
 @media(max-width:860px){.about-inner{grid-template-columns:1fr;gap:40px}}
 
 /* ── FOOTER ── */
-footer{position:relative;overflow:hidden;background:var(--s1);border-top:1px solid var(--border)}
-.ft-bg{position:absolute;inset:0;background:url('assets/footer_background.png') center/cover no-repeat;opacity:.18;pointer-events:none}
-.ft-char{position:absolute;right:0;bottom:0;height:85%;opacity:.9;pointer-events:none;
-         mask-image:linear-gradient(to right,transparent 0%,black 20%)}
+footer{position:relative;overflow-x:clip;overflow-y:visible;background:var(--s1);border-top:1px solid var(--border)}
+.ft-bg{position:absolute;inset:0;overflow:hidden;background:url('assets/footer-madhouse-bg.jpg') center/cover no-repeat;opacity:.22;pointer-events:none}
+/* rabbit is a child of .ft-body (the max-width:1200px centred grid). It's
+   anchored to the right so its edge sits ~34px inside the viewport at every
+   width (clipped by footer's overflow-x past that), and .ft-body reserves a
+   spacer track on the right so the rabbit clears the Follow Us column. */
+.ft-char{position:absolute;top:0;right:calc(-8px - (50vw - 50%));
+         width:clamp(200px,24vw,320px);height:auto;
+         transform:translateY(-49%);
+         pointer-events:none;z-index:3;
+         filter:drop-shadow(0 16px 30px rgba(0,0,0,.55))}
 .ft-overlay{position:absolute;inset:0;background:url('footer_overlay.png') center bottom/cover no-repeat;opacity:.06;pointer-events:none}
 .ft-body{position:relative;z-index:2;max-width:1200px;margin:0 auto;
          padding:64px clamp(20px,4vw,64px) 0;
-         display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px}
+         display:grid;grid-template-columns:1.9fr 1fr 1fr 1fr minmax(80px,.7fr);gap:48px}
 .ft-brand img.ft-logo{height:44px;object-fit:contain;margin-bottom:20px;display:block}
 .ft-brand p{font-size:13px;color:var(--muted);line-height:1.8;max-width:280px}
 .ft-col h4{font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;
@@ -372,7 +379,7 @@ footer{position:relative;overflow:hidden;background:var(--s1);border-top:1px sol
   .games-grid{grid-template-columns:repeat(3,1fr)}
   .sec-head{grid-template-columns:1fr;gap:24px}
   .ft-body{grid-template-columns:1fr 1fr;gap:32px}
-  .ft-char{height:60%;opacity:.5}
+  .ft-char{width:clamp(160px,26vw,240px);transform:translateY(-42%)}
   .modal-specs{grid-template-columns:repeat(2,1fr)}
   .modal-features{grid-template-columns:1fr}
 }
@@ -381,7 +388,7 @@ footer{position:relative;overflow:hidden;background:var(--s1);border-top:1px sol
   .stat-item{padding:28px 12px}
   .stats-inner{gap:0}
   .ft-body{grid-template-columns:1fr}
-  .ft-char{display:none}
+  .ft-char{width:clamp(120px,32vw,175px);transform:translateY(-34%)}
   .nav-links{display:none}
   .nav-burger{display:flex}
   .nav-contact-btn{display:none}
@@ -955,7 +962,6 @@ footer{position:relative;overflow:hidden;background:var(--s1);border-top:1px sol
 <footer>
   <div class="ft-bg"></div>
   <div class="ft-overlay"></div>
-  <img src="footer_gladiator.png" alt="" class="ft-char">
   <div class="ft-body">
     <div class="ft-brand">
       <img src="logo/zinzin_studios_logo.png" alt="ZinZin Studios" class="ft-logo">
@@ -992,7 +998,46 @@ footer{position:relative;overflow:hidden;background:var(--s1);border-top:1px sol
         </a>
       </div>
     </div>
+    <canvas class="ft-char" id="ftChar" aria-hidden="true"></canvas>
   </div>
+  <script>
+  // Decorative looping rabbit, anchored to the footer content grid (right
+  // edge, over the Follow Us column) so it holds position at any viewport
+  // width. Source is a "stacked alpha" H.264 (colour on top, greyscale
+  // matte on the bottom) recombined onto the canvas each frame — a plain
+  // alpha <video> painted a black box behind it in some Chrome/GPU setups.
+  // Only starts once the footer scrolls into view.
+  (function(){
+    var cv=document.getElementById('ftChar'), cx=cv.getContext('2d');
+    var v=document.createElement('video');
+    v.src='assets/footer-rabbit.mp4';v.muted=true;v.loop=true;v.playsInline=true;
+    v.setAttribute('playsinline','');v.setAttribute('muted','');v.preload='auto';
+    var started=false,lastT=-1;
+    function loop(){
+      requestAnimationFrame(loop);
+      if(!v.videoWidth||v.readyState<2||v.currentTime===lastT)return;
+      lastT=v.currentTime;
+      var w=v.videoWidth, h=(v.videoHeight/2)|0;
+      if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;}
+      cx.clearRect(0,0,w,h);
+      cx.drawImage(v,0,0,w,h,0,0,w,h);
+      var col=cx.getImageData(0,0,w,h);
+      cx.drawImage(v,0,h,w,h,0,0,w,h);
+      var mat=cx.getImageData(0,0,w,h).data, cd=col.data;
+      for(var i=0,n=cd.length;i<n;i+=4)cd[i+3]=mat[i];
+      cx.putImageData(col,0,0);
+    }
+    var io=new IntersectionObserver(function(e){
+      if(e[0].isIntersecting&&!started){
+        started=true;
+        v.play().catch(function(){setTimeout(function(){v.play().catch(function(){});},400);});
+        requestAnimationFrame(loop);
+        io.disconnect();
+      }
+    },{rootMargin:'200px'});
+    io.observe(document.querySelector('footer'));
+  })();
+  </script>
 
   <div class="ft-badges">
     <div class="ft-badge">
