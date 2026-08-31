@@ -99,6 +99,62 @@ canvas{display:block}
 }
 #play-btn:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 12px 40px rgba(245,196,50,.6)}
 #play-btn:active{transform:scale(.97)}
+
+/* ── MOBILE CONTROLS ──
+   The desktop #bot bar crams balance/cashout/bet/GO/difficulty/results
+   into one 78px row — far too tight for a phone. On narrow screens it's
+   swapped for a taller, stacked panel (MIN/bet/MAX, quick-bet presets, a
+   full-width difficulty bar, then CASHOUT and GO as big tappable bars),
+   reusing the same underlying elements/state so no game logic changes. */
+#mMin,#mMax,#mPresets{display:none}
+@media(max-width:640px){
+  #botWrap{padding:10px 12px 16px}
+  #bot{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    grid-template-areas:
+      "min betc betc max"
+      "presets presets presets presets"
+      "diff diff diff diff"
+      "cash cash cash cash"
+      "go go go go";
+    gap:8px;height:auto;max-width:100%;padding:14px 12px;align-items:stretch;
+  }
+  #balCard,#res,#betArrows,#diffArrows,.rDiv{display:none}
+  #mMin,#mMax{
+    display:flex;align-items:center;justify-content:center;
+    background:#1A3050;border:1px solid #2D5080;border-radius:10px;
+    color:#DFF0F2;font-size:12px;font-weight:800;letter-spacing:.5px;cursor:pointer;
+    font-family:inherit;
+  }
+  #mMin{grid-area:min}
+  #mMax{grid-area:max}
+  #betCtrl{grid-area:betc;align-items:center;text-align:center;padding:0}
+  #betCtrl .val{justify-content:center;font-size:18px}
+  #mPresets{grid-area:presets;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  #mPresets button{
+    background:#1A3050;border:1px solid #1E3A5F;border-radius:10px;color:#DFF0F2;
+    font-size:13px;font-weight:700;padding:10px 0;cursor:pointer;font-family:inherit;
+    display:flex;align-items:center;justify-content:center;gap:2px;
+  }
+  #diffCtrl{
+    grid-area:diff;flex-direction:row;align-items:center;justify-content:space-between;
+    background:#1A3050;border:1px solid #1E3A5F;border-radius:10px;padding:0 16px;
+    height:48px;cursor:pointer;
+  }
+  #diffCtrl .lbl{display:none}
+  #diffCtrl .val{font-size:15px!important}
+  #diffCtrl::after{content:'\25BE';color:#4A80A0;font-size:16px}
+  #cashWrap{grid-area:cash;width:100%}
+  #cashBtn{width:100%;height:52px;border-radius:10px;flex-direction:row;gap:10px}
+  #cLbl{font-size:14px}
+  #cAmtRow{font-size:13px}
+  #goBtn{
+    grid-area:go;width:100%;height:56px;border-radius:10px;top:0;margin:0;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(180deg,#4AEA49,#0EA00D);
+  }
+  #goBtn::before,#goBtn::after{content:none}
+}
 </style>
 </head>
 <body>
@@ -135,22 +191,30 @@ canvas{display:block}
         <div id="cAmtRow"><span class="coin" style="background:#C88000;color:#1A1000">$</span><span id="cAmtTxt">0.00</span></div>
       </button>
     </div>
-    <div class="ctrl">
+    <button id="mMin" class="mMinMax" onclick="setBet(BETS[0])">MIN</button>
+    <div class="ctrl" id="betCtrl">
       <div class="lbl">BET</div>
       <div class="val"><span class="coin">$</span><span id="betTxt">1</span></div>
     </div>
-    <div class="arrows">
+    <button id="mMax" class="mMinMax" onclick="setBet(BETS[BETS.length-1])">MAX</button>
+    <div class="arrows" id="betArrows">
       <button class="ar" onclick="chBet(1)">&#8743;</button>
       <button class="ar" onclick="chBet(-1)">&#8744;</button>
+    </div>
+    <div id="mPresets">
+      <button onclick="setBet(1)">1<span class="coin">$</span></button>
+      <button onclick="setBet(3)">3<span class="coin">$</span></button>
+      <button onclick="setBet(10)">10<span class="coin">$</span></button>
+      <button onclick="setBet(25)">25<span class="coin">$</span></button>
     </div>
     <div class="rDiv"></div>
     <button id="goBtn" onclick="handleGo()"><span id="goT">GO</span></button>
     <div class="rDiv"></div>
-    <div class="arrows">
+    <div class="arrows" id="diffArrows">
       <button class="ar" onclick="chDiff(1)">&#8743;</button>
       <button class="ar" onclick="chDiff(-1)">&#8744;</button>
     </div>
-    <div class="ctrl">
+    <div class="ctrl" id="diffCtrl" onclick="chDiff(1)">
       <div class="lbl">DIFFICULTY</div>
       <div class="val" id="diffV" style="font-size:12px">EASY</div>
     </div>
@@ -417,6 +481,12 @@ function chDiff(d){
   if(ST==='PLAYING')return;
   dIdx=(dIdx+d+DIFFS.length)%DIFFS.length;
   document.getElementById('diffV').textContent=DIFFS[dIdx];
+}
+// Jump straight to a bet value — used by the mobile MIN/MAX/preset buttons.
+function setBet(v){
+  if(ST==='PLAYING')return;
+  bet=v;
+  document.getElementById('betTxt').textContent=bet%1===0?bet:bet.toFixed(1);
 }
 
 function updateSpawns(dt){

@@ -93,27 +93,40 @@ html,body{
   #ld-character canvas{ height:min(62vh,540px); }
 }
 
+/* ── GAME AREA ── */
+/* Real, unscaled band between the (real, always-full-size) topbar and hud
+   bars — never itself scaled, so it always exactly matches their height.
+   #shell is centered and clipped inside it. */
+#game-area{
+  position:fixed; left:0; right:0; top:84px; bottom:84px;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden; z-index:1;
+}
+
 /* ── GAME SHELL ── */
-/* Fixed logical design size (1480×900) that scales as ONE unit to fit any
-   viewport (JS sets --stage-scale on resize) — same composition on
-   desktop/tablet/mobile, just smaller, never reflowed or hidden. Because
-   this element has a transform, it becomes the containing block for every
-   position:fixed descendant (topbar/hud/character/logo/popups/etc.), so
-   they dock to the STAGE instead of the real viewport. */
+/* Fixed logical design size (1480×732 — just the game-art band, not the
+   HUD bars) that scales as ONE unit to fit #game-area (JS sets
+   --stage-scale on resize) — same composition on desktop/tablet/mobile,
+   just smaller, never reflowed or hidden. Because this element has a
+   transform, it becomes the containing block for every position:fixed
+   descendant (character/logo/popups/etc.), so they dock to the STAGE
+   instead of the real viewport. The topbar/hud bars themselves live
+   OUTSIDE #shell now (real siblings, see #topbar/#hud below) so they stay
+   full, tappable size at any screen size instead of shrinking with the
+   game art. */
 #shell{
-  width:1480px; height:900px;
-  position:fixed; left:50%; top:50%;
-  transform:translate(-50%,-50%) scale(var(--stage-scale,1));
+  width:1480px; height:732px;
+  flex-shrink:0;
+  transform:scale(var(--stage-scale,1));
   transform-origin:center center;
   display:flex; flex-direction:column;
   align-items:center; justify-content:flex-start;
 }
 
 /* ── PIXI CANVAS ── */
-/* margin-top matches #topbar's height so the board sits flush under it,
-   and JS sizes the canvas to end exactly at the HUD's top edge (see
-   TOPBAR_H / HUD_H in the layout script). */
-#game-canvas{ display:block; position:relative; z-index:1; margin-top:84px; }
+/* Fills #shell top-to-bottom now that the topbar/hud bars are real,
+   external elements instead of an 84px reservation baked into the stage. */
+#game-canvas{ display:block; position:relative; z-index:1; }
 
 /* ── IN-GAME CHARACTER ── */
 /* Wrapper div positioned/sized by JS (see positionCharacter()); holds two
@@ -214,6 +227,25 @@ html,body{
   text-align:right; max-width:120px; flex:0 0 auto; display:block;
 }
 .hud-hint b{ color:rgba(255,255,255,.55); }
+
+@media(max-width:600px){
+  #hud{height:70px;padding:0 8px;gap:4px}
+  #topbar{height:70px}
+  #game-area{top:70px;bottom:70px}
+  .hud-stat-row .lbl{display:none}
+  .hud-stats{gap:2px}
+  .hud-stat-row .val{font-size:12px}
+  .hud-center{display:none}
+  #spin-btn{width:66px;height:66px;top:-10px}
+  #spin-btn svg{width:28px;height:28px}
+  .hud-hint{display:none}
+  .hud-actions{gap:4px}
+  .hud-pill{padding:0;width:34px;height:34px;border-radius:50%;justify-content:center}
+  .hud-pill .pill-label{display:none}
+  .hud-bet-stepper{flex-direction:row;gap:6px}
+  .bet-step{width:34px;height:34px}
+  .bet-step img{width:18px;height:18px}
+}
 
 /* ── TOP BAR ── */
 #topbar{
@@ -440,9 +472,20 @@ html,body{
   <button id="play-btn">▶ Play Now</button>
 </div>
 
-<!-- Everything below lives inside #shell — the fixed 1480×900 design
+<!-- TOP BAR — real, unscaled, docks to the actual viewport (see
+     #topbar's CSS). Lives outside #shell so it stays full size on mobile
+     instead of shrinking with the game art. -->
+<div id="topbar">
+  <div class="tb-right">
+    <div class="tb-badge">Demo</div>
+    <div class="tb-badge" style="color:rgba(255,215,0,.5);border-color:rgba(255,215,0,.15)">RTP 96.5%</div>
+  </div>
+</div>
+
+<!-- Everything below lives inside #shell — the fixed 1480×732 design
      stage — so it docks/scales as one unit instead of the raw viewport
      (see #shell's CSS comment and updateStageScale() in the script). -->
+<div id="game-area">
 <div id="shell">
   <!-- IN-GAME CHARACTER -->
   <div id="character-img">
@@ -454,14 +497,6 @@ html,body{
        centered right above the character's head (see positionLogo()). -->
   <img id="tb-logo-img" src="/Bakerybonanza/logo.png" alt="Bakery Bonanza">
 
-  <!-- TOP BAR -->
-  <div id="topbar">
-    <div class="tb-right">
-      <div class="tb-badge">Demo</div>
-      <div class="tb-badge" style="color:rgba(255,215,0,.5);border-color:rgba(255,215,0,.15)">RTP 96.5%</div>
-    </div>
-  </div>
-
   <!-- PIXI CANVAS -->
   <canvas id="game-canvas"></canvas>
 
@@ -471,42 +506,6 @@ html,body{
   <!-- WIN MESSAGE (mid-screen) -->
   <div id="win-msg">
     <div id="win-msg-amount">$0.00</div>
-  </div>
-
-  <!-- BOTTOM HUD -->
-  <div id="hud">
-    <div class="hud-left">
-      <button class="hud-icon-btn" id="menu-btn" title="Menu">
-        <img src="/Bakerybonanza/UI/Menu_Normal.webp" alt="Menu">
-      </button>
-    </div>
-
-    <div class="hud-stats">
-      <div class="hud-stat-row"><span class="lbl">BALANCE</span><span class="val" id="hud-balance">1,000.00</span></div>
-      <div class="hud-stat-row"><span class="lbl">BET</span><span class="val" id="hud-bet">1.00</span></div>
-    </div>
-
-    <div class="hud-center">
-      <div class="lbl">Win</div>
-      <div class="val" id="hud-win">0.00</div>
-    </div>
-
-    <div class="hud-actions">
-      <button class="hud-pill" id="turbo-btn" onclick="toggleTurbo()"><span class="bolt">⚡</span>TURBO</button>
-      <button class="hud-pill" id="auto-btn" onclick="toggleAuto()">AUTO</button>
-    </div>
-
-    <!-- SPIN BUTTON -->
-    <button id="spin-btn" onclick="spin()">
-      <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-    </button>
-
-    <div class="hud-bet-stepper">
-      <button class="bet-step" onclick="changeBet(1)"><img src="/Bakerybonanza/UI/Plus_Normal.webp" alt="+"></button>
-      <button class="bet-step" onclick="changeBet(-1)"><img src="/Bakerybonanza/UI/Minus_Normal.webp" alt="−"></button>
-    </div>
-
-    <div class="hud-hint">Press <b>spacebar</b> to spin</div>
   </div>
 
   <!-- SUPER WIN OVERLAY — no button: pure timed popup like the small win
@@ -525,6 +524,45 @@ html,body{
   <!-- PARTICLES -->
   <canvas id="pfx"></canvas>
   <div id="toast"></div>
+</div>
+</div>
+
+<!-- BOTTOM HUD — real, unscaled, docks to the actual viewport (see #hud's
+     CSS). Lives outside #shell so every button stays full, tappable size
+     on mobile instead of shrinking with the game art. -->
+<div id="hud">
+  <div class="hud-left">
+    <button class="hud-icon-btn" id="menu-btn" title="Menu">
+      <img src="/Bakerybonanza/UI/Menu_Normal.webp" alt="Menu">
+    </button>
+  </div>
+
+  <div class="hud-stats">
+    <div class="hud-stat-row"><span class="lbl">BALANCE</span><span class="val" id="hud-balance">1,000.00</span></div>
+    <div class="hud-stat-row"><span class="lbl">BET</span><span class="val" id="hud-bet">1.00</span></div>
+  </div>
+
+  <div class="hud-center">
+    <div class="lbl">Win</div>
+    <div class="val" id="hud-win">0.00</div>
+  </div>
+
+  <div class="hud-actions">
+    <button class="hud-pill" id="turbo-btn" onclick="toggleTurbo()"><span class="bolt">⚡</span><span class="pill-label">TURBO</span></button>
+    <button class="hud-pill" id="auto-btn" onclick="toggleAuto()"><span class="bolt">&#8635;</span><span class="pill-label">AUTO</span></button>
+  </div>
+
+  <!-- SPIN BUTTON -->
+  <button id="spin-btn" onclick="spin()">
+    <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+  </button>
+
+  <div class="hud-bet-stepper">
+    <button class="bet-step" onclick="changeBet(1)"><img src="/Bakerybonanza/UI/Plus_Normal.webp" alt="+"></button>
+    <button class="bet-step" onclick="changeBet(-1)"><img src="/Bakerybonanza/UI/Minus_Normal.webp" alt="−"></button>
+  </div>
+
+  <div class="hud-hint">Press <b>spacebar</b> to spin</div>
 </div>
 
 <!-- SIDE MENU — Sound and Music are independent switches here. -->
@@ -871,20 +909,27 @@ const Game = {
 
 // ── PIXI SETUP ────────────────────────────────────────────
 const canvas = document.getElementById('game-canvas');
-// TOPBAR_H must match #topbar's CSS height and #game-canvas's margin-top;
-// HUD_H must match #hud's CSS height. The canvas is sized to fill exactly
-// the band between them so the board's bottom edge lands flush on the HUD.
-const TOPBAR_H = 84, HUD_H = 84;
+// The topbar/hud bars are now real elements outside #shell (see
+// #game-area's CSS), not a reservation baked into the stage — so the
+// canvas fills #shell's full height and these stay 0. BAR_H (below) is the
+// real, unscaled height of each bar, used only to size #game-area.
+const TOPBAR_H = 0, HUD_H = 0;
+const BAR_H = 84;
 // Fixed logical design resolution — must match #shell's CSS width/height.
 // The layout below is computed ONCE against these constants, never against
-// window.innerWidth/innerHeight, so the composition (board + character +
-// HUD) never reflows. updateStageScale() scales the whole #shell as one
-// unit to fit whatever viewport it's shown in (same idea as a fixed-canvas
-// game with a "fit" scale mode — how Sweet Bonanza/Peter&Sons-style slots
-// stay visually identical on desktop, tablet and mobile).
-const STAGE_W = 1480, STAGE_H = 900;
+// window.innerWidth/innerHeight, so the composition (board + character)
+// never reflows. updateStageScale() scales the whole #shell as one unit
+// to fit whatever space #game-area has (same idea as a fixed-canvas game
+// with a "fit" scale mode — how Sweet Bonanza/Peter&Sons-style slots stay
+// visually identical on desktop, tablet and mobile), while the topbar/hud
+// bars themselves stay real, tappable size.
+const STAGE_W = 1480, STAGE_H = 732;
 let W = STAGE_W - 24;
 let H = STAGE_H - TOPBAR_H - HUD_H;
+// Evaluated once at load, same as the rest of this fixed-design layout —
+// on mobile there's no room for the character beside the board, so it's
+// dropped from the composition and the board is centered on its own.
+const MOBILE = window.innerWidth <= 600;
 
 const app = new PIXI.Application({
   view: canvas,
@@ -922,19 +967,22 @@ function computeLayout() {
   if (boardW > availW) { boardW = availW; boardH = boardW / BOARD_ASPECT; }
 
   // The character stands beside the board, close to full board height
-  // (matches the reference art direction). Layout is computed once against
-  // the fixed STAGE_W/STAGE_H design resolution, so the character is always
-  // part of the composition — it never disappears at any screen size.
-  let cH = boardH * CHAR_HEIGHT_RATIO;
-  let cW = cH * CHAR_ASPECT;
-  let gap = CHAR_GAP;
-  const spareW = availW - boardW - gap;
-  if (cW > spareW) {
-    if (spareW > 40) {
-      const scale = spareW / cW;
-      cW *= scale; cH *= scale;
-    } else {
-      cW = 0; cH = 0; gap = 0;
+  // (matches the reference art direction) — except on mobile, where
+  // there's no room for it and it's dropped entirely so the board can be
+  // centered on its own (see MOBILE above).
+  let cH = 0, cW = 0, gap = 0;
+  if (!MOBILE) {
+    cH = boardH * CHAR_HEIGHT_RATIO;
+    cW = cH * CHAR_ASPECT;
+    gap = CHAR_GAP;
+    const spareW = availW - boardW - gap;
+    if (cW > spareW) {
+      if (spareW > 40) {
+        const scale = spareW / cW;
+        cW *= scale; cH *= scale;
+      } else {
+        cW = 0; cH = 0; gap = 0;
+      }
     }
   }
 
@@ -976,6 +1024,15 @@ function positionLogo() {
   const el = document.getElementById('tb-logo-img');
   const canvasLeft = (STAGE_W - W) / 2;
   const canvasTop  = TOPBAR_H;
+  if (MOBILE) { // no character to sit above — big, centered over the board instead
+    const logoH = 130;
+    const gap = 16;
+    el.style.transform = 'translateX(-50%)';
+    el.style.height = logoH + 'px';
+    el.style.left = Math.round(boardX + boardW / 2) + 'px';
+    el.style.top  = Math.round(boardY - logoH - gap) + 'px';
+    return;
+  }
   if (charDispW <= 0) { // fallback if the board ever leaves no spare width — small top-right badge
     el.style.transform = 'none';
     el.style.height = '38px';
@@ -1736,7 +1793,20 @@ document.getElementById('menu-info-row').addEventListener('click', () => {
 // bigger or smaller (letterboxed on very different aspect ratios, same
 // as any fixed-resolution HTML5 slot using a "fit" scale mode).
 function updateStageScale() {
-  const scale = Math.min(window.innerWidth / STAGE_W, window.innerHeight / STAGE_H);
+  // Measure the real bars' rendered height (they shrink via CSS media
+  // query on narrow screens) rather than assuming BAR_H, so the game area
+  // always gets exactly what's left over.
+  const barH = document.getElementById('hud').offsetHeight || BAR_H;
+  const availH = window.innerHeight - barH * 2;
+  // On mobile, fit the scale to the BOARD (not the full 1480-wide stage
+  // that reserves space for the character, which is dropped — see
+  // MOBILE/computeLayout()) so the reels fill the screen like a mobile
+  // slot instead of sitting small in the middle with dead space around
+  // them. The board is centered on the stage, so this crops symmetrically.
+  const pad = 16;
+  const scale = MOBILE
+    ? Math.min(window.innerWidth / (boardW + pad*2), availH / STAGE_H)
+    : Math.min(window.innerWidth / STAGE_W, availH / STAGE_H);
   document.getElementById('shell').style.setProperty('--stage-scale', scale);
 }
 window.addEventListener('resize', updateStageScale);

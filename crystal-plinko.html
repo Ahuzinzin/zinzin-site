@@ -274,14 +274,34 @@ tbody td.mult-lo{ color:rgba(255,255,255,.3); }
 }
 #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 
-/* ── RESPONSIVE ── */
+/* ── RESPONSIVE ──
+   Desktop is a fixed 100vh dashboard (canvas + side panel + history,
+   nothing scrolls). That doesn't fit on a phone — panel + history alone
+   are taller than most screens, and with body{overflow:hidden} the
+   overflow just got clipped off-screen, unreachable. On mobile the page
+   is allowed to scroll normally instead, the canvas gets an explicit
+   height (so PixiJS has a real box to measure), and the history table —
+   not essential to actually playing — is dropped to save space. */
 @media(max-width:768px){
+  html,body{ height:auto; overflow:visible; overflow-y:auto; }
   #shell{
-    grid-template-columns:1fr;
-    grid-template-rows:48px 1fr auto auto;
+    display:block; width:100%; height:auto; max-width:none;
   }
-  #panel{ grid-column:1; grid-row:3; grid-template-columns:repeat(2,1fr); display:grid; max-height:300px; }
-  #history-wrap{ grid-column:1; grid-row:4; }
+  #topbar{ height:48px; padding:0 12px; }
+  .tb-badge{ display:none; }
+  .tb-logo{ font-size:14px; }
+  .tb-balance{ font-size:12px; }
+  #canvas-wrap{ width:100%; height:min(105vw,460px); }
+  #panel{
+    display:grid; grid-template-columns:repeat(2,1fr);
+    max-height:none; overflow-y:visible;
+    padding:14px; gap:12px;
+  }
+  #panel .mode-tabs,#bet-btn,#auto-opts,.rtp-info{ grid-column:1/3; }
+  #panel-spacer{ display:none; }
+  #history-wrap{ display:none; }
+  #win-flash{ left:50%; }
+  #toast{ left:50%; }
 }
 </style>
 </head>
@@ -369,10 +389,10 @@ tbody td.mult-lo{ color:rgba(255,255,255,.3); }
     <button id="bet-btn" onclick="dropBall()">BET 1.00</button>
 
     <!-- Spacer -->
-    <div style="flex:1"></div>
+    <div id="panel-spacer" style="flex:1"></div>
 
     <!-- RTP info -->
-    <div style="font-size:11px;color:rgba(255,255,255,.2);line-height:1.6;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">
+    <div class="rtp-info" style="font-size:11px;color:rgba(255,255,255,.2);line-height:1.6;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">
       Provably Fair · ZinZin Studio<br>
       Min 0.10 · Max 100 · RTP 96%
     </div>

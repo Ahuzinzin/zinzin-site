@@ -385,7 +385,16 @@ footer{position:relative;overflow:hidden;background:var(--s1);border-top:1px sol
   .sec-head{flex-direction:column;align-items:flex-start}
   .hero-scroll{display:none}
   .ft-badges{gap:8px}
-  .modal-body{padding:20px}
+  /* Play should be reachable without scrolling past specs/features — put
+     the whole actions row (Play/Full Details/Close) right after the
+     description instead of at the very bottom. */
+  .modal-body{padding:20px;display:flex;flex-direction:column}
+  .modal-kicker{order:1}
+  .modal-title{order:2}
+  .modal-desc{order:3}
+  .modal-actions{order:4}
+  .modal-specs{order:5}
+  .modal-features{order:6}
 }
 @media(max-width:400px){.games-grid{grid-template-columns:1fr 1fr;gap:10px}}
 
