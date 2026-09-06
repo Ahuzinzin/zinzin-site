@@ -249,6 +249,7 @@ const IMGS={
   'bgroom':'assets/bg-room.jpg',
   'frame':'assets/reel.png',
   'wild':'assets/wild-papi.png',
+  'wildfull':'assets/wild-full.png',
   'scatter':'assets/scatter-key.png',
   'babe':'assets/sym-babe.png',
   'ring':'assets/sym-ring.png',
@@ -329,14 +330,18 @@ const SYMS=[
   {id:9, k:'lips',      pay:[0,0,0, 0.7, 2.5,  9], glow:'#ff5aa0'},
   {id:10,k:'heartwhip', pay:[0,0,0, 0.5,   2,  7], glow:'#c56bff'},
 ];
-// Reel strips — generated from weighted tables then fixed (deterministic shuffle),
-// simulated at ~95.7% combined RTP (see /sugar-papi RTP report). Wild absent from
-// the two edge reels (0 & 4), like premium wilds in comparable ZinZin slots.
+// Reel strips — generated from weighted tables then fixed (deterministic shuffle).
+// Wild (id0) only appears on reels 2-4 (index 1,2,3) and EXPANDS to fill the
+// whole column before line eval (see resolveWildExpand()) — one wild landing
+// anywhere in that column instantly puts a wild on all 20 paylines through it,
+// so wild occurrences are kept rare on purpose (~1 per strip) or RTP balloons;
+// simulated with expansion active at ~94.9% combined RTP (see /sugar-papi RTP
+// report, sugarpapi_wild_tune.js). Wild absent from the two edge reels (0 & 4).
 const STRIPS=[
   [3,10,5,10,2,5,9,7,2,4,5,6,10,7,7,10,8,9,2,1,9,9,10,9,6,9,6,10,8,7,3,10,6,8,4,5,10,4,9,10,7,4,1,2,10,10,9,6,6,7,6,7,10,3,8,5,4,2,7,8,9,8,5,7,8,10,9,3,3,4,8,5,4,8,6,5,4,2,7,6,9,3,7,8,8,3,5,6,1,10,8,9,9],
-  [6,2,7,4,6,0,4,9,10,2,4,10,8,9,6,8,8,8,8,1,9,6,6,10,7,7,4,9,7,3,3,10,10,10,3,9,5,10,9,7,10,10,7,8,8,7,6,3,10,1,10,7,2,8,4,10,2,6,8,0,4,0,5,5,1,3,5,4,9,7,8,3,7,4,9,5,9,6,9,2,3,8,6,5,10,5,7,9,9,5,6,9,5,2,8,10],
-  [7,9,6,5,8,2,5,6,9,5,5,9,10,7,7,4,1,0,5,3,6,9,2,10,7,3,4,1,4,10,5,2,8,9,4,9,4,7,8,3,1,9,10,9,3,2,6,6,10,3,7,6,10,5,2,4,10,10,4,6,8,9,9,10,10,5,7,8,3,10,8,2,0,0,8,8,6,10,7,7,8,9,8,10,5,9,3,9,7,7,8,4,10,6,8,6],
-  [10,8,5,7,6,7,0,3,3,10,2,8,5,9,2,3,7,9,0,1,4,5,5,6,10,2,5,9,9,10,9,2,8,8,2,6,3,6,4,1,10,3,10,8,9,9,7,8,7,3,9,4,9,9,7,4,8,6,8,0,10,4,5,7,7,4,8,10,2,10,3,4,6,4,6,8,5,5,7,7,10,1,10,6,10,6,8,9,5,9,10,9,10,7,8,6],
+  [6,2,7,4,6,0,4,9,10,2,4,10,8,9,6,8,8,8,8,1,9,6,6,10,7,7,4,9,7,3,3,10,10,10,3,9,5,10,9,7,10,10,7,8,8,7,6,3,10,1,10,7,2,8,4,10,2,6,8,10,4,8,5,5,1,3,5,4,9,7,8,3,7,4,9,5,9,6,9,2,3,8,6,5,10,5,7,9,9,5,6,9,5,2,8,10],
+  [7,9,6,5,8,2,5,6,9,5,5,9,10,7,7,4,1,9,5,3,6,9,2,10,7,3,4,1,4,10,5,2,8,9,4,9,4,7,8,3,1,9,10,9,3,2,6,6,10,3,7,6,10,5,2,4,10,10,4,6,8,9,9,10,10,5,7,8,3,10,8,2,9,0,8,8,6,10,7,7,8,9,8,10,5,9,3,9,7,7,8,4,10,6,8,6],
+  [10,8,5,7,6,7,9,3,3,10,2,8,5,9,2,3,7,9,8,1,4,5,5,6,10,2,5,9,9,10,9,2,8,8,2,6,3,6,4,1,10,3,10,8,9,9,7,8,7,3,9,4,9,9,7,4,8,6,8,0,10,4,5,7,7,4,8,10,2,10,3,4,6,4,6,8,5,5,7,7,10,1,10,6,10,6,8,9,5,9,10,9,10,7,8,6],
   [8,4,8,5,1,2,4,7,5,5,2,3,3,10,4,7,2,3,8,1,8,9,8,7,10,10,3,6,6,9,6,10,10,10,9,2,10,3,5,9,9,4,6,2,9,8,4,6,7,10,9,6,7,5,6,9,7,9,9,9,5,2,5,3,7,6,6,10,4,4,6,10,4,10,7,8,8,3,9,8,5,7,8,5,7,8,8,10,7,10,10,9,1],
 ];
 const LINES=[
@@ -355,6 +360,7 @@ let grid=[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]];
 for(let c=0;c<5;c++)for(let r=0;r<3;r++)grid[c][r]=STRIPS[c][(c*7+r*3)%STRIPS[c].length];
 let reelOff=[0,0,0,0,0],reelVel=[0,0,0,0,0];
 let reelPhase=['idle','idle','idle','idle','idle'];
+let expandedCols=[false,false,false,false,false]; // reels that landed a full-column wild this spin
 let spinning=false;
 let autoSpin=false,autoTimer=null,muted=false;
 
@@ -365,10 +371,14 @@ const OPEN_GRID={
   big:   [[6,9,10],[6,8,7],[6,10,9],[5,7,8],[4,9,10]],
   mega:  [[9,3,10],[8,3,7],[7,3,9],[10,3,8],[6,2,10]],
   super: [[10,2,9],[9,2,8],[8,2,7],[7,2,10],[10,2,9]],
-  bonus: [[8,1,9],[7,10,6],[1,9,8],[6,7,10],[9,8,1]]
+  bonus: [[8,1,9],[7,10,6],[1,9,8],[6,7,10],[9,8,1]],
+  wild:  [[9,10,3],[7,9,10],[9,0,8],[10,8,7],[8,10,9]]  // single wild in reel 3 -> expands to full column
 };
-const OPENING={ 4:{g:'big',m:11,tier:'big'}, 9:{g:'mega',m:22,tier:'mega'},
-                13:{g:'bonus'}, 18:{g:'super',m:45,tier:'super'} };
+// Front-loaded so a demo player sees the signature moments fast: the
+// full-column wild expansion, then the VIP Room bonus, then the win tiers.
+const OPENING={ 2:{g:'wild',m:14,tier:'big'}, 4:{g:'bonus'},
+                7:{g:'big',m:11,tier:'big'}, 10:{g:'mega',m:22,tier:'mega'},
+                14:{g:'super',m:45,tier:'super'} };
 let turboToggled=false,turboKeyHeld=false,Turbo=false;
 function updateTurboState(){Turbo=turboToggled||turboKeyHeld;}
 function T(ms){return Math.round(ms*(Turbo?0.4:1));}
@@ -506,6 +516,7 @@ function handleSpin(){
   spinning=true;
   document.getElementById('sb').classList.add('spinning');
   winLines=[];totalWin=0;winFlash=0;particles=[];bigWin.a=0;bigWin.label=null;
+  expandedCols=[false,false,false,false,false];
   document.getElementById('vWin').textContent='0.00';
   sessSpin++;scriptSpin=OPENING[sessSpin]||null;
   const forced=scriptSpin?OPEN_GRID[scriptSpin.g]:null;
@@ -535,11 +546,25 @@ function handleSpin(){
 function onDone(){
   spinning=false;reelPhase=['idle','idle','idle','idle','idle'];
   document.getElementById('sb').classList.remove('spinning');
+  resolveWildExpand();
   const triggered=checkWins();
   const delay=T(triggered?900:totalWin>=bet*10?2200:1250);
   if(autoSpin&&!spinning&&!inHoldWin&&!triggered){
     autoTimer=setTimeout(()=>{if(autoSpin&&!spinning&&!inHoldWin)handleSpin();},delay);
   }
+}
+// Full-column wild: any wild landing on reel 2, 3 or 4 (index 1-3) stretches
+// to cover that whole column before lines are evaluated.
+function resolveWildExpand(){
+  let any=false;
+  for(let c=1;c<=3;c++){
+    if(grid[c].includes(0)){
+      grid[c]=[0,0,0];expandedCols[c]=true;any=true;
+      burst(RL+c*CW+CW/2,RT+RH/2,18);
+    }
+  }
+  if(any)playSfx('wild');
+  return any;
 }
 function checkWins(){
   let triggered=false;
@@ -656,10 +681,36 @@ function drawSymbols(){
         const si=((base-r)%strip.length+strip.length)%strip.length;
         drawCell(strip[si],RL+c*CW,cy,CW,CH,false);
       }
+    }else if(expandedCols[c]){
+      drawWildColumn(RL+c*CW,RT,CW,RH);
     }else{
       for(let r=0;r<3;r++)drawCell(grid[c][r],RL+c*CW,RT+r*CH,CW,CH,false);
     }
   }
+  ctx.restore();
+}
+function drawWildColumn(cx,cy,cw,ch){
+  const img=IMG['wildfull'];
+  if(!img){for(let r=0;r<3;r++)drawCell(0,cx,cy+r*(ch/3),cw,ch/3,false);return;}
+  // "cover" fit: fill the FULL column height (all 3 symbol slots) edge to edge,
+  // cropping the source's sides if needed — never fit-by-width, or it looks short.
+  const srcW=img.naturalWidth,srcH=img.naturalHeight;
+  const dW=cw*0.94,dH=ch*0.985;
+  const dx=cx+(cw-dW)/2,dy=cy+(ch-dH)/2;
+  const targetAR=dW/dH,srcAR=srcW/srcH;
+  let sx,sy,sw,sh;
+  if(srcAR>targetAR){sh=srcH;sw=srcH*targetAR;sx=(srcW-sw)/2;sy=0;}
+  else{sw=srcW;sh=srcW/targetAR;sx=0;sy=(srcH-sh)/2;}
+  ctx.save();
+  const pulse=.5+Math.sin(Date.now()*.006)*.35;
+  const gs=Math.max(dW,dH)*0.95;
+  const g=ctx.createRadialGradient(dx+dW/2,dy+dH/2,gs*0.08,dx+dW/2,dy+dH/2,gs*0.55);
+  g.addColorStop(0,'rgba(255,210,77,'+(0.40*pulse).toFixed(3)+')');g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g;ctx.fillRect(dx+dW/2-gs/2,dy+dH/2-gs/2,gs,gs);
+  ctx.restore();
+  ctx.save();
+  roundRectPath(dx,dy,dW,dH,10);ctx.clip();
+  ctx.drawImage(img,sx,sy,sw,sh,dx,dy,dW,dH);
   ctx.restore();
 }
 function drawCell(sid,cx,cy,cw,ch,hi){
@@ -791,7 +842,7 @@ function drawWinFX(){
     ln.forEach((r,c)=>{const px=RL+c*CW+CW/2,py=RT+r*CH+CH/2;c===0?ctx.moveTo(px,py):ctx.lineTo(px,py);});
     ctx.stroke();ctx.restore();
     ctx.save();ctx.beginPath();ctx.rect(RL,RT,RW,RH);ctx.clip();
-    ln.slice(0,wl.count).forEach((r,c)=>drawCell(grid[c][r],RL+c*CW,RT+r*CH,CW,CH,true));
+    ln.slice(0,wl.count).forEach((r,c)=>{if(expandedCols[c])return;drawCell(grid[c][r],RL+c*CW,RT+r*CH,CW,CH,true);});
     ctx.restore();
   });
   ctx.fillStyle=`rgba(255,207,58,${Math.min(.09,winFlash/8000)})`;ctx.fillRect(RL,RT,RW,RH);
