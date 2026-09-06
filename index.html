@@ -666,6 +666,38 @@ footer{position:relative;overflow-x:clip;overflow-y:visible;background:var(--s1)
     </div>
   </div>
   <div class="games-grid" id="gamesGrid">
+    <div class="gc" onclick="openModal(13)">
+      <div class="gc-img">
+        <img src="assets/circus-maximus.jpg" alt="Circus Maximus — Roman chariot-race crash game art by ZinZin Studios" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        <span class="gc-badge ">Coming Soon</span>
+        <div class="gc-foot">
+          <span class="gc-cat">crash</span>
+          <a class="gc-name" href="/games/circus-maximus/" onclick="event.stopPropagation()">Circus Maximus</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="gc" onclick="openModal(12)">
+      <div class="gc-img">
+        <img src="assets/sugar-papi.jpg" alt="Sugar Papi — Miami sunset slot game art by ZinZin Studios" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        <span class="gc-badge gold">New</span>
+        <div class="gc-foot">
+          <span class="gc-cat">slot</span>
+          <a class="gc-name" href="/games/sugar-papi/" onclick="event.stopPropagation()">Sugar Papi</a>
+        </div>
+      </div>
+    </div>
+
     <div class="gc" onclick="openModal(11)">
       <div class="gc-img">
         <img src="assets/jokers-madhouse.jpg" alt="Joker's Madhouse — horror slot game art by ZinZin Studios" loading="lazy">
@@ -1103,6 +1135,38 @@ window.addEventListener('scroll',()=>{
 
 // Games data
 const games=[
+  {
+    id:13,name:"Circus Maximus",slug:"circus-maximus",category:"crash",
+    image:"assets/circus-maximus.jpg",
+    badge:"Coming Soon",badgeClass:"",
+    short:"Whip the horses. Cash out before the wheels give out.",
+    desc:"Circus Maximus straps players into a thundering chariot race through Ancient Rome's greatest arena. A rising multiplier tracks the chariot's speed as it tears past a roaring crowd, laurel banners and torch-lit colonnades — cash out before a wheel splinters and the race ends. Original hand-painted arena art, a live multiplayer track, and provably fair multiplier math.",
+    tags:["Crash","Multiplier","Live Betting","Roman"],
+    specs:[{val:"1x–∞",lbl:"Multiplier Range"},{val:"RTP 97%",lbl:"Return to Player"},{val:"Provably Fair",lbl:"Algorithm"},{val:"Multi-player",lbl:"Mode"}],
+    features:[
+      {icon:"🏆",title:"Chariot speed meter",desc:"The multiplier climbs as the chariot's speed builds around the track"},
+      {icon:"🐎",title:"Multiplayer arena",desc:"See other players' bets and cash-outs in real time"},
+      {icon:"📊",title:"Live race history",desc:"Track crash points across previous races"},
+      {icon:"🏛️",title:"Colosseum aesthetics",desc:"Hand-painted Ancient Rome arena art direction"}
+    ]
+  },
+  {
+    id:12,name:"Sugar Papi",slug:"sugar-papi",category:"slot",
+    image:"assets/sugar-papi.jpg",
+    heroPos:"50% 40%",
+    demoUrl:"sugar-papi/",
+    badge:"New",badgeClass:"gold",
+    short:"Cash falls like confetti on the Miami strip.",
+    desc:"Sugar Papi cruises into a neon pink-and-gold sunset where a silver-haired VIP and his convertible-riding companion run the show. On a 5×3, 20-payline reel set, the Papi Wild substitutes for every paying symbol while the Room 69 Key Scatter drops you straight into Sugar Papi's VIP Room — a classic money-respin Hold & Win feature with three fixed jackpot tiers (Mini, Major, Grand). Original hand-painted retro-Miami art, a glowing gold-trimmed cabinet, and a driving synthwave soundtrack.",
+    tags:["Slot","5×3 Grid","Wild Substitution","Hold & Win","Miami"],
+    specs:[{val:"5×3",lbl:"Grid"},{val:"RTP 95.75%",lbl:"Return to Player"},{val:"High",lbl:"Volatility"},{val:"200x",lbl:"Grand Jackpot"}],
+    features:[
+      {icon:"💵",title:"Papi Wild",desc:"Substitutes for every paying symbol on a line to complete winning combinations"},
+      {icon:"🔑",title:"VIP Room Hold & Win",desc:"3+ Room 69 Key scatters lock the grid into a money-respin bonus with 3 respins"},
+      {icon:"🏆",title:"Mini / Major / Grand Jackpots",desc:"Three fixed jackpot tiles worth 15x, 50x and 200x total bet can land during the bonus"},
+      {icon:"🌴",title:"Miami sunset art",desc:"Hand-painted retro skyline, palm trees and a gold-trimmed cabinet frame"}
+    ]
+  },
   {
     id:11,name:"Joker's Madhouse",slug:"jokers-madhouse",category:"slot",
     image:"assets/jokers-madhouse.jpg",

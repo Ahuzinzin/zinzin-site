@@ -11,6 +11,26 @@
     </image:image>
   </url>
   <url>
+    <loc>https://zinzinstudios.com/games/circus-maximus/</loc>
+    <lastmod>2026-09-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://zinzinstudios.com/assets/circus-maximus.jpg</image:loc>
+      <image:title>Circus Maximus — Roman chariot-race crash game art by ZinZin Studios</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://zinzinstudios.com/games/sugar-papi/</loc>
+    <lastmod>2026-09-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://zinzinstudios.com/assets/sugar-papi.jpg</image:loc>
+      <image:title>Sugar Papi — Miami sunset slot game art by ZinZin Studios</image:title>
+    </image:image>
+  </url>
+  <url>
     <loc>https://zinzinstudios.com/games/jokers-madhouse/</loc>
     <lastmod>2026-08-30</lastmod>
     <changefreq>monthly</changefreq>
@@ -155,6 +175,12 @@
   <url>
     <loc>https://zinzinstudios.com/jokers-madhouse/</loc>
     <lastmod>2026-08-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://zinzinstudios.com/sugar-papi/</loc>
+    <lastmod>2026-09-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

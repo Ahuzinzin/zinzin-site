@@ -11,6 +11,7 @@
   ],
   "redirects": [
     { "source": "/saga_of_valhalla", "destination": "/saga_of_valhalla/", "permanent": true },
+    { "source": "/sugar-papi", "destination": "/sugar-papi/", "permanent": true },
     { "source": "/jokers-madhouse", "destination": "/jokers-madhouse/", "permanent": true },
     { "source": "/quack_rush_crash", "destination": "/quack_rush_crash/", "permanent": true },
     { "source": "/bullet_hole", "destination": "/bullet_hole/", "permanent": true }
