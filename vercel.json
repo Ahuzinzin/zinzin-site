@@ -10,6 +10,8 @@
     { "source": "/hit-me-goblin", "destination": "/hit-me-goblin.html" }
   ],
   "redirects": [
+    { "source": "/rocket-rustler", "destination": "/rocket-rustler/", "permanent": true },
+    { "source": "/circus-maximus", "destination": "/circus-maximus/", "permanent": true },
     { "source": "/saga_of_valhalla", "destination": "/saga_of_valhalla/", "permanent": true },
     { "source": "/sugar-papi", "destination": "/sugar-papi/", "permanent": true },
     { "source": "/jokers-madhouse", "destination": "/jokers-madhouse/", "permanent": true },

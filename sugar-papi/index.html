@@ -259,7 +259,15 @@ const IMGS={
   'whipcream':'assets/sym-whip-cream.png',
   'energy':'assets/sym-energy.png',
   'lips':'assets/sym-lips.png',
-  'heartwhip':'assets/sym-heart-whip.png'
+  'heartwhip':'assets/sym-heart-whip.png',
+  // win-celebration art (logo + character per tier; super reuses the mega babe)
+  'winbig':'assets/win-big.png',
+  'winmega':'assets/win-mega.png',
+  'winsuper':'assets/win-super.png',
+  'charbig':'assets/win-char-big.png',
+  'charmega':'assets/win-char-mega.png',
+  'bill1':'assets/dollar1.png','bill2':'assets/dollar2.png','bill3':'assets/dollar3.png',
+  'bill4':'assets/dollar4.png','bill5':'assets/dollar5.png','bill6':'assets/dollar6.png'
 };
 const IMG={};
 function preload(){
@@ -287,21 +295,26 @@ const FL=0.0080,FR=0.9911,FT=0.0107,FB=0.9893;
 let FX=0,FY=0,FW=0,FH=0,RL=0,RT=0,RW=0,RH=0,CW=0,CH=0;
 
 function resize(){
-  DPR=window.devicePixelRatio||1;
+  // cap DPR at 2 — a 5×3 slot gains nothing visible from 3× device pixels
+  // but pays ~2.25× the fill cost every frame (spin felt sluggish on phones).
+  DPR=Math.min(window.devicePixelRatio||1,2);
   const r=GW.getBoundingClientRect();
   W=Math.max(r.width,300);H=Math.max(r.height,300);
   C.width=Math.round(W*DPR);C.height=Math.round(H*DPR);
   C.style.width=W+'px';C.style.height=H+'px';
   ctx.setTransform(DPR,0,0,DPR,0,0);
   layout();
+  buildAmbient();
 }
 function layout(){
   const FAR=1121/840;
   const portrait=H>W*1.15;
   let fw,fh;
   if(portrait){
-    fh=Math.min(H*0.60,(W*(MOBILE?1.16:1.10))/FAR);
-    fw=fh*FAR;
+    // fit the whole cabinet inside the viewport width (with a small margin) —
+    // never wider than the screen, or the outer reels get clipped on mobile.
+    fw=Math.min(W*(MOBILE?0.96:0.92),H*0.60*FAR);
+    fh=fw/FAR;
   }else{
     fw=W*(W<580?0.98:0.86);fh=fw/FAR;
     if(fh>H*0.97){fh=H*0.97;fw=fh*FAR;}
@@ -391,6 +404,46 @@ window.addEventListener('keydown',e=>{
 });
 let winLines=[],totalWin=0,winFlash=0;
 let particles=[],bigWin={a:0,v:0,vCur:0,s:0,tier:'big',label:null},lastTS=0;
+let winBills=[]; // raining cash on the big-win celebration
+function easeOutBack(t){const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2);}
+function spawnWinBills(){
+  winBills=[];
+  const n=MOBILE?16:26;
+  for(let i=0;i<n;i++){
+    winBills.push({
+      x:Math.random()*W,
+      y:Math.random()*H-H*1.1,                 // staggered above the viewport
+      vy:260+Math.random()*300,                // faster cash rain on the win screen
+      vx:(Math.random()-0.5)*60,
+      rot:Math.random()*Math.PI*2,
+      vr:(Math.random()-0.5)*4.6,
+      sway:Math.random()*Math.PI*2,
+      k:'bill'+(1+Math.floor(Math.random()*6)),
+      sc:(MOBILE?0.5:0.72)*(0.7+Math.random()*0.6)
+    });
+  }
+}
+function updateWinBills(dt){
+  if(bigWin.a<=0){if(winBills.length)winBills=[];return;}
+  const sec=dt*.001;
+  for(const b of winBills){
+    b.sway+=sec*2.8;
+    b.y+=b.vy*sec;
+    b.x+=b.vx*sec+Math.sin(b.sway)*22*sec;
+    b.rot+=b.vr*sec;
+    if(b.y>H+70){b.y=-70-Math.random()*160;b.x=Math.random()*W;}
+  }
+}
+function drawWinBills(){
+  for(const b of winBills){
+    const img=IMG[b.k];if(!img)continue;
+    const w=img.naturalWidth*b.sc,h=img.naturalHeight*b.sc;
+    ctx.save();
+    ctx.translate(b.x,b.y);ctx.rotate(b.rot);
+    ctx.drawImage(img,-w/2,-h/2,w,h);
+    ctx.restore();
+  }
+}
 
 // ── Ambient motes (rising cash sparkles) ─────────────────
 const MOTES=[];
@@ -592,6 +645,7 @@ function checkWins(){
     if(forceTier||mult>=10){
       bigWin.a=1;bigWin.v=totalWin;bigWin.vCur=0;bigWin.s=0;bigWin.label=null;
       bigWin.tier=forceTier||(mult>=40?'super':mult>=20?'mega':'big');
+      spawnWinBills();
       playSfx('bigwin');
     }else{
       playSfx(mult>=4?'winbig':'win');
@@ -634,13 +688,6 @@ function draw(ts){
   ctx.restore();
   requestAnimationFrame(draw);
 }
-function drawBG(){
-  const b=IMG[inHoldWin?'bgroom':'bg'];if(!b)return;
-  const bAR=b.naturalWidth/b.naturalHeight,sAR=W/H;
-  let bW=W,bH=bW/bAR;if(bAR>sAR){bH=H;bW=bH*bAR;}
-  ctx.drawImage(b,(W-bW)/2,(H-bH)/2,bW,bH);
-  ctx.fillStyle=inHoldWin?'rgba(50,6,36,.40)':'rgba(18,4,26,.38)';ctx.fillRect(0,0,W,H);
-}
 // roaming glows (gold / hot-pink / turquoise) drifting behind the cabinet
 const SPOTS=[
   {c:'255,45,149', a:0.24, rx:0.40, ry:0.36, sx:0.070,sy:0.050, ph:0.0,  rad:0.40},
@@ -648,20 +695,66 @@ const SPOTS=[
   {c:'255,120,70', a:0.20, rx:0.36, ry:0.32, sx:0.045,sy:0.060, ph:4.1,  rad:0.34},
   {c:'50,150,255', a:0.18, rx:0.38, ry:0.34, sx:0.060,sy:0.045, ph:1.3,  rad:0.37},
 ];
+// ── Cached ambient layer ───────────────────────────────────
+// The background photo + its dark wash, and each roaming glow, are baked
+// once per resize into offscreen canvases. Per frame we blit those instead
+// of re-scaling a 1MB JPEG and filling the whole canvas with 4 fresh radial
+// gradients — that per-frame gradient work was what made spin feel heavy.
+let bgCache=null, spotSprites=[];
+function makeCanvas(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return c;}
+function buildAmbient(){
+  if(!W||!H)return;
+  // background (uses CSS px space; drawn with ctx at DPR transform)
+  const b=IMG['bg'];
+  if(b){
+    bgCache=makeCanvas(Math.round(W*DPR),Math.round(H*DPR));
+    const bx=bgCache.getContext('2d');bx.scale(DPR,DPR);
+    const bAR=b.naturalWidth/b.naturalHeight,sAR=W/H;
+    let bW=W,bH=bW/bAR;if(bAR>sAR){bH=H;bW=bH*bAR;}
+    bx.drawImage(b,(W-bW)/2,(H-bH)/2,bW,bH);
+    bx.fillStyle='rgba(18,4,26,.38)';bx.fillRect(0,0,W,H);
+  }
+  // one soft-glow sprite per spotlight colour (fixed 384px, scaled on blit)
+  spotSprites=SPOTS.map(s=>{
+    const S=384,c=makeCanvas(S,S),g=c.getContext('2d');
+    const rg=g.createRadialGradient(S/2,S/2,0,S/2,S/2,S/2);
+    rg.addColorStop(0,   'rgba('+s.c+','+s.a.toFixed(3)+')');
+    rg.addColorStop(0.38,'rgba('+s.c+','+(s.a*0.5).toFixed(3)+')');
+    rg.addColorStop(1,   'rgba('+s.c+',0)');
+    g.fillStyle=rg;g.fillRect(0,0,S,S);
+    return c;
+  });
+}
+function drawBG(){
+  if(inHoldWin){
+    const b=IMG['bgroom'];if(!b)return;
+    const bAR=b.naturalWidth/b.naturalHeight,sAR=W/H;
+    let bW=W,bH=bW/bAR;if(bAR>sAR){bH=H;bW=bH*bAR;}
+    ctx.drawImage(b,(W-bW)/2,(H-bH)/2,bW,bH);
+    ctx.fillStyle='rgba(50,6,36,.40)';ctx.fillRect(0,0,W,H);
+    return;
+  }
+  if(bgCache){
+    ctx.save();ctx.setTransform(1,0,0,1,0,0);
+    ctx.drawImage(bgCache,0,0);
+    ctx.restore();
+  }else{
+    ctx.fillStyle='#190a29';ctx.fillRect(0,0,W,H);
+  }
+}
 function drawSpotlights(ts){
+  if(!spotSprites.length)return;
   const t=ts*0.001, boost=inHoldWin?1.5:1;
   ctx.save();
   ctx.globalCompositeOperation='lighter';
-  for(const s of SPOTS){
+  for(let i=0;i<SPOTS.length;i++){
+    const s=SPOTS[i];
     const cx=W*0.5 + Math.sin(t*s.sx + s.ph)*W*s.rx;
     const cy=H*0.50 + Math.cos(t*s.sy + s.ph*1.3)*H*s.ry;
     const r=Math.max(W,H)*s.rad;
-    const pulse=(0.70+0.30*Math.sin(t*0.55+s.ph))*boost;
-    const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r);
-    g.addColorStop(0,   'rgba('+s.c+','+(s.a*pulse).toFixed(3)+')');
-    g.addColorStop(0.38,'rgba('+s.c+','+(s.a*pulse*0.5).toFixed(3)+')');
-    g.addColorStop(1,   'rgba('+s.c+',0)');
-    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    const pulse=Math.max(0,Math.min(1.5,(0.70+0.30*Math.sin(t*0.55+s.ph))*boost));
+    ctx.globalAlpha=pulse;
+    ctx.drawImage(spotSprites[i],cx-r,cy-r,r*2,r*2);
   }
   ctx.restore();
 }
@@ -854,30 +947,99 @@ function drawBigWin(){
   if(Math.abs(bigWin.v-bigWin.vCur)<0.02)bigWin.vCur=bigWin.v;
   const ease=1-Math.pow(1-bigWin.s,3);
   const tier=bigWin.tier||'big';
-  const cfg = tier==='super'? {label:'SUPER WIN',c1:'#ffe9a8',c2:'#ff2d95',glow:'#ffcf3a'}
-            : tier==='mega' ? {label:'MEGA WIN', c1:'#ff9fe0',c2:'#c56bff',glow:'#ff2d95'}
-            : {label:'BIG WIN', c1:'#ffe9a8',c2:'#ffb020',glow:'#ffd24d'};
-  ctx.save();ctx.globalAlpha=bigWin.a;
-  ctx.fillStyle='rgba(10,2,20,.62)';ctx.fillRect(0,0,W,H);
+
+  // ── VIP Room payout keeps the original canvas-text treatment ──
+  if(bigWin.label){
+    const cfg = tier==='super'? {c1:'#ffe9a8',c2:'#ff2d95',glow:'#ffcf3a'}
+              : tier==='mega' ? {c1:'#ff9fe0',c2:'#c56bff',glow:'#ff2d95'}
+              : {c1:'#ffe9a8',c2:'#ffb020',glow:'#ffd24d'};
+    ctx.save();ctx.globalAlpha=bigWin.a;
+    ctx.fillStyle='rgba(10,2,20,.62)';ctx.fillRect(0,0,W,H);
+    ctx.save();
+    ctx.translate(W/2,H/2-40);
+    ctx.scale(0.7+ease*0.3,0.7+ease*0.3);
+    ctx.rotate(Math.sin(Date.now()*.002)*0.02);
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.font='900 '+(W<560?40:60)+'px Barlow,Inter,sans-serif';
+    ctx.shadowColor=cfg.glow;ctx.shadowBlur=34;
+    const grad=ctx.createLinearGradient(-160,0,160,0);
+    grad.addColorStop(0,cfg.c1);grad.addColorStop(1,cfg.c2);
+    ctx.fillStyle=grad;
+    ctx.fillText(bigWin.label,0,0);
+    ctx.restore();
+    ctx.font='900 '+(W<560?24:32)+'px Inter,sans-serif';
+    ctx.shadowColor=cfg.glow;ctx.shadowBlur=20;ctx.fillStyle='#fff';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('+ $'+bigWin.vCur.toFixed(2),W/2,H/2+56);
+    ctx.restore();
+    bigWin.a=Math.max(0,bigWin.a-.0018);
+    return;
+  }
+
+  // ── line / scatter big wins: art composite (logo + babe + raining cash) ──
+  const cfg = tier==='super'? {logo:'winsuper',char:'charmega',glow:'#28d1ff'}
+            : tier==='mega' ? {logo:'winmega', char:'charmega',glow:'#ff2d95'}
+            : {logo:'winbig',  char:'charbig', glow:'#ffd24d'};
   ctx.save();
-  ctx.translate(W/2,H/2-40);
-  const scl=0.7+ease*0.3;
-  ctx.scale(scl,scl);
-  ctx.rotate(Math.sin(Date.now()*.002)*0.02);
+  ctx.globalAlpha=bigWin.a;
+  ctx.fillStyle='rgba(8,1,16,.86)';ctx.fillRect(0,0,W,H);
+
+  // roaming glow behind everything
+  const gcx=W/2,gcy=H*0.44,gr=Math.max(W,H)*0.55;
+  const gg=ctx.createRadialGradient(gcx,gcy,0,gcx,gcy,gr);
+  gg.addColorStop(0,'rgba('+hexToRgb(cfg.glow)+','+(0.30+0.06*Math.sin(Date.now()*.004)).toFixed(3)+')');
+  gg.addColorStop(1,'rgba('+hexToRgb(cfg.glow)+',0)');
+  ctx.fillStyle=gg;ctx.fillRect(0,0,W,H);
+
+  // character — slides up from the bottom edge, fades in
+  const chImg=IMG[cfg.char];
+  if(chImg){
+    const eIn=Math.min(1,ease*1.25);
+    let chH=H*(MOBILE?0.60:0.72);
+    let chW=chH*(chImg.naturalWidth/chImg.naturalHeight);
+    const capW=W*(MOBILE?0.86:0.5);
+    if(chW>capW){chW=capW;chH=chW*(chImg.naturalHeight/chImg.naturalWidth);}
+    const chX=W/2-chW/2;
+    const chY=H-chH+(1-eIn)*chH*0.9;
+    ctx.save();ctx.globalAlpha=bigWin.a*eIn;
+    ctx.drawImage(chImg,chX,chY,chW,chH);
+    ctx.restore();
+  }
+
+  // raining cash
+  drawWinBills();
+
+  // logo — pops in with an overshoot, then a gentle bob
+  const lg=IMG[cfg.logo];
+  let logoBottom=H*0.30;
+  if(lg){
+    const pop=Math.max(0,easeOutBack(bigWin.s));
+    let lw=Math.min(W*0.86,600)*(0.55+pop*0.45);
+    let lh=lw*(lg.naturalHeight/lg.naturalWidth);
+    const bob=Math.sin(Date.now()*.003)*4*ease;
+    const lx=W/2-lw/2, ly=H*0.20-lh/2+bob;
+    logoBottom=ly+lh;
+    ctx.save();
+    ctx.shadowColor=cfg.glow;ctx.shadowBlur=42;
+    ctx.drawImage(lg,lx,ly,lw,lh);
+    ctx.restore();
+  }
+
+  // win amount, just under the logo
+  ctx.font='900 '+(W<560?30:46)+'px Barlow,Inter,sans-serif';
   ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.font='900 '+(W<560?40:60)+'px Barlow,Inter,sans-serif';
-  ctx.shadowColor=cfg.glow;ctx.shadowBlur=34;
-  const grad=ctx.createLinearGradient(-160,0,160,0);
-  grad.addColorStop(0,cfg.c1);grad.addColorStop(1,cfg.c2);
-  ctx.fillStyle=grad;
-  ctx.fillText(bigWin.label||cfg.label,0,0);
-  ctx.restore();
-  ctx.font='900 '+(W<560?24:32)+'px Inter,sans-serif';
-  ctx.shadowColor=cfg.glow;ctx.shadowBlur=20;ctx.fillStyle='#fff';
-  ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText('+ $'+bigWin.vCur.toFixed(2),W/2,H/2+56);
+  ctx.lineWidth=W<560?5:7;ctx.strokeStyle='rgba(10,2,20,.85)';
+  ctx.shadowColor=cfg.glow;ctx.shadowBlur=24;
+  ctx.fillStyle='#fff';
+  const amtY=logoBottom+(W<560?26:34);
+  ctx.strokeText('$'+bigWin.vCur.toFixed(2),W/2,amtY);
+  ctx.fillText('$'+bigWin.vCur.toFixed(2),W/2,amtY);
   ctx.restore();
   bigWin.a=Math.max(0,bigWin.a-.0018);
+}
+function hexToRgb(h){
+  const n=parseInt(h.slice(1),16);
+  return (n>>16&255)+','+(n>>8&255)+','+(n&255);
 }
 function drawParticles(){
   for(const p of particles){
@@ -908,6 +1070,7 @@ function update(dt){
   if(winFlash>0){winFlash-=dt;}
   if(hwIntro>0)hwIntro-=dt;
   updateMotes(dt);
+  updateWinBills(dt);
   for(let c=0;c<5;c++){
     if(reelPhase[c]==='spin')reelOff[c]+=reelVel[c]*dt*.001;
     else if(reelPhase[c]==='brake'){reelVel[c]=Math.max(0,reelVel[c]-6500*dt*.001);reelOff[c]+=reelVel[c]*dt*.001;}
