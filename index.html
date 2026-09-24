@@ -18,7 +18,7 @@
 <meta name="twitter:description" content="An iGaming art studio crafting original slot game art, animation and game design.">
 <meta name="twitter:image" content="https://zinzinstudios.com/banner-poster.jpg">
 <link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="preload" href="banner-poster.jpg" as="image" fetchpriority="high">
+<link rel="preload" href="banner-circus-poster.jpg" as="image" fetchpriority="high">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -52,6 +52,7 @@
   --red:#e03040;
   --nav-h:72px;
   --radius:10px;
+  --ease-out:cubic-bezier(0.23,1,0.32,1);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -124,7 +125,8 @@ body{font-family:'Inter',sans-serif;font-size:16px;background:var(--bg);color:va
 
 /* ── AGE GATE ── */
 #ag{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;
-    display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px)}
+    display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px)}
+#ag.show{display:flex}
 .ag-box{background:var(--s2);border:1px solid var(--border);border-radius:20px;
         max-width:520px;width:100%;padding:56px 40px;text-align:center}
 .ag-box img{height:48px;margin-bottom:32px;object-fit:contain}
@@ -328,11 +330,23 @@ footer{position:relative;overflow-x:clip;overflow-y:visible;background:var(--s1)
                font-size:11px;color:rgba(96,96,138,.6);line-height:1.7;border-top:1px solid var(--border);padding-top:20px}
 
 /* ── MODAL ── */
+/* Always laid out (display:flex) so it can transition; hidden via
+   opacity/visibility. Enter 250ms ease-out, exit a quicker 150ms. */
 #modalOverlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:950;
-              display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
-#modalOverlay.open{display:flex}
+              display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px);
+              opacity:0;visibility:hidden;pointer-events:none;
+              transition:opacity 150ms ease-in,visibility 0s linear 150ms}
+#modalOverlay.open{opacity:1;visibility:visible;pointer-events:auto;
+                   transition:opacity 200ms var(--ease-out),visibility 0s}
 .modal{background:var(--s2);border:1px solid var(--border);border-radius:16px;
-       width:100%;max-width:800px;max-height:90vh;overflow-y:auto;position:relative}
+       width:100%;max-width:800px;max-height:90vh;overflow-y:auto;position:relative;
+       opacity:0;transform:translateY(8px) scale(.96);
+       transition:opacity 150ms ease-in,transform 150ms ease-in}
+#modalOverlay.open .modal{opacity:1;transform:none;
+                          transition:opacity 200ms var(--ease-out),transform 250ms var(--ease-out)}
+@media(prefers-reduced-motion:reduce){
+  .modal,#modalOverlay.open .modal{transform:none}
+}
 .modal-close{position:absolute;top:16px;right:16px;width:36px;height:36px;
              border-radius:50%;background:rgba(255,255,255,.08);border:none;
              color:var(--text);font-size:18px;cursor:pointer;display:flex;
@@ -513,8 +527,8 @@ footer{position:relative;overflow-x:clip;overflow-y:visible;background:var(--s1)
 <div id="ag">
   <div class="ag-box">
     <img src="logo/zinzin_studios_logo.png" alt="ZinZin Studios">
-    <h2>You must be 18 or older to enter this site</h2>
-    <p>This website contains information about gambling products and services. Please confirm your age to continue.</p>
+    <h2>You must be 18 or older to view this demo</h2>
+    <p>These games depict gambling mechanics and are intended for adult audiences. Please confirm your age to continue.</p>
     <div class="ag-btns">
       <button class="ag-yes" id="age-yes">I am 18 or older</button>
       <button class="ag-no" id="age-no">I am under 18</button>
@@ -546,9 +560,9 @@ footer{position:relative;overflow-x:clip;overflow-y:visible;background:var(--s1)
 <!-- HERO -->
 <section id="hero">
   <video class="hero-video active" id="hero-video-a" autoplay muted playsinline
-         poster="banner-poster.jpg"
+         poster="banner-circus-poster.jpg"
          preload="auto">
-    <source src="banner.mp4" type="video/mp4">
+    <source src="banner-circus.mp4" type="video/mp4">
   </video>
   <video class="hero-video" id="hero-video-b" muted playsinline preload="auto"></video>
   <script>
@@ -560,6 +574,7 @@ footer{position:relative;overflow-x:clip;overflow-y:visible;background:var(--s1)
     // started playing, so the visible video is never blank.
     // {src, max} — max caps how long the clip plays before crossfading (seconds)
     var vids=[
+      {src:'banner-circus.mp4'},
       {src:'banner.mp4'},
       {src:'banner-joker.mp4'},
       {src:'banner3.mp4'},
@@ -674,7 +689,7 @@ footer{position:relative;overflow-x:clip;overflow-y:visible;background:var(--s1)
             <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
           </div>
         </div>
-        <span class="gc-badge ">Coming Soon</span>
+        <span class="gc-badge gold">New</span>
         <div class="gc-foot">
           <span class="gc-cat">crash</span>
           <a class="gc-name" href="/games/circus-maximus/" onclick="event.stopPropagation()">Circus Maximus</a>
@@ -1119,8 +1134,16 @@ footer{position:relative;overflow-x:clip;overflow-y:visible;background:var(--s1)
 </div>
 
 <script>
-// Age gate
-document.getElementById('age-yes').addEventListener('click',()=>document.getElementById('ag').style.display='none');
+// Age gate — shown on the first game click, then remembered
+var ageOK=false;
+try{ ageOK=localStorage.getItem('zz_age_ok')==='1'; }catch(e){}
+var pendingGame=null;
+document.getElementById('age-yes').addEventListener('click',()=>{
+  try{ localStorage.setItem('zz_age_ok','1'); }catch(e){}
+  ageOK=true;
+  document.getElementById('ag').classList.remove('show');
+  if(pendingGame!=null){ var id=pendingGame; pendingGame=null; openModal(id); }
+});
 document.getElementById('age-no').addEventListener('click',()=>window.location.href='https://www.begambleaware.org');
 
 // Mobile menu
@@ -1138,7 +1161,8 @@ const games=[
   {
     id:13,name:"Circus Maximus",slug:"circus-maximus",category:"crash",
     image:"assets/circus-maximus.jpg",
-    badge:"Coming Soon",badgeClass:"",
+    demoUrl:"circus-maximus/",
+    badge:"New",badgeClass:"gold",
     short:"Whip the horses. Cash out before the wheels give out.",
     desc:"Circus Maximus straps players into a thundering chariot race through Ancient Rome's greatest arena. A rising multiplier tracks the chariot's speed as it tears past a roaring crowd, laurel banners and torch-lit colonnades — cash out before a wheel splinters and the race ends. Original hand-painted arena art, a live multiplayer track, and provably fair multiplier math.",
     tags:["Crash","Multiplier","Live Betting","Roman"],
@@ -1395,6 +1419,7 @@ function filterGames(cat,btn){
 
 function openModal(id){
   const g=games.find(x=>x.id===id);if(!g)return;
+  if(!ageOK){ pendingGame=id; document.getElementById('ag').classList.add('show'); return; }
   document.getElementById('modalHero').innerHTML=`<img src="${g.image}" alt="${g.name} — ${g.category} game art by ZinZin Studios"${g.heroPos?` style="object-position:${g.heroPos}"`:''}>`;
   document.getElementById('modalTag').textContent=g.category.toUpperCase()+' GAME';
   document.getElementById('modalTitle').textContent=g.name;
@@ -1413,6 +1438,8 @@ function openModal(id){
     :`<button class="btn-modal-primary" onclick="alert('Demo coming soon!')"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>Coming Soon</button>`;
   const detailsLink=`<a class="btn-modal-sec" href="/games/${g.slug}/">Full Details</a>`;
   document.getElementById('modalActions').innerHTML=action+detailsLink+`<button class="btn-modal-sec" onclick="closeModal()">Close</button>`;
+  // overlay is never display:none now, so reset scroll left from the previous game
+  document.querySelector('#modalOverlay .modal').scrollTop=0;
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
