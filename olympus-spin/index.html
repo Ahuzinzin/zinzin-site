@@ -404,9 +404,9 @@ async function spin(){
   S.busy=false; ui();
   if(S.auto) setTimeout(()=>{ if(S.auto) spin(); },550);
 }
-function cashout(){ if(S.busy||!S.inRound) return; const w=curWin(); if(w<=0) return;
+function cashout(){ if(S.busy||!S.inRound) return; const w=curWin(); if(w<=0) return; const mx=mult();
   S.bal=+(S.bal+w).toFixed(2); S.last=w; S.steps=[0,0,0]; S.inRound=false; RINGS.forEach((_,i)=>drawRing(i));
-  sfx.cash(); FX.cash(); toast(`${fmt(w)}<small>CASHED OUT · ${mult().toFixed(2)}X</small>`); stopAuto(); ui(); }
+  sfx.cash(); FX.cash(); toast(`${fmt(w)}<small>CASHED OUT · ${mx.toFixed(2)}X</small>`); stopAuto(); ui(); }
 function part(){ if(S.busy||!S.inRound) return; const w=partWin(); if(w<=0) return;
   S.bal=+(S.bal+w).toFixed(2); S.last=w; S.steps=S.steps.map(k=>Math.max(0,k-1)); RINGS.forEach((_,i)=>drawRing(i));
   if(S.steps.every(k=>k===0)) S.inRound=false;
