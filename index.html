@@ -681,6 +681,22 @@ footer{position:relative;overflow-x:clip;overflow-y:visible;background:var(--s1)
     </div>
   </div>
   <div class="games-grid" id="gamesGrid">
+    <div class="gc" onclick="openModal(14)">
+      <div class="gc-img">
+        <img src="assets/olympus-spin.jpg" alt="Olympus Spin — Greek mythology instant game art by ZinZin Studios" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        <span class="gc-badge gold">New</span>
+        <div class="gc-foot">
+          <span class="gc-cat">instant</span>
+          <a class="gc-name" href="/games/olympus-spin/" onclick="event.stopPropagation()">Olympus Spin</a>
+        </div>
+      </div>
+    </div>
+  
     <div class="gc" onclick="openModal(13)">
       <div class="gc-img">
         <img src="assets/circus-maximus.jpg" alt="Circus Maximus — Roman chariot-race crash game art by ZinZin Studios" loading="lazy">
@@ -1025,6 +1041,7 @@ footer{position:relative;overflow-x:clip;overflow-y:visible;background:var(--s1)
       <a href="bullet_hole/" target="_blank">Bullet Hole</a>
       <a href="saga_of_valhalla/" target="_blank">Saga of Valhalla</a>
       <a href="quack_rush_crash/" target="_blank">Quack Rush</a>
+      <a href="olympus-spin/" target="_blank">Olympus Spin</a>
       <a href="crystal-plinko" target="_blank">Crystal Plinko</a>
       <a href="altitude-x" target="_blank">Altitude X</a>
     </div>
@@ -1158,6 +1175,23 @@ window.addEventListener('scroll',()=>{
 
 // Games data
 const games=[
+  {
+    id:14,name:"Olympus Spin",slug:"olympus-spin",category:"instant",
+    image:"assets/olympus-spin.jpg",
+    heroPos:"center 45%",
+    demoUrl:"olympus-spin/",
+    badge:"New",badgeClass:"gold",
+    short:"Spin the heavens. Fill the rings of the gods.",
+    desc:"Olympus Spin is a three-ring multiplier wheel set high above Mount Olympus. Every spin reveals Zeus, Poseidon or Hades — each one charges its own golden ring and pushes the multiplier higher. Fill a ring to bank its bonus instantly, dodge the empty wind, and cash out before the cracked urn shatters your winnings.",
+    tags:["Instant","Wheel","Multiplier","Greek Mythology"],
+    specs:[{val:"3 Rings",lbl:"Multiplier Wheel"},{val:"Up to 120x",lbl:"Ring Multiplier"},{val:"+20x / +10x / +5x",lbl:"Ring Bonuses"},{val:"Part Cashout",lbl:"Cash Out Mode"}],
+    features:[
+      {icon:"⚡",title:"Three gods, three rings",desc:"Zeus, Poseidon and Hades each fill their own multiplier ring"},
+      {icon:"🏆",title:"Instant ring bonuses",desc:"Complete a ring to bank +20x, +10x or +5x on the spot"},
+      {icon:"💰",title:"Cashout or Part Cashout",desc:"Take everything, or bank half and keep spinning"},
+      {icon:"🏺",title:"Risk & reward",desc:"Wind blows a spin away; the cracked urn breaks the round"}
+    ]
+  },
   {
     id:13,name:"Circus Maximus",slug:"circus-maximus",category:"crash",
     image:"assets/circus-maximus.jpg",

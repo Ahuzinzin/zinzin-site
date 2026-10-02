@@ -1,21 +1,78 @@
 {
   "rewrites": [
-    { "source": "/bakery-bonanza", "destination": "/bakery-bonanza.html" },
-    { "source": "/crystal-plinko", "destination": "/crystal-plinko.html" },
-    { "source": "/altitude-x", "destination": "/altitude-x.html" },
-    { "source": "/claws-and-crumbs", "destination": "/claws-and-crumbs.html" },
-    { "source": "/blackhearts-booty", "destination": "/blackhearts-booty.html" },
-    { "source": "/arena-of-blood-colosseum", "destination": "/arena-of-blood-colosseum.html" },
-    { "source": "/nordic-raiders", "destination": "/nordic-raiders.html" },
-    { "source": "/hit-me-goblin", "destination": "/hit-me-goblin.html" }
+    {
+      "source": "/bakery-bonanza",
+      "destination": "/bakery-bonanza.html"
+    },
+    {
+      "source": "/crystal-plinko",
+      "destination": "/crystal-plinko.html"
+    },
+    {
+      "source": "/altitude-x",
+      "destination": "/altitude-x.html"
+    },
+    {
+      "source": "/claws-and-crumbs",
+      "destination": "/claws-and-crumbs.html"
+    },
+    {
+      "source": "/blackhearts-booty",
+      "destination": "/blackhearts-booty.html"
+    },
+    {
+      "source": "/arena-of-blood-colosseum",
+      "destination": "/arena-of-blood-colosseum.html"
+    },
+    {
+      "source": "/nordic-raiders",
+      "destination": "/nordic-raiders.html"
+    },
+    {
+      "source": "/hit-me-goblin",
+      "destination": "/hit-me-goblin.html"
+    }
   ],
   "redirects": [
-    { "source": "/rocket-rustler", "destination": "/rocket-rustler/", "permanent": true },
-    { "source": "/circus-maximus", "destination": "/circus-maximus/", "permanent": true },
-    { "source": "/saga_of_valhalla", "destination": "/saga_of_valhalla/", "permanent": true },
-    { "source": "/sugar-papi", "destination": "/sugar-papi/", "permanent": true },
-    { "source": "/jokers-madhouse", "destination": "/jokers-madhouse/", "permanent": true },
-    { "source": "/quack_rush_crash", "destination": "/quack_rush_crash/", "permanent": true },
-    { "source": "/bullet_hole", "destination": "/bullet_hole/", "permanent": true }
+    {
+      "source": "/olympus-spin",
+      "destination": "/olympus-spin/",
+      "permanent": true
+    },
+    {
+      "source": "/rocket-rustler",
+      "destination": "/rocket-rustler/",
+      "permanent": true
+    },
+    {
+      "source": "/circus-maximus",
+      "destination": "/circus-maximus/",
+      "permanent": true
+    },
+    {
+      "source": "/saga_of_valhalla",
+      "destination": "/saga_of_valhalla/",
+      "permanent": true
+    },
+    {
+      "source": "/sugar-papi",
+      "destination": "/sugar-papi/",
+      "permanent": true
+    },
+    {
+      "source": "/jokers-madhouse",
+      "destination": "/jokers-madhouse/",
+      "permanent": true
+    },
+    {
+      "source": "/quack_rush_crash",
+      "destination": "/quack_rush_crash/",
+      "permanent": true
+    },
+    {
+      "source": "/bullet_hole",
+      "destination": "/bullet_hole/",
+      "permanent": true
+    }
   ]
 }
