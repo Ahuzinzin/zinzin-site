@@ -73,6 +73,11 @@
       "source": "/bullet_hole",
       "destination": "/bullet_hole/",
       "permanent": true
+    },
+    {
+      "source": "/crash-games",
+      "destination": "/crash-games/",
+      "permanent": true
     }
   ]
 }

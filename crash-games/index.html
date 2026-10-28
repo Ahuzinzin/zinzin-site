@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zinzin Studios — Crash &amp; Instant Games</title>
+<meta name="description" content="Original crash and instant-win games by Zinzin Studios: characters, worlds, multiplier and bet UI, launch art. Seven playable demos.">
+<link rel="canonical" href="https://zinzinstudios.com/crash-games/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Zinzin Studios — Crash &amp; Instant Games">
+<meta property="og:description" content="Bonkers by design. 5 crash titles, 3 instant games, 7 playable demos.">
+<meta property="og:url" content="https://zinzinstudios.com/crash-games/">
+<meta property="og:image" content="https://zinzinstudios.com/crash-games/assets/og-cover.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="assets/zinzo-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&amp;family=Rubik+Dirt&amp;display=swap">
+<style>
+body{margin:0;background:#121212}
+a{color:#F71E7E}a:hover{color:#FFF000}
+img{display:block}
+@keyframes zzSpin{to{transform:rotate(360deg)}}
+@keyframes zzBob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-14px) rotate(2deg)}}
+@keyframes zzBob2{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-10px) rotate(4deg)}}
+@keyframes zzWobble{0%,100%{transform:rotate(-5deg) scale(1)}50%{transform:rotate(3deg) scale(1.06)}}
+@keyframes zzMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes zzPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,240,0,0.55)}50%{box-shadow:0 0 0 12px rgba(255,240,0,0)}}
+@keyframes zzRise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+.zz-spin{animation:zzSpin 14s linear infinite;transform-origin:50% 50%}
+.zz-bob{animation:zzBob 3.6s ease-in-out infinite}
+.zz-bob2{animation:zzBob2 4.2s ease-in-out infinite}
+.zz-wobble{animation:zzWobble 2.4s ease-in-out infinite}
+.zz-marquee{animation:zzMarquee 22s linear infinite}
+.zz-pulse{animation:zzPulse 2s ease-out infinite}
+.zz-rise{animation:zzRise .8s cubic-bezier(.2,.8,.2,1) both}
+.zz-rise2{animation:zzRise .8s .15s cubic-bezier(.2,.8,.2,1) both}
+.zz-lift{transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.zz-lift:hover{transform:translateY(-8px) rotate(-0.6deg)}
+@media (prefers-reduced-motion: reduce){.zz-spin,.zz-bob,.zz-bob2,.zz-wobble,.zz-marquee,.zz-pulse,.zz-rise,.zz-rise2{animation:none}.zz-lift:hover{transform:none}}
+</style>
+<style>html{scroll-behavior:smooth}@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}</style>
+</head>
+<body>
+<div style="background: #121212; color: #FEF7E5; font-family: 'Teko', sans-serif; min-height: 100vh; overflow: hidden">
+
+<header style="max-width: 1280px; margin: 0 auto; padding: 24px 24px; display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: center; justify-content: space-between">
+<a href="#top" aria-label="Zinzin Studios home" style="display: flex; align-items: center; gap: 14px; text-decoration: none">
+<img src="assets/zinzo-mark.svg" alt="" style="width: 62px; height: 40px">
+<svg viewBox="24 180 1122 296" width="150" style="display: block" aria-hidden="true"><g fill="#FEF7E5"><path d="M 29.054688 206.664062 L 35 291.703125 L 115.585938 291.703125 L 33.019531 382.667969 L 33.019531 436.238281 L 206.570312 461.371094 L 206.652344 460.085938 L 211.496094 382.667969 L 130.910156 382.667969 L 211.496094 291.703125 L 213.476562 291.703125 L 213.476562 233.347656 Z M 29.054688 206.664062 "></path><path d="M 567.464844 334.46875 C 560.867188 309.582031 549.730469 288.554688 534.078125 271.414062 C 518.429688 254.289062 499.894531 243.421875 478.464844 238.78125 C 459.339844 234.511719 440.5625 236.003906 422.109375 243.238281 L 422.109375 241.765625 L 421.621094 242.257812 L 424.09375 220.984375 L 339.054688 214.570312 L 332.617188 392.066406 C 330.636719 425.347656 329.328125 443.800781 328.652344 447.4375 L 336.949219 447.394531 L 337.09375 443.453125 L 385.027344 447.070312 L 401.125 446.96875 L 408.257812 446.925781 L 414.203125 360.90625 C 419.800781 350.691406 427.117188 343.109375 436.1875 338.164062 C 445.261719 333.21875 454.558594 331.730469 464.140625 333.710938 C 477.644531 336.671875 488.027344 345.09375 495.277344 358.925781 C 502.53125 372.777344 504.675781 388.101562 501.695312 404.917969 C 499.734375 416.113281 495.605469 426.003906 489.351562 434.585938 C 495.605469 434.585938 504.839844 434.503906 517.039062 434.320312 C 529.214844 434.15625 538.125 433.910156 543.722656 433.582031 C 551.632812 433.582031 558.722656 433.746094 564.996094 434.074219 C 567.28125 426.839844 569.101562 419.585938 570.429688 412.335938 C 575.046875 385.300781 574.046875 359.355469 567.464844 334.46875 "></path><path d="M 232.703125 283.792969 L 238.960938 424.265625 L 239.015625 425.265625 C 245.246094 420.761719 252.648438 417.332031 261.144531 415.007812 C 267.730469 413.046875 274.476562 412.214844 281.035156 412.507812 C 287.535156 412.851562 293.492188 413.878906 298.792969 415.519531 C 304.394531 417.261719 309.257812 419.878906 313.300781 423.332031 C 314.011719 423.945312 314.691406 424.558594 315.292969 425.21875 L 320.621094 273.703125 Z M 318.027344 224.285156 C 316.632812 219.804688 314.121094 215.8125 310.484375 212.34375 C 306.851562 208.875 302.507812 206.28125 297.453125 204.53125 C 292.425781 202.78125 286.878906 201.769531 280.816406 201.390625 C 274.75 201.0625 268.574219 201.9375 262.347656 203.984375 C 249.859375 207.808594 240.054688 214.339844 232.949219 223.519531 C 225.820312 232.699219 223.660156 241.90625 226.449219 251.085938 C 229.207031 260.292969 236.066406 266.902344 246.992188 270.867188 C 257.921875 274.855469 269.640625 275.019531 282.125 271.382812 C 294.613281 267.75 304.421875 261.332031 311.523438 252.152344 C 318.628906 242.972656 320.785156 233.683594 318.027344 224.285156 "></path><g transform="translate(566 -233)"><path d="M 206.652344 465.507812 L 33.019531 440.355469 L 29.054688 439.78125 L 35 524.820312 L 115.585938 524.820312 L 33.019531 615.808594 L 33.019531 687.972656 L 206.550781 694.898438 L 211.496094 615.808594 L 130.910156 615.808594 L 211.496094 524.820312 L 213.476562 524.820312 L 213.476562 466.488281 Z M 206.652344 465.507812 "></path><path d="M 567.464844 567.585938 C 560.867188 542.71875 549.730469 521.695312 534.078125 504.554688 C 518.429688 487.429688 499.894531 476.539062 478.464844 471.921875 C 459.339844 467.652344 440.5625 469.125 422.109375 476.375 L 422.109375 474.886719 L 421.621094 475.394531 L 424.09375 454.125 L 401.125 452.390625 L 339.054688 447.710938 L 338.871094 452.796875 L 332.617188 625.183594 C 330.636719 658.488281 329.328125 676.941406 328.652344 680.578125 L 408.257812 680.066406 L 414.203125 594.046875 C 419.800781 583.828125 427.117188 576.25 436.1875 571.304688 C 445.261719 566.359375 454.558594 564.867188 464.140625 566.851562 C 477.644531 569.8125 488.027344 578.230469 495.277344 592.066406 C 502.53125 605.917969 504.675781 621.242188 501.695312 638.058594 C 499.734375 649.253906 495.605469 659.144531 489.351562 667.703125 C 495.605469 667.703125 504.839844 667.644531 517.039062 667.457031 C 529.214844 667.296875 538.125 667.050781 543.722656 666.722656 C 551.632812 666.722656 558.722656 666.886719 564.996094 667.214844 C 567.28125 659.960938 569.101562 652.726562 570.429688 645.476562 C 575.046875 618.441406 574.046875 592.492188 567.464844 567.585938 "></path><path d="M 229.234375 503.441406 L 235.570312 659.691406 L 237.113281 697.972656 L 294.621094 704.402344 C 300.15625 701.277344 304.886719 697.351562 308.792969 692.65625 C 309.878906 691.34375 310.855469 690.015625 311.722656 688.707031 L 312.589844 660.921875 L 317.972656 492.238281 Z M 229.234375 503.441406 "></path><path d="M 319.273438 442.917969 C 317.863281 438.382812 315.347656 434.34375 311.65625 430.851562 C 307.992188 427.355469 303.605469 424.730469 298.527344 422.972656 C 293.449219 421.214844 287.851562 420.171875 281.730469 419.804688 C 275.613281 419.480469 269.382812 420.347656 263.089844 422.429688 C 250.480469 426.292969 240.585938 432.867188 233.421875 442.136719 C 226.242188 451.402344 224.046875 460.691406 226.847656 469.957031 C 229.648438 479.246094 236.570312 485.90625 247.59375 489.921875 C 258.617188 493.9375 270.445312 494.113281 283.054688 490.441406 C 295.640625 486.777344 305.539062 480.289062 312.722656 471.019531 C 319.882812 461.753906 322.074219 452.378906 319.273438 442.917969 "></path></g></g></svg>
+</a>
+<nav style="display: flex; flex-wrap: wrap; gap: 8px 28px; align-items: center; font-weight: 500; font-size: 22px; letter-spacing: 0.08em; text-transform: uppercase">
+<a href="#crash" style="color: #FEF7E5; text-decoration: none">Crash</a>
+<a href="#instant" style="color: #FEF7E5; text-decoration: none">Instant</a>
+<a href="#contact" style="display: inline-flex; align-items: center; min-height: 44px; padding: 4px 20px 0; border-radius: 999px; background: #F71E7E; color: #121212; text-decoration: none">Let’s talk</a>
+</nav>
+</header>
+
+<section id="top" style="max-width: 1280px; margin: 0 auto; padding: 32px 24px 72px; display: flex; flex-wrap: wrap; gap: 40px; align-items: center">
+<div class="zz-rise" style="flex: 1.3 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 22px">
+<div style="font-weight: 500; font-size: 22px; line-height: 1; letter-spacing: 0.1em; text-transform: uppercase; color: #FFF000">Portfolio · Crash &amp; instant games</div>
+<h1 style="margin: 0; font-weight: 700; font-size: clamp(76px, 11vw, 168px); line-height: 0.82; text-transform: uppercase; color: #FEF7E5">Bonkers by <span style="color: #F71E7E">design.</span></h1>
+<p style="margin: 0; font-size: 28px; line-height: 1.1; color: #FEF7E5; max-width: 620px">Original crash and instant‑win games, drawn from zero: characters, scrolling worlds, multiplier and bet UI for desktop and mobile, win / cash‑out / lose states, logos and launch art. Seven are live demos you can play.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px">
+<span style="background: #FFF000; color: #121212; font-weight: 600; font-size: 32px; line-height: 1; padding: 10px 18px 4px; border-radius: 10px">5 CRASH</span>
+<span style="background: #F71E7E; color: #121212; font-weight: 600; font-size: 32px; line-height: 1; padding: 10px 18px 4px; border-radius: 10px">3 INSTANT</span>
+<span style="background: #FEF7E5; color: #121212; font-weight: 600; font-size: 32px; line-height: 1; padding: 10px 18px 4px; border-radius: 10px">7 PLAYABLE</span>
+</div>
+</div>
+<div class="zz-rise2" style="flex: 1 1 380px; min-width: 0; position: relative">
+<div style="background: #F71E7E; border: 3px solid #FEF7E5; border-radius: 32px; aspect-ratio: 1 / 0.9; display: flex; align-items: center; justify-content: center; overflow: hidden">
+<div class="zz-bob" style="width: 86%"><img src="assets/zinzo-character.png" alt="Zinzo, the Zinzin Studios monkey mascot with a crown and gold tooth" style="width: 100%"></div>
+</div>
+<div class="zz-wobble" style="position: absolute; left: -14px; bottom: -22px; transform: rotate(-5deg); background: #FFF000; color: #121212; font-family: 'Rubik Dirt', sans-serif; font-size: 34px; line-height: 1; padding: 14px 20px; border-radius: 16px; border: 6px solid #FEF7E5; white-space: nowrap">HOLD MY BANANA</div>
+</div>
+</section>
+
+<div aria-label="We make mischief" style="position: relative; margin: 8px 0 56px; transform: rotate(-2deg); background: #FFF000; color: #121212; border-top: 4px solid #121212; border-bottom: 4px solid #121212; overflow: hidden; white-space: nowrap">
+<div class="zz-marquee" aria-hidden="true" style="display: flex; width: max-content; padding: 14px 0 6px; font-weight: 700; font-size: clamp(40px, 6vw, 72px); line-height: 1; letter-spacing: 0.02em">
+<div style="display: flex; flex-shrink: 0"><span style="display: inline-flex; align-items: center; gap: 28px; padding-right: 28px"><span>WE MAKE MISCHIEF</span><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#F71E7E"></path></svg></span><span style="display: inline-flex; align-items: center; gap: 28px; padding-right: 28px"><span>WE MAKE MISCHIEF</span><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#F71E7E"></path></svg></span><span style="display: inline-flex; align-items: center; gap: 28px; padding-right: 28px"><span>WE MAKE MISCHIEF</span><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#F71E7E"></path></svg></span><span style="display: inline-flex; align-items: center; gap: 28px; padding-right: 28px"><span>WE MAKE MISCHIEF</span><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#F71E7E"></path></svg></span><span style="display: inline-flex; align-items: center; gap: 28px; padding-right: 28px"><span>WE MAKE MISCHIEF</span><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#F71E7E"></path></svg></span><span style="display: inline-flex; align-items: center; gap: 28px; padding-right: 28px"><span>WE MAKE MISCHIEF</span><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#F71E7E"></path></svg></span></div>
+<div style="display: flex; flex-shrink: 0"><span style="display: inline-flex; align-items: center; gap: 28px; padding-right: 28px"><span>WE MAKE MISCHIEF</span><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#F71E7E"></path></svg></span><span style="display: inline-flex; align-items: center; gap: 28px; padding-right: 28px"><span>WE MAKE MISCHIEF</span><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#F71E7E"></path></svg></span><span style="display: inline-flex; align-items: center; gap: 28px; padding-right: 28px"><span>WE MAKE MISCHIEF</span><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#F71E7E"></path></svg></span><span style="display: inline-flex; align-items: center; gap: 28px; padding-right: 28px"><span>WE MAKE MISCHIEF</span><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#F71E7E"></path></svg></span><span style="display: inline-flex; align-items: center; gap: 28px; padding-right: 28px"><span>WE MAKE MISCHIEF</span><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#F71E7E"></path></svg></span><span style="display: inline-flex; align-items: center; gap: 28px; padding-right: 28px"><span>WE MAKE MISCHIEF</span><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z" fill="#F71E7E"></path></svg></span></div>
+</div>
+</div>
+
+<section id="crash" style="max-width: 1280px; margin: 0 auto; padding: 48px 24px 32px; display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: flex-end; justify-content: space-between">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div style="font-weight: 500; font-size: 22px; line-height: 1; letter-spacing: 0.1em; text-transform: uppercase; color: #BDB5A6">01 — Crash games</div>
+<h2 style="margin: 0; font-weight: 700; font-size: clamp(64px, 9vw, 140px); line-height: 0.85; text-transform: uppercase">Cash out <span style="color: #FFF000">or crash.</span></h2>
+</div>
+<p style="margin: 0; font-size: 26px; line-height: 1.1; color: #FEF7E5; max-width: 420px">Something climbs, the multiplier climbs with it — the player decides when to bail. Five worlds built around that one heartbeat.</p>
+</section>
+
+<section id="rocket" style="max-width: 1280px; margin: 0 auto; padding: 0 24px 32px">
+<div class="zz-lift" style="position: relative; background: #F71E7E; color: #121212; border: 3px solid #FEF7E5; border-radius: 32px; padding: clamp(20px, 4vw, 44px); display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: flex-end; justify-content: space-between; padding-right: 110px">
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<div style="font-weight: 500; font-size: 22px; line-height: 1; letter-spacing: 0.1em; text-transform: uppercase">01 · Crash · Wild West heist · Live demo</div>
+<h3 style="margin: 0; font-weight: 700; font-size: clamp(56px, 7vw, 96px); line-height: 0.85; text-transform: uppercase">Rocket Rustler</h3>
+</div>
+<div style="flex: 1 1 360px; max-width: 520px; display: flex; flex-direction: column; gap: 16px; align-items: flex-start">
+<p style="margin: 0; font-size: 24px; line-height: 1.1">A bandit rabbit rides a rocket full of loot, the sheriff fox gives chase. The multiplier climbs with the chase — cash out before the rocket blows.</p>
+<a href="/rocket-rustler/" style="display: inline-flex; align-items: center; min-height: 52px; padding: 6px 26px 0; border-radius: 999px; background: #121212; color: #FFF000; font-weight: 600; font-size: 28px; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none" class="zz-pulse">Play the demo →</a>
+</div>
+</div>
+<img loading="lazy" src="assets/rr-cover.jpg" alt="Rocket Rustler key art: fox sheriff on horseback chasing a rabbit riding a rocket full of gold" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 20px; border: 3px solid #121212; box-sizing: border-box">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px">
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/rr-running.jpg" alt="In-game round running at 2.45x with bet panels" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 16px; border: 3px solid #121212; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase">In‑game · round running</figcaption>
+</figure>
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/rr-lost.jpg" alt="Crash state with comic BOOM explosion" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 16px; border: 3px solid #121212; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase">Crash state · comic FX</figcaption>
+</figure>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch">
+<figure style="margin: 0; flex: 1 1 220px; max-width: 300px; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/rr-mobile.jpg" alt="Mobile UI with stage, history and two bet panels" style="width: 100%; border-radius: 16px; border: 3px solid #121212; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase">Mobile UI</figcaption>
+</figure>
+<figure style="margin: 0; flex: 1 1 220px; max-width: 300px; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/rr-mkt.jpg" alt="Rocket Rustler social marketing poster with logo" style="width: 100%; border-radius: 16px; border: 3px solid #121212; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase">Launch post · 1080 × 1350</figcaption>
+</figure>
+<div style="flex: 1 1 260px; background: #121212; color: #FEF7E5; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="font-weight: 700; font-size: 40px; line-height: 0.9; text-transform: uppercase; color: #FFF000">Delivered</div>
+<ul style="margin: 0; padding-left: 20px; font-size: 24px; line-height: 1.25">
+<li>Logo &amp; key art</li>
+<li>Characters + run / win / lose sprites</li>
+<li>Parallax desert layers</li>
+<li>Desktop &amp; mobile UI kit</li>
+<li>History strip, all‑bets panel</li>
+<li>Win / lose popups &amp; FX</li>
+<li>Social launch set</li>
+</ul>
+</div>
+</div>
+<div style="position: absolute; right: 18px; top: -26px; transform: rotate(10deg); width: 120px; height: 120px">
+<svg class="zz-spin" viewBox="0 0 200 200" width="120" height="120" style="position: absolute; left: 0; top: 0" aria-hidden="true"><polygon points="199.0,100.0 184.7,114.9 193.0,133.9 174.5,143.0 175.8,163.6 155.3,165.9 149.5,185.7 129.4,180.8 117.2,197.5 100.0,186.0 82.8,197.5 70.6,180.8 50.5,185.7 44.7,165.9 24.2,163.6 25.5,143.0 7.0,133.9 15.3,114.9 1.0,100.0 15.3,85.1 7.0,66.1 25.5,57.0 24.2,36.4 44.7,34.1 50.5,14.3 70.6,19.2 82.8,2.5 100.0,14.0 117.2,2.5 129.4,19.2 149.5,14.3 155.3,34.1 175.8,36.4 174.5,57.0 193.0,66.1 184.7,85.1" fill="#121212"></polygon><circle cx="100" cy="100" r="80" fill="#FFF000"></circle></svg>
+<img loading="lazy" src="assets/zinzo-mark.svg" alt="A Zinzin original" style="position: absolute; left: 19px; top: 36px; width: 82px; height: 53px">
+</div>
+</div>
+</section>
+
+<section id="altitude" style="max-width: 1280px; margin: 0 auto; padding: 0 24px 32px">
+<div class="zz-lift" style="position: relative; background: #FFF000; color: #121212; border: 3px solid #FEF7E5; border-radius: 32px; padding: clamp(20px, 4vw, 44px); display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: flex-end; justify-content: space-between; padding-right: 110px">
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<div style="font-weight: 500; font-size: 22px; line-height: 1; letter-spacing: 0.1em; text-transform: uppercase">02 · Crash · Classic flyer · Live demo</div>
+<h3 style="margin: 0; font-weight: 700; font-size: clamp(56px, 7vw, 96px); line-height: 0.85; text-transform: uppercase">Altitude X</h3>
+</div>
+<div style="flex: 1 1 360px; max-width: 520px; display: flex; flex-direction: column; gap: 16px; align-items: flex-start">
+<p style="margin: 0; font-size: 24px; line-height: 1.1">The pure flying‑plane format: the plane climbs, the multiplier rises, cash out before it flies away. Two bet panels, auto cash‑out, live bets feed, round history, provably fair.</p>
+<a href="/altitude-x" style="display: inline-flex; align-items: center; min-height: 52px; padding: 6px 26px 0; border-radius: 999px; background: #121212; color: #FFF000; font-weight: 600; font-size: 28px; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none" class="zz-pulse">Play the demo →</a>
+</div>
+</div>
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/ax-flight.jpg" alt="Altitude X mid-flight at 3.18x with live bets list and two bet panels" style="width: 100%; border-radius: 20px; border: 3px solid #121212; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase">Live build · round in flight, players cashing out</figcaption>
+</figure>
+<div style="position: absolute; right: 18px; top: -26px; transform: rotate(10deg); width: 120px; height: 120px">
+<svg class="zz-spin" viewBox="0 0 200 200" width="120" height="120" style="position: absolute; left: 0; top: 0" aria-hidden="true"><polygon points="199.0,100.0 184.7,114.9 193.0,133.9 174.5,143.0 175.8,163.6 155.3,165.9 149.5,185.7 129.4,180.8 117.2,197.5 100.0,186.0 82.8,197.5 70.6,180.8 50.5,185.7 44.7,165.9 24.2,163.6 25.5,143.0 7.0,133.9 15.3,114.9 1.0,100.0 15.3,85.1 7.0,66.1 25.5,57.0 24.2,36.4 44.7,34.1 50.5,14.3 70.6,19.2 82.8,2.5 100.0,14.0 117.2,2.5 129.4,19.2 149.5,14.3 155.3,34.1 175.8,36.4 174.5,57.0 193.0,66.1 184.7,85.1" fill="#121212"></polygon><circle cx="100" cy="100" r="80" fill="#F71E7E"></circle></svg>
+<img loading="lazy" src="assets/zinzo-mark-outline.svg" alt="A Zinzin original" style="position: absolute; left: 19px; top: 36px; width: 82px; height: 51px">
+</div>
+</div>
+</section>
+
+<section id="circus" style="max-width: 1280px; margin: 0 auto; padding: 0 24px 32px">
+<div class="zz-lift" style="position: relative; background: #FEF7E5; color: #121212; border: 3px solid #FEF7E5; border-radius: 32px; padding: clamp(20px, 4vw, 44px); display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: flex-end; justify-content: space-between; padding-right: 110px">
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<div style="font-weight: 500; font-size: 22px; line-height: 1; letter-spacing: 0.1em; text-transform: uppercase; color: #5E574C">03 · Crash · Roman chariot race · Live demo</div>
+<h3 style="margin: 0; font-weight: 700; font-size: clamp(56px, 7vw, 96px); line-height: 0.85; text-transform: uppercase">Circus Maximus</h3>
+</div>
+<div style="flex: 1 1 360px; max-width: 520px; display: flex; flex-direction: column; gap: 16px; align-items: flex-start">
+<p style="margin: 0; font-size: 24px; line-height: 1.1">A gladiator whips his chariot around the hippodrome; the multiplier grows with every stride until the turning post claims a wreck.</p>
+<a href="/circus-maximus/" style="display: inline-flex; align-items: center; min-height: 52px; padding: 6px 26px 0; border-radius: 999px; background: #121212; color: #FFF000; font-weight: 600; font-size: 28px; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none" class="zz-pulse">Play the demo →</a>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<figure style="margin: 0; flex: 1 1 400px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/cm-keyart.jpg" alt="Circus Maximus key art: screaming gladiator and horse charging through the arena under the logo" style="width: 100%; border-radius: 20px; border: 3px solid #121212; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase; color: #5E574C">Key art &amp; logo</figcaption>
+</figure>
+<figure style="margin: 0; flex: 1.4 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/cm-horse.jpg" alt="Horse character sheet: pencil sketches, expressions, final colour run pose and palette" style="width: 100%; border-radius: 20px; border: 3px solid #121212; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase; color: #5E574C">Character sheet · sketch → expressions → final</figcaption>
+</figure>
+</div>
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/cm-main.jpg" alt="Circus Maximus in-game: gladiator on a chariot racing past the arena walls" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 20px; border: 3px solid #121212; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase; color: #5E574C">In‑game · arena loop &amp; bet bar</figcaption>
+</figure>
+<div style="position: absolute; right: 18px; top: -26px; transform: rotate(10deg); width: 120px; height: 120px">
+<svg class="zz-spin" viewBox="0 0 200 200" width="120" height="120" style="position: absolute; left: 0; top: 0" aria-hidden="true"><polygon points="199.0,100.0 184.7,114.9 193.0,133.9 174.5,143.0 175.8,163.6 155.3,165.9 149.5,185.7 129.4,180.8 117.2,197.5 100.0,186.0 82.8,197.5 70.6,180.8 50.5,185.7 44.7,165.9 24.2,163.6 25.5,143.0 7.0,133.9 15.3,114.9 1.0,100.0 15.3,85.1 7.0,66.1 25.5,57.0 24.2,36.4 44.7,34.1 50.5,14.3 70.6,19.2 82.8,2.5 100.0,14.0 117.2,2.5 129.4,19.2 149.5,14.3 155.3,34.1 175.8,36.4 174.5,57.0 193.0,66.1 184.7,85.1" fill="#121212"></polygon><circle cx="100" cy="100" r="80" fill="#FFF000"></circle></svg>
+<img loading="lazy" src="assets/zinzo-mark.svg" alt="A Zinzin original" style="position: absolute; left: 19px; top: 36px; width: 82px; height: 53px">
+</div>
+</div>
+</section>
+
+<section id="taksim" style="max-width: 1280px; margin: 0 auto; padding: 0 24px 32px">
+<div class="zz-lift" style="position: relative; background: #121212; color: #FEF7E5; border: 3px solid #FEF7E5; border-radius: 32px; padding: clamp(20px, 4vw, 44px); display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: flex-end; justify-content: space-between; padding-right: 110px">
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<div style="font-weight: 500; font-size: 22px; line-height: 1; letter-spacing: 0.1em; text-transform: uppercase; color: #BDB5A6">04 · Crash · Istanbul street run · Live demo</div>
+<h3 style="margin: 0; font-weight: 700; font-size: clamp(56px, 7vw, 96px); line-height: 0.85; text-transform: uppercase">Taksim Crash</h3>
+</div>
+<div style="flex: 1 1 360px; max-width: 520px; display: flex; flex-direction: column; gap: 16px; align-items: flex-start">
+<p style="margin: 0; font-size: 24px; line-height: 1.1">A lane‑crossing crash on İstiklal Avenue: dodge the nostalgic tram and vintage cars — every lane raises the multiplier. Difficulty modes and a full character state set.</p>
+<a href="/ottoman_crash/" style="display: inline-flex; align-items: center; min-height: 52px; padding: 6px 26px 0; border-radius: 999px; background: #FFF000; color: #121212; font-weight: 600; font-size: 28px; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none" class="zz-pulse">Play the demo →</a>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px">
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/oc-mkt.jpg" alt="Taksim Crash key art with fez-wearing hero, red tram and Galata Tower" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 20px; border: 3px solid #FEF7E5; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase; color: #BDB5A6">Key art &amp; logo</figcaption>
+</figure>
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/oc-ingame.jpg" alt="Top-down in-game view with lanes, tram and multiplier manholes" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover; object-position: top; border-radius: 20px; border: 3px solid #FEF7E5; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase; color: #BDB5A6">In‑game · lanes with live multipliers</figcaption>
+</figure>
+</div>
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/oc-popups.jpg" alt="Win, cash-out and lose popups" style="width: 100%; max-width: 820px; border-radius: 16px; border: 3px solid #FEF7E5; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase; color: #BDB5A6">Result popups · localised (TR)</figcaption>
+</figure>
+<div style="position: absolute; right: 18px; top: -26px; transform: rotate(10deg); width: 120px; height: 120px">
+<svg class="zz-spin" viewBox="0 0 200 200" width="120" height="120" style="position: absolute; left: 0; top: 0" aria-hidden="true"><polygon points="199.0,100.0 184.7,114.9 193.0,133.9 174.5,143.0 175.8,163.6 155.3,165.9 149.5,185.7 129.4,180.8 117.2,197.5 100.0,186.0 82.8,197.5 70.6,180.8 50.5,185.7 44.7,165.9 24.2,163.6 25.5,143.0 7.0,133.9 15.3,114.9 1.0,100.0 15.3,85.1 7.0,66.1 25.5,57.0 24.2,36.4 44.7,34.1 50.5,14.3 70.6,19.2 82.8,2.5 100.0,14.0 117.2,2.5 129.4,19.2 149.5,14.3 155.3,34.1 175.8,36.4 174.5,57.0 193.0,66.1 184.7,85.1" fill="#FEF7E5"></polygon><circle cx="100" cy="100" r="80" fill="#FFF000"></circle></svg>
+<img loading="lazy" src="assets/zinzo-mark.svg" alt="A Zinzin original" style="position: absolute; left: 19px; top: 36px; width: 82px; height: 53px">
+</div>
+</div>
+</section>
+
+<section id="tower" style="max-width: 1280px; margin: 0 auto; padding: 0 24px 32px">
+<div class="zz-lift" style="position: relative; background: #F71E7E; color: #121212; border: 3px solid #FEF7E5; border-radius: 32px; padding: clamp(20px, 4vw, 44px); display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: flex-end; justify-content: space-between; padding-right: 110px">
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<div style="font-weight: 500; font-size: 22px; line-height: 1; letter-spacing: 0.1em; text-transform: uppercase">05 · Crash · Stack &amp; cash out</div>
+<h3 style="margin: 0; font-weight: 700; font-size: clamp(56px, 7vw, 96px); line-height: 0.85; text-transform: uppercase">Tower Cash</h3>
+</div>
+<p style="margin: 0; flex: 1 1 360px; max-width: 520px; font-size: 24px; line-height: 1.1">A crane drops floor after floor; every floor that lands pushes the multiplier up. One tall backdrop carries the tower from the street through the clouds into space.</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<figure style="margin: 0; flex: 3 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/tc-ingame.jpg" alt="Tower Cash in-game with crane, tower and multiplier ladder" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 20px; border: 3px solid #121212; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase">In‑game · multiplier ladder &amp; bet bar</figcaption>
+</figure>
+<figure style="margin: 0; flex: 1 1 200px; max-width: 280px; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/tc-tower.jpg" alt="Full vertical scrolling background from street to outer space" style="width: 100%; border-radius: 20px; border: 3px solid #121212; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase">Vertical world · street → space</figcaption>
+</figure>
+</div>
+<div style="position: absolute; right: 18px; top: -26px; transform: rotate(10deg); width: 120px; height: 120px">
+<svg class="zz-spin" viewBox="0 0 200 200" width="120" height="120" style="position: absolute; left: 0; top: 0" aria-hidden="true"><polygon points="199.0,100.0 184.7,114.9 193.0,133.9 174.5,143.0 175.8,163.6 155.3,165.9 149.5,185.7 129.4,180.8 117.2,197.5 100.0,186.0 82.8,197.5 70.6,180.8 50.5,185.7 44.7,165.9 24.2,163.6 25.5,143.0 7.0,133.9 15.3,114.9 1.0,100.0 15.3,85.1 7.0,66.1 25.5,57.0 24.2,36.4 44.7,34.1 50.5,14.3 70.6,19.2 82.8,2.5 100.0,14.0 117.2,2.5 129.4,19.2 149.5,14.3 155.3,34.1 175.8,36.4 174.5,57.0 193.0,66.1 184.7,85.1" fill="#121212"></polygon><circle cx="100" cy="100" r="80" fill="#FFF000"></circle></svg>
+<img loading="lazy" src="assets/zinzo-mark.svg" alt="A Zinzin original" style="position: absolute; left: 19px; top: 36px; width: 82px; height: 53px">
+</div>
+</div>
+</section>
+
+<section id="instant" style="max-width: 1280px; margin: 0 auto; padding: 72px 24px 32px; display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: flex-end; justify-content: space-between">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div style="font-weight: 500; font-size: 22px; line-height: 1; letter-spacing: 0.1em; text-transform: uppercase; color: #BDB5A6">02 — Instant games</div>
+<h2 style="margin: 0; font-weight: 700; font-size: clamp(64px, 9vw, 140px); line-height: 0.85; text-transform: uppercase">Hit it. <span style="color: #F71E7E">It pays.</span></h2>
+</div>
+<p style="margin: 0; font-size: 26px; line-height: 1.1; color: #FEF7E5; max-width: 420px">Wheels, pick’ems and plinko — quick rounds with their own worlds and characters.</p>
+</section>
+
+<section id="olympus" style="max-width: 1280px; margin: 0 auto; padding: 0 24px 32px">
+<div class="zz-lift" style="position: relative; background: #FFF000; color: #121212; border: 3px solid #FEF7E5; border-radius: 32px; padding: clamp(20px, 4vw, 44px); display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: flex-end; justify-content: space-between; padding-right: 110px">
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<div style="font-weight: 500; font-size: 22px; line-height: 1; letter-spacing: 0.1em; text-transform: uppercase">Instant · Multiplier wheel · Live demo</div>
+<h3 style="margin: 0; font-weight: 700; font-size: clamp(56px, 7vw, 96px); line-height: 0.85; text-transform: uppercase">Olympus Spin</h3>
+</div>
+<div style="flex: 1 1 360px; max-width: 520px; display: flex; flex-direction: column; gap: 16px; align-items: flex-start">
+<p style="margin: 0; font-size: 24px; line-height: 1.1">A three‑ring multiplier wheel ruled by Zeus, Poseidon and Hades. Each ring fills toward its bonus, with part cash‑out and full cash‑out. Desktop and portrait mobile plus a god icon set.</p>
+<a href="/olympus-spin/" style="display: inline-flex; align-items: center; min-height: 52px; padding: 6px 26px 0; border-radius: 999px; background: #121212; color: #FFF000; font-weight: 600; font-size: 28px; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none" class="zz-pulse">Play the demo →</a>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<figure style="margin: 0; flex: 1.25 1 460px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/os-laptop.jpg" alt="Olympus Spin game on a laptop with Zeus and god icons around it" style="width: 100%; border-radius: 20px; border: 3px solid #121212; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase">Game UI · desktop showcase</figcaption>
+</figure>
+<figure style="margin: 0; flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/os-poster.jpg" alt="Olympus Spin launch poster with Zeus and the multiplier wheel" style="width: 100%; border-radius: 20px; border: 3px solid #121212; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase">Launch poster · 1080 × 1350</figcaption>
+</figure>
+</div>
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/os-zeus.jpg" alt="Zeus main character holding a lightning bolt in front of Mount Olympus" style="width: 100%; border-radius: 20px; border: 3px solid #121212; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase">Main character · Zeus</figcaption>
+</figure>
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/os-icons.jpg" alt="God icon set: lightning, trident, helmet, laurel and urn badges" style="width: 100%; max-width: 900px; border-radius: 20px; border: 3px solid #121212; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase">Icon set · badges &amp; ring markers</figcaption>
+</figure>
+<div style="position: absolute; right: 18px; top: -26px; transform: rotate(10deg); width: 120px; height: 120px">
+<svg class="zz-spin" viewBox="0 0 200 200" width="120" height="120" style="position: absolute; left: 0; top: 0" aria-hidden="true"><polygon points="199.0,100.0 184.7,114.9 193.0,133.9 174.5,143.0 175.8,163.6 155.3,165.9 149.5,185.7 129.4,180.8 117.2,197.5 100.0,186.0 82.8,197.5 70.6,180.8 50.5,185.7 44.7,165.9 24.2,163.6 25.5,143.0 7.0,133.9 15.3,114.9 1.0,100.0 15.3,85.1 7.0,66.1 25.5,57.0 24.2,36.4 44.7,34.1 50.5,14.3 70.6,19.2 82.8,2.5 100.0,14.0 117.2,2.5 129.4,19.2 149.5,14.3 155.3,34.1 175.8,36.4 174.5,57.0 193.0,66.1 184.7,85.1" fill="#121212"></polygon><circle cx="100" cy="100" r="80" fill="#F71E7E"></circle></svg>
+<img loading="lazy" src="assets/zinzo-mark-outline.svg" alt="A Zinzin original" style="position: absolute; left: 19px; top: 36px; width: 82px; height: 51px">
+</div>
+</div>
+</section>
+
+<section id="goblin" style="max-width: 1280px; margin: 0 auto; padding: 0 24px 32px">
+<div class="zz-lift" style="position: relative; background: #FEF7E5; color: #121212; border: 3px solid #FEF7E5; border-radius: 32px; padding: clamp(20px, 4vw, 44px); display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: flex-end; justify-content: space-between; padding-right: 110px">
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<div style="font-weight: 500; font-size: 22px; line-height: 1; letter-spacing: 0.1em; text-transform: uppercase; color: #5E574C">Instant · Whack‑a‑mole pick’em · Live demo</div>
+<h3 style="margin: 0; font-weight: 700; font-size: clamp(56px, 7vw, 96px); line-height: 0.85; text-transform: uppercase">Hit Me, Goblin!</h3>
+</div>
+<div style="flex: 1 1 360px; max-width: 520px; display: flex; flex-direction: column; gap: 16px; align-items: flex-start">
+<p style="margin: 0; font-size: 24px; line-height: 1.1">Goblins pop out of a swampy whack‑a‑mole box; every good smash climbs the multiplier ladder. A cast of goblins with hit reactions, difficulty modes and turbo play.</p>
+<a href="/hit-me-goblin" style="display: inline-flex; align-items: center; min-height: 52px; padding: 6px 26px 0; border-radius: 999px; background: #121212; color: #FFF000; font-weight: 600; font-size: 28px; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none" class="zz-pulse">Play the demo →</a>
+</div>
+</div>
+<img loading="lazy" src="assets/wg-cover.jpg" alt="Hit Me, Goblin! logo over a dark swamp scene" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 20px; border: 3px solid #121212; box-sizing: border-box">
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start">
+<figure style="margin: 0; flex: 3 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/wg-desktop.jpg" alt="Desktop in-game: wooden whack-a-mole box with multiplier chips and bet bar" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 20px; border: 3px solid #121212; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase; color: #5E574C">Desktop · multiplier ladder &amp; bet bar</figcaption>
+</figure>
+<figure style="margin: 0; flex: 1 1 200px; max-width: 280px; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/wg-mobile.jpg" alt="Mobile in-game with goblin characters popping out" style="width: 100%; border-radius: 20px; border: 3px solid #121212; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase; color: #5E574C">Mobile · goblin cast</figcaption>
+</figure>
+</div>
+<div style="position: absolute; right: 18px; top: -26px; transform: rotate(10deg); width: 120px; height: 120px">
+<svg class="zz-spin" viewBox="0 0 200 200" width="120" height="120" style="position: absolute; left: 0; top: 0" aria-hidden="true"><polygon points="199.0,100.0 184.7,114.9 193.0,133.9 174.5,143.0 175.8,163.6 155.3,165.9 149.5,185.7 129.4,180.8 117.2,197.5 100.0,186.0 82.8,197.5 70.6,180.8 50.5,185.7 44.7,165.9 24.2,163.6 25.5,143.0 7.0,133.9 15.3,114.9 1.0,100.0 15.3,85.1 7.0,66.1 25.5,57.0 24.2,36.4 44.7,34.1 50.5,14.3 70.6,19.2 82.8,2.5 100.0,14.0 117.2,2.5 129.4,19.2 149.5,14.3 155.3,34.1 175.8,36.4 174.5,57.0 193.0,66.1 184.7,85.1" fill="#121212"></polygon><circle cx="100" cy="100" r="80" fill="#FFF000"></circle></svg>
+<img loading="lazy" src="assets/zinzo-mark.svg" alt="A Zinzin original" style="position: absolute; left: 19px; top: 36px; width: 82px; height: 53px">
+</div>
+</div>
+</section>
+
+<section id="plinko" style="max-width: 1280px; margin: 0 auto; padding: 0 24px 32px">
+<div class="zz-lift" style="position: relative; background: #121212; color: #FEF7E5; border: 3px solid #FEF7E5; border-radius: 32px; padding: clamp(20px, 4vw, 44px); display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: flex-end; justify-content: space-between; padding-right: 110px">
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<div style="font-weight: 500; font-size: 22px; line-height: 1; letter-spacing: 0.1em; text-transform: uppercase; color: #BDB5A6">Instant · Space plinko · Live demo</div>
+<h3 style="margin: 0; font-weight: 700; font-size: clamp(56px, 7vw, 96px); line-height: 0.85; text-transform: uppercase">Crystal Plinko</h3>
+</div>
+<div style="flex: 1 1 360px; max-width: 520px; display: flex; flex-direction: column; gap: 16px; align-items: flex-start">
+<p style="margin: 0; font-size: 24px; line-height: 1.1">A UFO drops the ball through a cosmic peg field. 12, 14 or 16 rows, three volatility levels, manual and auto play — up to <span style="color: #FFF000">999×</span>.</p>
+<a href="/crystal-plinko" style="display: inline-flex; align-items: center; min-height: 52px; padding: 6px 26px 0; border-radius: 999px; background: #FFF000; color: #121212; font-weight: 600; font-size: 28px; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none" class="zz-pulse">Play the demo →</a>
+</div>
+</div>
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 6px">
+<img loading="lazy" src="assets/cp-board.jpg" alt="Crystal Plinko board with UFO, planets and bet controls" style="width: 100%; max-width: 980px; border-radius: 20px; border: 3px solid #FEF7E5; box-sizing: border-box">
+<figcaption style="font-size: 20px; letter-spacing: 0.04em; text-transform: uppercase; color: #BDB5A6">Live build · board &amp; bet controls</figcaption>
+</figure>
+<div style="position: absolute; right: 18px; top: -26px; transform: rotate(10deg); width: 120px; height: 120px">
+<svg class="zz-spin" viewBox="0 0 200 200" width="120" height="120" style="position: absolute; left: 0; top: 0" aria-hidden="true"><polygon points="199.0,100.0 184.7,114.9 193.0,133.9 174.5,143.0 175.8,163.6 155.3,165.9 149.5,185.7 129.4,180.8 117.2,197.5 100.0,186.0 82.8,197.5 70.6,180.8 50.5,185.7 44.7,165.9 24.2,163.6 25.5,143.0 7.0,133.9 15.3,114.9 1.0,100.0 15.3,85.1 7.0,66.1 25.5,57.0 24.2,36.4 44.7,34.1 50.5,14.3 70.6,19.2 82.8,2.5 100.0,14.0 117.2,2.5 129.4,19.2 149.5,14.3 155.3,34.1 175.8,36.4 174.5,57.0 193.0,66.1 184.7,85.1" fill="#FEF7E5"></polygon><circle cx="100" cy="100" r="80" fill="#FFF000"></circle></svg>
+<img loading="lazy" src="assets/zinzo-mark.svg" alt="A Zinzin original" style="position: absolute; left: 19px; top: 36px; width: 82px; height: 53px">
+</div>
+</div>
+</section>
+
+<section style="max-width: 1280px; margin: 0 auto; padding: 72px 24px 48px; display: flex; flex-direction: column; gap: 32px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div style="font-weight: 500; font-size: 22px; line-height: 1; letter-spacing: 0.1em; text-transform: uppercase; color: #BDB5A6">03 — For your game</div>
+<h2 style="margin: 0; font-weight: 700; font-size: clamp(56px, 8vw, 120px); line-height: 0.85; text-transform: uppercase">Serious about <span style="color: #F71E7E">monkey</span> business.</h2>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px">
+<div style="border: 2px solid #F71E7E; border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="font-weight: 700; font-size: 44px; line-height: 0.9; text-transform: uppercase; color: #F71E7E">The flyer</div>
+<p style="margin: 0; font-size: 24px; line-height: 1.1">Plane, rocket, character or vehicle — idle, flight, cash‑out and crash frames ready for animation.</p>
+</div>
+<div style="border: 2px solid #FFF000; border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="font-weight: 700; font-size: 44px; line-height: 0.9; text-transform: uppercase; color: #FFF000">The world</div>
+<p style="margin: 0; font-size: 24px; line-height: 1.1">Seamless parallax layers, horizontal or vertical, with sky, altitude and space transitions.</p>
+</div>
+<div style="border: 2px solid #FEF7E5; border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="font-weight: 700; font-size: 44px; line-height: 0.9; text-transform: uppercase; color: #FEF7E5">The UI</div>
+<p style="margin: 0; font-size: 24px; line-height: 1.1">Multiplier display, two‑bet panel with auto cash‑out, history strip, live bets — desktop and mobile.</p>
+</div>
+<div style="border: 2px solid #F71E7E; border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 10px">
+<div style="font-weight: 700; font-size: 44px; line-height: 0.9; text-transform: uppercase; color: #F71E7E">The launch</div>
+<p style="margin: 0; font-size: 24px; line-height: 1.1">Logo, lobby thumbnail, key art and social posts sized for operators and channels.</p>
+</div>
+</div>
+</section>
+
+<footer id="contact" style="max-width: 1280px; margin: 0 auto; padding: 24px 24px 64px">
+<div class="zz-lift" style="position: relative; background: #F71E7E; color: #121212; border: 3px solid #FEF7E5; border-radius: 32px; padding: clamp(24px, 5vw, 56px); display: flex; flex-wrap: wrap; gap: 32px; align-items: center; justify-content: space-between; overflow: hidden">
+<div style="flex: 1.4 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+<div style="font-weight: 500; font-size: 22px; line-height: 1; letter-spacing: 0.1em; text-transform: uppercase">Ahu Ay · Art Director, Zinzin Studios</div>
+<h2 style="margin: 0; font-weight: 700; font-size: clamp(64px, 9vw, 132px); line-height: 0.82; text-transform: uppercase">Zin it to win it.</h2>
+<div style="display: flex; flex-wrap: wrap; gap: 12px">
+<a href="https://t.me/xzinzinx" style="display: inline-flex; align-items: center; min-height: 52px; padding: 6px 24px 0; border-radius: 999px; background: #121212; color: #FFF000; font-weight: 600; font-size: 26px; letter-spacing: 0.04em; text-decoration: none">Telegram · @xzinzinx</a>
+<a href="https://zinzinstudios.com" style="display: inline-flex; align-items: center; min-height: 52px; padding: 6px 24px 0; border-radius: 999px; border: 3px solid #121212; color: #121212; font-weight: 600; font-size: 26px; letter-spacing: 0.04em; text-decoration: none">zinzinstudios.com</a>
+<a href="https://instagram.com/zinzin_studios" style="display: inline-flex; align-items: center; min-height: 52px; padding: 6px 24px 0; border-radius: 999px; border: 3px solid #121212; color: #121212; font-weight: 600; font-size: 26px; letter-spacing: 0.04em; text-decoration: none">@zinzin_studios</a>
+</div>
+</div>
+<div style="flex: 0 1 300px; display: flex; justify-content: center">
+<div class="zz-bob2" style="width: 100%; max-width: 280px"><img loading="lazy" src="assets/zinzo-mark-outline.svg" alt="Zinzo mark" style="width: 100%"></div>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; padding-top: 28px; font-weight: 500; font-size: 20px; letter-spacing: 0.1em; text-transform: uppercase; color: #BDB5A6">
+<span>© Zinzin Studios · <span style="color: #FFF000">We make mischief.</span></span>
+<span>Slots · Crash · Instant</span>
+</div>
+</footer>
+
+</div>
+</body>
+</html>
