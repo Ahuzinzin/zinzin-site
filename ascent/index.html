@@ -67,10 +67,7 @@ button:focus-visible{outline:3px solid #7ee8ff;outline-offset:2px}
 .sp-tag{font:800 34px Inter,sans-serif;color:#fff;text-shadow:0 3px 10px rgba(0,0,0,.6)}
 .sp-bar{width:520px;height:18px;border-radius:9px;background:#0f172acc;border:2px solid #ffffff44;overflow:hidden}
 .sp-bar b{display:block;height:100%;width:0;background:linear-gradient(90deg,#5ce1ff,#22c55e);transition:width .2s}
-.sp-play{display:none;width:300px;height:96px;border:0;border-radius:48px;background:radial-gradient(circle at 40% 35%,#4ade80,#16a34a 70%);box-shadow:inset 0 -7px 0 #15803d,0 8px 0 #0f5d2c,0 0 40px #22c55e88;color:#fff;font:900 40px Inter,sans-serif;letter-spacing:2px;cursor:pointer;animation:sp-pulse 1.6s ease-in-out infinite}
-.sp-play:active{transform:translateY(4px)}
-@keyframes sp-pulse{50%{box-shadow:inset 0 -7px 0 #15803d,0 8px 0 #0f5d2c,0 0 70px #22c55ecc}}
-.sp-note{position:absolute;left:0;right:0;bottom:26px;text-align:center;font:600 18px Inter,sans-serif;color:#ffffffcc;text-shadow:0 2px 6px #000}
+
 </style>
 </head>
 <body>
@@ -98,9 +95,7 @@ button:focus-visible{outline:3px solid #7ee8ff;outline-offset:2px}
       <img class="sp-logo" src="img/logo.webp" alt="Ascent — Tower of Gods">
       <div class="sp-tag">Build your way to the gods.</div>
       <div class="sp-bar" id="spbar"><b id="spfill"></b></div>
-      <button class="sp-play" id="spplay">PLAY</button>
     </div>
-    <div class="sp-note">18+ · ZinZin Studios</div>
   </div>
 </div>
 <script>
@@ -165,7 +160,7 @@ function ready(){
   const g=ground.getContext('2d');g.drawImage(IMG.bg0,0,0,1920,1080);
   g.globalCompositeOperation='destination-in';const gr=g.createLinearGradient(0,0,0,420);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(1,'#000');g.fillStyle=gr;g.fillRect(0,0,1920,1080);
   S.order=[0,1,2,3,4,5].map(()=>shuffle([1,2,3,4,5]));
-  buildLadder();ui();setTimeout(()=>{$('spbar').style.display='none';$('spplay').style.display='block'},300);requestAnimationFrame(loop);
+  buildLadder();ui();setTimeout(closeSplash,350);requestAnimationFrame(loop);
 }
 
 /* ladder: one stop per floor; the fill climbs to the reached stop, then the stops slide down */
@@ -327,7 +322,7 @@ function loop(now){
 
 /* splash: PLAY starts audio and fades the cover away */
 let splashOn=true;
-$('spplay').addEventListener('click',()=>{audioInit();sfx('click',.7);splashOn=false;$('splash').classList.add('out');setTimeout(()=>$('splash').remove(),700)});
+function closeSplash(){splashOn=false;$('splash').classList.add('out');setTimeout(()=>$('splash').remove(),700)}
 /* controls: grab the scene and drag up to look down the tower, or use the wheel; it eases back after release */
 cv.addEventListener('pointerdown',e=>{S.drag={y:e.clientY,v:S.view};cv.setPointerCapture(e.pointerId);cv.classList.add('drag')});
 cv.addEventListener('pointermove',e=>{if(S.drag)S.view=S.drag.v-(e.clientY-S.drag.y)/SC});
@@ -344,7 +339,7 @@ $('du').addEventListener('click',()=>{S.mi=Math.min(2,S.mi+1);ui()});
 $('dd').addEventListener('click',()=>{S.mi=Math.max(0,S.mi-1);ui()});
 $('bu').addEventListener('click',()=>{S.bi=Math.min(BETS.length-1,S.bi+1);ui()});
 $('bd').addEventListener('click',()=>{S.bi=Math.max(0,S.bi-1);ui()});
-addEventListener('keydown',e=>{if(splashOn){if(e.code==='Space'||e.code==='Enter'){e.preventDefault();$('spplay').style.display==='block'&&$('spplay').click()}return}if(e.code==='Space'){e.preventDefault();go()}if(e.key==='c'||e.key==='C')cashout()});
+addEventListener('keydown',e=>{if(splashOn){if(e.code==='Space')e.preventDefault();return}if(e.code==='Space'){e.preventDefault();go()}if(e.key==='c'||e.key==='C')cashout()});
 }
 </script>
 </body>
