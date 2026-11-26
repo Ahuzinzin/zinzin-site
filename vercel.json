@@ -35,6 +35,21 @@
   ],
   "redirects": [
     {
+      "source": "/reign-of-poseidon",
+      "destination": "/reign-of-poseidon/",
+      "permanent": true
+    },
+    {
+      "source": "/games/poseidon-fortunes",
+      "destination": "/games/reign-of-poseidon/",
+      "permanent": true
+    },
+    {
+      "source": "/games/poseidon-fortunes/",
+      "destination": "/games/reign-of-poseidon/",
+      "permanent": true
+    },
+    {
       "source": "/olympus-spin",
       "destination": "/olympus-spin/",
       "permanent": true

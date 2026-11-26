@@ -681,6 +681,22 @@ footer{position:relative;overflow-x:clip;overflow-y:visible;background:var(--s1)
     </div>
   </div>
   <div class="games-grid" id="gamesGrid">
+    <div class="gc" onclick="openModal(6)">
+      <div class="gc-img">
+        <img src="assets/reign-of-poseidon.jpg" alt="Reign of Poseidon — underwater slot game art by ZinZin Studios" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        <span class="gc-badge gold">New</span>
+        <div class="gc-foot">
+          <span class="gc-cat">slot</span>
+          <a class="gc-name" href="/games/reign-of-poseidon/" onclick="event.stopPropagation()">Reign of Poseidon</a>
+        </div>
+      </div>
+    </div>
+  
     <div class="gc" onclick="openModal(14)">
       <div class="gc-img">
         <img src="assets/olympus-spin.jpg" alt="Olympus Spin — Greek mythology instant game art by ZinZin Studios" loading="lazy">
@@ -885,22 +901,6 @@ footer{position:relative;overflow-x:clip;overflow-y:visible;background:var(--s1)
         <div class="gc-foot">
           <span class="gc-cat">crash</span>
           <a class="gc-name" href="/games/altitude-x/" onclick="event.stopPropagation()">Altitude X</a>
-        </div>
-      </div>
-    </div>
-  
-    <div class="gc" onclick="openModal(6)">
-      <div class="gc-img">
-        <img src="assets/poseidon-fortunes.jpg" alt="Poseidon Fortunes — slot game art by ZinZin Studios" loading="lazy">
-        <div class="gc-ov">
-          <div class="gc-play">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
-          </div>
-        </div>
-        <span class="gc-badge gold">Exclusive</span>
-        <div class="gc-foot">
-          <span class="gc-cat">slot</span>
-          <a class="gc-name" href="/games/poseidon-fortunes/" onclick="event.stopPropagation()">Poseidon Fortunes</a>
         </div>
       </div>
     </div>
@@ -1387,18 +1387,19 @@ const games=[
     ]
   },
   {
-    id:6,name:"Poseidon Fortunes",slug:"poseidon-fortunes",category:"slot",
-    image:"assets/poseidon-fortunes.jpg",
-    badge:"Exclusive",badgeClass:"gold",
-    short:"Dive deep. Rule the ocean reels.",
-    desc:"Poseidon Fortunes plunges players into a majestic underwater kingdom ruled by the god of the seas. On a colossal 7-reel grid, Poseidon himself appears as a towering stacked wild.",
-    tags:["Slot","7-Reel","Stacked Wild","Mega Ways"],
-    specs:[{val:"7×6",lbl:"Grid"},{val:"RTP 96.5%",lbl:"Return to Player"},{val:"High",lbl:"Volatility"},{val:"50,000x",lbl:"Max Win"}],
+    id:6,name:"Reign of Poseidon",slug:"reign-of-poseidon",category:"slot",
+    image:"assets/reign-of-poseidon.jpg",
+    demoUrl:"reign-of-poseidon/",
+    badge:"New",badgeClass:"gold",heroPos:"50% 30%",
+    short:"Rule the deep. Strike the pearls.",
+    desc:"Reign of Poseidon plunges players into the sunken palace of Atlantis, where the god of the seas rules a 6×4 grid of gold-set gems. Land 8 or more matching symbols anywhere to win, watch winners shatter as new jewels tumble in, and let Poseidon's trident strike pearl multipliers of up to 100x. Four scatters open 10 free spins where every multiplier stacks for the whole feature.",
+    tags:["Slot","Pay Anywhere","Tumble","Multipliers","Greek Mythology"],
+    specs:[{val:"6×4",lbl:"Pay Anywhere Grid"},{val:"RTP 96.0%",lbl:"Return to Player"},{val:"Up to 100x",lbl:"Pearl Multiplier"},{val:"5,000x",lbl:"Max Win"}],
     features:[
-      {icon:"🔱",title:"Poseidon stacked wild",desc:"God wild towers across all 6 rows"},
-      {icon:"🌊",title:"Wave multiplier",desc:"Cascading 2x–50x multiplier chain"},
-      {icon:"🐚",title:"Deep Sea spins",desc:"Trident scatter unlocks free spins"},
-      {icon:"🎨",title:"Underwater epic art",desc:"Largest canvas art piece in our portfolio"}
+      {icon:"🔱",title:"Poseidon's lightning",desc:"The trident strikes pearl multipliers from 2x up to 100x"},
+      {icon:"🌊",title:"Tumbling reels",desc:"Winning gems shatter and new ones fall in for chain wins"},
+      {icon:"💎",title:"Pay anywhere",desc:"8+ matching symbols anywhere on the grid pay"},
+      {icon:"🐚",title:"Stacking free spins",desc:"4 scatters award 10 spins with a multiplier that never resets"}
     ]
   },
   {

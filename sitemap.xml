@@ -151,13 +151,13 @@
     </image:image>
   </url>
   <url>
-    <loc>https://zinzinstudios.com/games/poseidon-fortunes/</loc>
-    <lastmod>2026-07-09</lastmod>
+    <loc>https://zinzinstudios.com/games/reign-of-poseidon/</loc>
+    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
-      <image:loc>https://zinzinstudios.com/assets/poseidon-fortunes.jpg</image:loc>
-      <image:title>Poseidon Fortunes — slot game art by ZinZin Studios</image:title>
+      <image:loc>https://zinzinstudios.com/assets/reign-of-poseidon.jpg</image:loc>
+      <image:title>Reign of Poseidon — underwater slot game art by ZinZin Studios</image:title>
     </image:image>
   </url>
   <url>
@@ -209,6 +209,12 @@
   <url>
     <loc>https://zinzinstudios.com/olympus-spin/</loc>
     <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://zinzinstudios.com/reign-of-poseidon/</loc>
+    <lastmod>2026-11-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
