@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Reign of Poseidon</title>
+<meta name="description" content="Reign of Poseidon — playable slot demo by ZinZin Studios. 6×4 pay-anywhere tumbling reels, Poseidon's lightning multipliers and free spins.">
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#030b24;
+  font-family:Inter,system-ui,sans-serif;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+#wrap{display:flex;flex-direction:column;width:100%;height:100%}
+#gw{flex:1;min-height:0;position:relative}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:manipulation}
+
+/* ── BOTTOM HUD ── */
+#ui{
+  height:84px;flex-shrink:0;background:linear-gradient(180deg,#071a44,#040f2c);
+  border-top:1px solid rgba(255,207,74,.22);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 18px;gap:14px;overflow:visible;position:relative;z-index:5
+}
+.hud-left{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.hud-icon-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:none;color:#fff;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
+.hud-icon-btn:hover{background:rgba(255,255,255,.16)}
+.hud-icon-btn img{width:20px;height:20px}
+.hud-stats{display:flex;flex-direction:column;gap:5px;flex:0 0 auto}
+.hud-stat-row{display:flex;gap:6px;align-items:baseline;white-space:nowrap}
+.lbl{font-size:12px;font-weight:800;color:rgba(255,255,255,.5);letter-spacing:.5px;text-transform:uppercase}
+.val{font-size:14px;font-weight:800;color:#fff}
+.hud-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0}
+.hud-center .lbl{font-size:11px;letter-spacing:2px}
+.hud-center .val{font-size:24px;font-weight:900;color:#ffcf4a}
+.hud-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.hud-pill{background:rgba(255,255,255,.08);border:none;border-radius:20px;color:rgba(255,255,255,.85);font-weight:800;
+  font-size:11px;letter-spacing:.5px;padding:10px 16px;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap;
+  font-family:inherit;display:flex;align-items:center;gap:5px}
+.hud-pill:hover{background:rgba(255,255,255,.16)}
+.hud-pill:active{transform:scale(.96)}
+.hud-pill.on{background:#ffcf4a;color:#2a1800}
+.hud-pill .bolt{color:#ffcf4a}
+.hud-pill.on .bolt{color:#2a1800}
+.hud-hint{font-size:10px;line-height:1.3;color:rgba(255,255,255,.35);text-align:right;max-width:120px;flex:0 0 auto}
+.hud-hint b{color:rgba(255,255,255,.55)}
+#sb{position:relative;width:92px;height:92px;border-radius:50%;
+  background:radial-gradient(circle at 38% 30%,#fffbe0,#ffd65c 45%,#c9861a 100%);
+  border:3px solid #fff1b8;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 18px rgba(0,0,0,.55),0 0 30px rgba(255,207,74,.45),inset 0 -6px 12px rgba(120,60,0,.35);
+  transition:transform .15s,filter .15s;flex-shrink:0;top:-14px}
+#sb:hover{transform:translateY(-1px) scale(1.04)}
+#sb:active{transform:scale(.94)}
+#sb svg{width:40px;height:40px;fill:#3a2200}
+#sb.spinning svg{animation:sb-spin .6s linear infinite}
+#sb.locked{filter:saturate(.4) brightness(.8)}
+@keyframes sb-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.hud-bet-stepper{display:flex;flex-direction:column;gap:6px;flex:0 0 auto}
+.bet-step{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.08);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:background .15s}
+.bet-step:hover{background:rgba(255,255,255,.18)}
+.bet-step img{width:16px;height:16px}
+
+/* ── SIDE MENU ── */
+#side-menu-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s ease}
+#side-menu-overlay.show{opacity:1;pointer-events:all}
+#side-menu{position:fixed;top:0;left:0;bottom:0;width:min(78vw,280px);z-index:301;background:#061536;
+  border-right:1px solid rgba(255,207,74,.18);padding:84px 0 24px;display:flex;flex-direction:column;
+  transform:translateX(-100%);transition:transform .3s cubic-bezier(.22,1,.36,1);overflow-y:auto}
+#side-menu-overlay.show #side-menu{transform:translateX(0)}
+.menu-close{position:absolute;top:22px;right:18px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.08);
+  border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.menu-row{display:flex;align-items:center;gap:16px;width:100%;padding:14px 26px;background:none;border:none;cursor:pointer;
+  color:#fff;font-weight:800;font-size:14px;letter-spacing:1px;text-transform:uppercase;text-align:left;text-decoration:none;
+  transition:background .15s;font-family:inherit}
+.menu-row:hover{background:rgba(255,255,255,.06)}
+.menu-icon{width:38px;height:38px;border-radius:50%;flex-shrink:0;border:2px solid rgba(255,255,255,.55);
+  display:flex;align-items:center;justify-content:center}
+.menu-icon svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2}
+.menu-icon img{width:20px;height:20px}
+.menu-row.on .menu-icon{background:linear-gradient(135deg,#ffd65c,#b9740f);border-color:transparent}
+
+/* ── PAYTABLE ── */
+#info{position:fixed;inset:0;z-index:350;background:rgba(2,8,26,.86);display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .2s ease;padding:16px}
+#info.show{opacity:1;pointer-events:all}
+#info-box{width:min(640px,100%);max-height:100%;overflow-y:auto;background:linear-gradient(180deg,#0b2463,#061536);
+  border:2px solid #d9a63a;border-radius:16px;padding:22px 20px 24px;color:#fff;position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.6)}
+#info-box h2{font-family:Cinzel,Georgia,serif;font-weight:900;color:#ffd65c;text-align:center;font-size:24px;letter-spacing:1px;margin-bottom:4px}
+#info-box h3{font-family:Cinzel,Georgia,serif;color:#ffd65c;font-size:15px;letter-spacing:1px;margin:18px 0 8px}
+#info-box p{font-size:13px;line-height:1.55;color:rgba(255,255,255,.82)}
+.pt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-top:8px}
+.pt{background:rgba(255,255,255,.05);border:1px solid rgba(255,207,74,.18);border-radius:10px;padding:8px;display:flex;align-items:center;gap:8px}
+.pt img{width:48px;height:48px;object-fit:contain;flex-shrink:0}
+.pt div{font-size:11px;line-height:1.5;color:rgba(255,255,255,.75);white-space:nowrap}
+.pt b{color:#ffd65c}
+#info-close{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:15px;cursor:pointer}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(10px);background:#ffcf4a;color:#2a1800;
+  padding:8px 22px;border-radius:30px;font-size:13px;font-weight:800;letter-spacing:.5px;opacity:0;transition:all .25s;
+  pointer-events:none;z-index:400;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:620px){
+  #ui{height:66px;padding:0 8px;gap:6px}
+  .hud-stat-row .lbl{display:none}
+  .hud-hint{display:none}
+  .hud-stats{gap:2px}
+  .val{font-size:13px}
+  .hud-center .lbl{font-size:9px;letter-spacing:1px}
+  .hud-center .val{font-size:17px}
+  .hud-icon-btn{width:30px;height:30px}
+  .hud-icon-btn img{width:16px;height:16px}
+  .hud-actions{gap:5px}
+  .hud-pill{padding:8px 9px;font-size:0;gap:0;border-radius:50%;width:30px;height:30px;justify-content:center}
+  .hud-pill .bolt{font-size:12px}
+  #abtn::after{content:'A';font-size:12px}
+  .bet-step{width:22px;height:22px}
+  .bet-step img{width:13px;height:13px}
+  #sb{width:60px;height:60px;top:-6px;border-width:2px}
+  #sb svg{width:26px;height:26px}
+}
+@media(max-width:380px){.hud-actions{display:none}}
+
+/* ── SPLASH ── */
+#splash{position:fixed;inset:0;z-index:999;background:#030b24 url(assets/splash.jpg) center/cover no-repeat;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:48px;cursor:pointer;
+  transition:opacity .6s ease;overflow:hidden}
+@media(max-aspect-ratio:1/1){#splash{background-image:url(assets/splash-m.jpg)}}
+#splash-inner{display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;padding:80px 20px 0;
+  background:linear-gradient(0deg,rgba(3,11,36,.92) 0%,rgba(3,11,36,0) 100%)}
+#bar-wrap{width:320px;max-width:80vw}
+#bar-bg{height:6px;background:rgba(255,255,255,.14);border-radius:4px;overflow:hidden}
+#bar-fill{height:100%;width:0;background:linear-gradient(90deg,#b9740f,#ffd65c);border-radius:4px;transition:width .15s}
+#bar-label{font-size:10px;color:rgba(255,214,92,.7);text-align:center;margin-top:5px;letter-spacing:1px}
+#play-btn{display:none;background:linear-gradient(180deg,#ffe58a 0%,#d9971f 100%);border:2px solid #fff3c4;border-radius:10px;
+  color:#3a2200;font-size:20px;font-weight:900;letter-spacing:3px;padding:15px 56px;cursor:pointer;font-family:inherit;
+  box-shadow:0 0 40px rgba(255,207,74,.55),0 4px 0 #7a4a06;animation:glow 1.6s ease-in-out infinite}
+#play-btn:hover{filter:brightness(1.08)}
+@keyframes glow{0%,100%{box-shadow:0 0 36px rgba(255,207,74,.5),0 4px 0 #7a4a06}50%{box-shadow:0 0 64px rgba(255,207,74,.95),0 4px 0 #7a4a06}}
+@media (prefers-reduced-motion:reduce){#play-btn{animation:none}}
+</style>
+</head>
+<body>
+<div id="splash">
+  <div id="splash-inner">
+    <button id="play-btn">PLAY NOW</button>
+    <div id="bar-wrap">
+      <div id="bar-bg"><div id="bar-fill"></div></div>
+      <div id="bar-label">LOADING...</div>
+    </div>
+  </div>
+</div>
+
+<div id="wrap">
+  <div id="gw"><canvas id="gc"></canvas></div>
+  <div id="ui">
+    <div class="hud-left">
+      <button class="hud-icon-btn" id="menu-btn" title="Menu"><img src="/Bakerybonanza/UI/Menu_Normal.webp" alt="Menu"></button>
+    </div>
+    <div class="hud-stats">
+      <div class="hud-stat-row"><span class="lbl">Balance</span><span class="val" id="vBal">1,000.00</span></div>
+      <div class="hud-stat-row"><span class="lbl">Bet</span><span class="val" id="vBet">1.00</span></div>
+    </div>
+    <div class="hud-center">
+      <div class="lbl" id="vWinLbl">Win</div>
+      <div class="val" id="vWin">0.00</div>
+    </div>
+    <div class="hud-actions">
+      <button class="hud-pill" id="turbo-btn" onclick="toggleTurbo()"><span class="bolt">&#9889;</span>TURBO</button>
+      <button class="hud-pill" id="abtn" onclick="toggleAuto()">AUTO</button>
+    </div>
+    <button id="sb" onclick="handleSpin()" aria-label="Spin">
+      <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+    </button>
+    <div class="hud-bet-stepper">
+      <button class="bet-step" onclick="chBet(1)"><img src="/Bakerybonanza/UI/Plus_Normal.webp" alt="+"></button>
+      <button class="bet-step" onclick="chBet(-1)"><img src="/Bakerybonanza/UI/Minus_Normal.webp" alt="-"></button>
+    </div>
+    <div class="hud-hint">Press <b>spacebar</b> to spin</div>
+  </div>
+</div>
+
+<div id="side-menu-overlay">
+  <div id="side-menu">
+    <button class="menu-close" id="menu-close-btn" title="Close">&#10005;</button>
+    <button class="menu-row on" id="mbtn" onclick="toggleMute()">
+      <span class="menu-icon"><img src="/Bakerybonanza/UI/Sound_Normal.webp" alt="Sound"></span>SOUND
+    </button>
+    <button class="menu-row" id="menu-info-row">
+      <span class="menu-icon"><img src="/Bakerybonanza/UI/Info_Normal.webp" alt="Info"></span>PAYTABLE
+    </button>
+    <a class="menu-row" href="/#games">
+      <span class="menu-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></span>HOME
+    </a>
+  </div>
+</div>
+
+<div id="info">
+  <div id="info-box">
+    <button id="info-close" aria-label="Close">&#10005;</button>
+    <h2>Reign of Poseidon</h2>
+    <p style="text-align:center">6×4 grid · Pay Anywhere · Tumbling Reels · RTP 96.0% · Max win 5,000x</p>
+    <h3>Pay Anywhere</h3>
+    <p>8 or more matching symbols anywhere on the grid pay. Payouts are shown as multiples of your total bet.</p>
+    <div class="pt-grid" id="pt-grid"></div>
+    <h3>Tumbling Reels</h3>
+    <p>Winning symbols shatter and new ones fall into their place. Tumbles continue as long as new wins appear.</p>
+    <h3>Poseidon's Lightning</h3>
+    <p>Pearl multipliers from 2x up to 100x can drop onto the grid. When a tumble sequence ends with a win, Poseidon strikes every pearl and their values are added together and applied to the total win.</p>
+    <h3>Free Spins</h3>
+    <p>4 or more SCATTER symbols award 10 free spins. During free spins every pearl multiplier that lands on a winning tumble sequence is added to a total multiplier that stays for the whole feature. 3 or more SCATTER symbols during the feature award 5 more spins.</p>
+    <h3>Buy Feature</h3>
+    <p>Free spins can be bought instantly for 100x the current bet.</p>
+    <p style="margin-top:14px;font-size:11px;color:rgba(255,255,255,.45)">Demo game for portfolio purposes. Play money only — no real money gambling. Malfunction voids all pays and plays.</p>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="assets/spine/spine-webgl.min.js"></script>
+<script>
+// <core> — pure game math, shared by the game and the headless RTP sim
+const COLS=6, ROWS=4, MAX_WIN=5000; let MIN_PAY=8;
+// pay = multiples of total bet for counts [8-9, 10-11, 12+]
+let SYMS=[
+  {k:'scatter', scat:true, glow:'#ffd34d'},
+  {k:'trident', pay:[10,25,50],  glow:'#ffcc33'},
+  {k:'ring',    pay:[4,10,25], glow:'#7ab8ff'},
+  {k:'purple',  pay:[2.5,5,15],    glow:'#c070ff'},
+  {k:'red',     pay:[1.8,3,12],  glow:'#ff4060'},
+  {k:'green',   pay:[1.2,2,10],  glow:'#3dff8a'},
+  {k:'blue',    pay:[1,1.5,8], glow:'#4aa8ff'},
+  {k:'yellow',  pay:[0.55,1.2,5],   glow:'#ffd84a'}
+];
+let SCAT_PAY={4:3,5:5,6:100};
+const FS_AWARD=10, FS_RETRIG=5;
+// symbol weights per cell (base / free spins)
+let W_BASE=[2, 5,6,8,10,12,15,18];
+let W_FS  =[1.6, 5,6,8,10,13,16,19];
+let ORB_P={base:0.0058, fs:0.042};
+const ORB_V=[[2,400],[3,250],[4,140],[5,90],[6,50],[8,30],[10,20],[12,10],[15,7],[20,4],[25,2.5],[50,1],[100,.3]];
+const ORB_T=ORB_V.reduce((a,v)=>a+v[1],0);
+let RNG=Math.random;
+let _cid=1;
+function pickW(w){let t=0;for(const x of w)t+=x;let r=RNG()*t;for(let i=0;i<w.length;i++){r-=w[i];if(r<0)return i;}return w.length-1;}
+function rollOrb(){let r=RNG()*ORB_T;for(const [v,w] of ORB_V){r-=w;if(r<0)return v;}return 2;}
+function newCell(fs,fy){
+  if(RNG()<(fs?ORB_P.fs:ORB_P.base))return {id:_cid++,s:-1,m:rollOrb(),fy};
+  return {id:_cid++,s:pickW(fs?W_FS:W_BASE),m:0,fy};
+}
+function newGrid(fs){
+  const g=[];for(let c=0;c<COLS;c++){g.push([]);for(let r=0;r<ROWS;r++)g[c].push(newCell(fs,r-ROWS-1));}
+  return g;
+}
+function cloneGrid(g){return g.map(col=>col.map(x=>({...x})));}
+function payFor(s,n){const p=SYMS[s].pay;if(!p||n<MIN_PAY)return 0;return n>=MIN_PAY+4?p[2]:n>=MIN_PAY+2?p[1]:p[0];}
+function findWins(g){
+  const cnt={};
+  for(let c=0;c<COLS;c++)for(let r=0;r<ROWS;r++){const s=g[c][r].s;if(s>0)(cnt[s]=cnt[s]||[]).push([c,r]);}
+  const out=[];
+  for(const s in cnt){const n=cnt[s].length;if(n>=MIN_PAY)out.push({s:+s,n,pay:payFor(+s,n),cells:cnt[s]});}
+  return out;
+}
+function countScat(g){let n=0;for(const col of g)for(const x of col)if(x.s===0)n++;return n;}
+function sumOrbs(g){let m=0;for(const col of g)for(const x of col)if(x.s===-1)m+=x.m;return m;}
+// remove cells, drop survivors, fill from top; every cell records fy = row it falls from
+function tumble(g,rm,fs){
+  const kill=new Set(rm.map(([c,r])=>c*10+r));
+  const ng=[];
+  for(let c=0;c<COLS;c++){
+    const keep=[];for(let r=0;r<ROWS;r++)if(!kill.has(c*10+r))keep.push({...g[c][r],fy:r});
+    const add=ROWS-keep.length, col=[];
+    for(let i=0;i<add;i++)col.push(newCell(fs,i-add-0.4));
+    ng.push(col.concat(keep));
+  }
+  return ng;
+}
+// resolve one paid spin fully: returns the sequence of boards the UI animates
+function playSpin(fs){
+  let g=newGrid(fs);
+  const steps=[];let win=0;
+  for(let guard=0;guard<40;guard++){
+    const wins=findWins(g);
+    const stepWin=wins.reduce((a,w)=>a+w.pay,0);
+    steps.push({g:cloneGrid(g),wins,win:stepWin});
+    if(!wins.length)break;
+    win+=stepWin;
+    g=tumble(g,wins.flatMap(w=>w.cells),fs);
+  }
+  const fin=steps[steps.length-1].g;
+  const sc=countScat(fin);
+  const scatWin=fs?0:(SCAT_PAY[Math.min(6,sc)]||0);
+  return {steps,lineWin:win,orbs:win>0?sumOrbs(fin):0,scat:sc,scatWin};
+}
+// </core>
+
+// ── Assets ─────────────────────────────────────────────────
+const IMGS={bg:'assets/bg.jpg',frame:'assets/frame.webp',logo:'assets/logo.webp',pos:'assets/poseidon.webp',
+};
+SYMS.forEach(s=>IMGS[s.k]='assets/'+s.k+'.webp');
+// bitmap number font: digits + x + dot, and ready-made 2x..10x multiplier labels
+'0123456789'.split('').forEach(c=>IMGS['n'+c]='assets/num/'+c+'.webp');
+IMGS.nx='assets/num/x.webp';IMGS.ndot='assets/num/dot.webp';
+for(let v=2;v<=10;v++)IMGS['m'+v]='assets/num/m'+v+'.webp';
+const IMG={};
+// interior of the six-cell frame, as fractions of the frame image
+const FI={x:64/1536,y:125/1024,w:1408/1536,h:768/1024};
+// trident tip inside poseidon.webp
+const TIP={x:.12,y:.03};
+
+const cv=document.getElementById('gc'), ctx=cv.getContext('2d');
+let W=0,H=0,DPR=1,L={};
+const BETS=[0.2,0.5,1,2,5,10,20,50,100];
+let betIdx=2, bet=BETS[betIdx], balance=1000;
+let busy=false, auto=false, Turbo=false, turboToggled=false, muted=false;
+let inFS=false, fsLeft=0, fsMult=0, fsTotal=0, sessSpin=0;
+let board=null, dimOn=false;
+let parts=[], floats=[], bolts=[], bubbles=[], flash=0;
+let overlay=null;       // {kind:'banner'|'big', ...}
+let multShow=null;      // centre "xN" reveal in base game
+let lastTs=0;
+try{muted=localStorage.getItem('rop_mute')==='1';}catch(e){}
+
+const fmt=v=>v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function T(ms){return Math.round(ms*(Turbo?0.45:1));}
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function easeOutBack(t){const c=1.25,c3=c+1;return 1+c3*Math.pow(t-1,3)+c*Math.pow(t-1,2);}
+
+// ── Preload ────────────────────────────────────────────────
+function preload(){
+  const keys=Object.keys(IMGS);let n=0;
+  const done=()=>{n++;document.getElementById('bar-fill').style.width=(n/keys.length*100)+'%';
+    if(n===keys.length){
+      const go=()=>{document.getElementById('bar-wrap').style.display='none';document.getElementById('play-btn').style.display='block';};
+      (document.fonts&&document.fonts.load?Promise.all([document.fonts.load('900 40px Cinzel'),document.fonts.load('900 20px Inter')]).catch(()=>{}):Promise.resolve()).then(go);
+    }};
+  keys.forEach(k=>{const im=new Image();im.onload=done;im.onerror=done;im.src=IMGS[k];IMG[k]=im;});
+}
+
+// ── Layout ─────────────────────────────────────────────────
+function resize(){
+  const r=document.getElementById('gw').getBoundingClientRect();
+  DPR=Math.min(2,window.devicePixelRatio||1);W=r.width;H=r.height;
+  cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);
+  layout();
+}
+function layout(){
+  const portrait=H>W*1.05;
+  let fw,fh,fx,fy,lw,lx,ly,ph,px,py,buy;
+  if(portrait){
+    fw=Math.min(W*.98,H*.58*1.5);fh=fw/1.5;fx=(W-fw)/2;
+    fy=H-fh-Math.max(14,H*.07);
+    lw=Math.min(W*.6,fy*1.5);lx=W*.04;ly=Math.max(8,fy*.16);
+    ph=Math.min(fy*1.02,H*.62);px=W-ph*.661*.92;py=fy-ph*.9;
+    const bw=Math.min(150,W*.36),bh=bw*.42;
+    buy={x:lx+lw*.5-bw/2,y:Math.min(fy-bh-12,ly+lw*.502+10),w:bw,h:bh,compact:true};
+  }else{
+    fh=Math.min(H*.74,W*.56/1.5);fw=fh*1.5;
+    fx=(W-fw)/2-W*.03;fy=H*.235+(H*.765-fh)/2;
+    const lh=Math.min(H*.22,fy*.96);lw=lh*1.99;lx=fx+fw/2-lw/2;ly=Math.max(4,(fy-lh)/2-H*.01);
+    ph=H*.94;px=fx+fw-ph*.661*.12;py=H*.05;
+    const bw=Math.min(170,fx-24),bh=bw*.8;
+    buy=bw>=110?{x:fx-bw-14,y:fy+fh/2-bh/2,w:bw,h:bh,compact:false}:
+      {x:fx,y:fy-46,w:150,h:40,compact:true};
+  }
+  const ix=fx+fw*FI.x,iy=fy+fh*FI.y,iw=fw*FI.w,ih=fh*FI.h;
+  L={portrait,fx,fy,fw,fh,ix,iy,iw,ih,cw:iw/COLS,ch:ih/ROWS,sz:Math.min(iw/COLS,ih/ROWS)*.9,
+     lx,ly,lw,ph,pw:ph*.661,px,py,buy};
+}
+function cellXY(c,r){return [L.ix+L.cw*(c+.5),L.iy+L.ch*(r+.5)];}
+function tipXY(ts){
+  if(SP.ok&&SP.tipBone){const v=SP.tipBone.localToWorld(new spine.Vector2(SP.tipLocal.x,SP.tipLocal.y));return spToScreen(v.x,v.y);}
+  const b=Math.sin(ts/900)*6;return [L.px+L.pw*TIP.x,L.py+b+L.ph*TIP.y];
+}
+
+// ── Poseidon Spine idle (spine-webgl, rendered offscreen, then drawn into the 2D canvas) ──
+// skeleton space: x -512..512, y 0..1536 (y up) = the 1024x1536 source image;
+// the character's alpha bbox inside it is (35,6)-(1024,1502), which is what L.px/py/pw/ph describe.
+// render window in skeleton space; win FX bolts reach far above the head
+const SP={ok:false}, SPX=680, SPTOP=2360, SPBOT=-120;
+function spScale(){return L.ph/1496;}
+function spToScreen(wx,wy){const s=spScale();return [L.px-35*s+(wx+512)*s,L.py-6*s+(1536-wy)*s];}
+function initSpine(){
+  if(!window.spine)return;
+  try{
+    const c=document.createElement('canvas');c.width=c.height=2;
+    const mctx=new spine.ManagedWebGLRenderingContext(c,{alpha:true,premultipliedAlpha:true,preserveDrawingBuffer:true,antialias:true});
+    const rd=new spine.SceneRenderer(c,mctx,true); // true = two-colour tint (tint black) for the body flash
+    const am=new spine.AssetManager(mctx,'assets/spine/');
+    am.loadTextureAtlas('poseidon.atlas');am.loadJson('poseidon.json');
+    am.loadAll().then(()=>{
+      const data=new spine.SkeletonJson(new spine.AtlasAttachmentLoader(am.require('poseidon.atlas'))).readSkeletonData(am.require('poseidon.json'));
+      const sk=new spine.Skeleton(data);sk.setToSetupPose();sk.updateWorldTransform(spine.Physics.update);
+      const asd=new spine.AnimationStateData(data);asd.defaultMix=.2;
+      const st=new spine.AnimationState(asd);st.setAnimation(0,'idle',true);
+      const tipBone=sk.findBone('arm_r');
+      const tipLocal=tipBone?tipBone.worldToLocal(new spine.Vector2(154-512,1536-51)):null;
+      Object.assign(SP,{c,mctx,rd,sk,st,tipBone,tipLocal,last:0,ok:true});
+    }).catch(e=>console.warn('spine load failed',e));
+  }catch(e){console.warn('spine init failed',e);}
+}
+// win: play once, then fall back to the idle loop
+function poseidonWin(){
+  if(!SP.ok)return;
+  const cur=SP.st.getCurrent(0);
+  if(cur&&cur.animation&&cur.animation.name==='win'&&!cur.isComplete())return;
+  SP.st.setAnimation(0,'win',false);SP.st.addAnimation(0,'idle',true,0);
+}
+function drawSpinePoseidon(ts){
+  const s=spScale(),ww=SPX*2,wh=SPTOP-SPBOT,W0=ww*s,H0=wh*s;
+  const cw=Math.max(2,Math.round(W0*DPR)),ch=Math.max(2,Math.round(H0*DPR));
+  const {c,rd,sk,st}=SP,gl=SP.mctx.gl;
+  if(c.width!==cw||c.height!==ch){c.width=cw;c.height=ch;}
+  const dt=SP.last?Math.min(.05,(ts-SP.last)/1000):0;SP.last=ts;
+  st.update(dt);st.apply(sk);if(sk.update)sk.update(dt);sk.updateWorldTransform(spine.Physics.update);
+  const cam=rd.camera;cam.position.x=0;cam.position.y=(SPTOP+SPBOT)/2;cam.viewportWidth=ww;cam.viewportHeight=wh;
+  gl.viewport(0,0,cw,ch);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
+  rd.begin();rd.drawSkeleton(sk,true);rd.end();
+  const [x0,y0]=spToScreen(-SPX,SPTOP);
+  ctx.drawImage(c,x0,y0,W0,H0);
+}
+
+// ── Board animation ────────────────────────────────────────
+const REEL_GAP=()=>T(170); // gap between reels landing on a fresh spin
+function mkBoard(g,now,tumble){
+  return g.map((col,c)=>col.map((x,r)=>{
+    const cl={...x,r,hi:0,dying:0};
+    if(x.fy!==r){
+      const delay=tumble?c*T(35):c*REEL_GAP()+(ROWS-1-r)*T(16);
+      cl.a={from:x.fy,to:r,t0:now+delay,dur:T(tumble?380:430),ease:'out'};
+    }
+    return cl;
+  }));
+}
+function dropOut(now){
+  board.forEach((col,c)=>col.forEach(cl=>{if(!cl.dying)cl.a={from:cl.r,to:cl.r+ROWS+1.5,t0:now+c*T(40),dur:T(300),ease:'in'};}));
+}
+function cellY(cl,now){
+  const a=cl.a;if(!a)return cl.r;
+  const t=(now-a.t0)/a.dur;
+  if(t<=0)return a.from;if(t>=1)return a.to;
+  return a.from+(a.to-a.from)*(a.ease==='in'?t*t:easeOutBack(t));
+}
+
+// ── Spin flow ──────────────────────────────────────────────
+const OPENING={
+  2:r=>r.steps.length>=3,
+  4:r=>r.lineWin>0&&r.orbs>=5&&r.lineWin*r.orbs>=12&&r.scat<4,
+  8:r=>r.scat>=4
+};
+function rollWhere(fs,pred){for(let i=0;i<40000;i++){const r=playSpin(fs);if(pred(r))return r;}return playSpin(fs);}
+
+async function handleSpin(){
+  if(overlay&&overlay.skip){overlay.skip();return;}
+  if(busy||inFS)return;
+  if(balance<bet){refill();return;}
+  sessSpin++;
+  const pred=OPENING[sessSpin];
+  await playRound(pred?rollWhere(false,pred):playSpin(false),bet);
+}
+async function buyFeature(){
+  if(busy||inFS||auto)return;
+  const cost=bet*100;
+  if(balance<cost){toast('Not enough balance to buy the feature');return;}
+  await playRound(rollWhere(false,r=>r.scat>=4),cost);
+}
+function refill(){balance=1000;updateUI();toast('Demo balance refilled');}
+
+async function playRound(out,cost){
+  busy=true;setSpinUI(true);
+  balance-=cost;updateUI();setWin(0,'Win');
+  stopFx();playBuf('spin',1);
+  const base=await animateOutcome(out,false);
+  let total=base;
+  if(base>0){balance+=base;updateUI();}
+  if(out.scat>=4){
+    await scatterCelebrate();
+    const fsWin=await runFreeSpins();
+    total+=fsWin;
+    setWin(total,'Total win');
+  }
+  if(total>=bet*10&&!(out.scat>=4))await bigWin(total);
+  busy=false;setSpinUI(false);
+  if(auto){await sleep(T(450));if(auto&&!busy){if(balance<bet){toggleAuto();toast('Auto stopped — balance too low');}else handleSpin();}}
+}
+
+// resolves one outcome on screen, returns the cash win
+async function animateOutcome(out,fs){
+  let now=performance.now();
+  if(board){dropOut(now);await sleep(T(300)+COLS*T(40));}
+  now=performance.now();
+  board=mkBoard(out.steps[0].g,now,false);
+  // reel stop sound each time a column lands, as in Saga of Valhalla
+  for(let c=0;c<COLS;c++)setTimeout(()=>playBuf('stop',1),c*REEL_GAP()+T(360));
+  await sleep(T(430)+(COLS-1)*REEL_GAP()+T(120));
+  let run=0;
+  for(let i=0;i<out.steps.length;i++){
+    const st=out.steps[i];if(!st.wins.length)break;
+    now=performance.now();dimOn=true;
+    st.wins.forEach(w=>{
+      let sx=0,sy=0;
+      w.cells.forEach(([c,r])=>{board[c][r].hi=now;const p=cellXY(c,r);sx+=p[0];sy+=p[1];});
+      floats.push({x:sx/w.cells.length,y:sy/w.cells.length,txt:numFmt(w.pay*bet),t0:now,dur:T(1100),col:SYMS[w.s].glow});
+    });
+    if(i===0){
+      poseidonWin();
+      winThunder();
+    }
+    run+=st.win;setWin(run*bet,fs?'Spin win':'Tumble win');
+    await sleep(T(850));
+    now=performance.now();
+    st.wins.forEach(w=>w.cells.forEach(([c,r])=>{
+      const cl=board[c][r];cl.dying=now;const p=cellXY(c,r);burst(p[0],p[1],14,SYMS[w.s].glow);
+    }));
+    await sleep(T(300));
+    dimOn=false;
+    board=mkBoard(out.steps[i+1].g,performance.now(),true);
+      await sleep(T(380)+COLS*T(35)+T(80));
+  }
+  let win=out.lineWin;
+  if(out.lineWin>0&&out.orbs>0){
+    await strikeOrbs(fs,out.orbs);
+    win=fs?out.lineWin*fsMult:out.lineWin*out.orbs;
+  }else if(fs&&out.lineWin>0&&fsMult>0){
+    win=out.lineWin*fsMult;
+  }
+  if(!fs)win+=out.scatWin;
+  win=Math.min(win,MAX_WIN);
+  const cash=win*bet;
+  if(cash>0)setWin(cash,fs?'Spin win':'Win');
+  return cash;
+}
+
+async function strikeOrbs(fs,sum){
+  const now0=performance.now();
+  const orbs=[];
+  board.forEach((col,c)=>col.forEach((cl,r)=>{if(cl.s===-1)orbs.push([c,r,cl]);}));
+  for(const [c,r,cl] of orbs){
+    const [x,y]=cellXY(c,r);const [tx,ty]=tipXY(performance.now());
+    bolts.push(mkBolt(tx,ty,x,y));flash=.55;cl.hi=performance.now();
+    burst(x,y,22,'#9fd8ff');
+    if(fs){fsMult+=cl.m;}
+    await sleep(T(420));
+  }
+  if(!fs){multShow={t0:performance.now(),m:sum};await sleep(T(1100));multShow=null;}
+  else{await sleep(T(400));}
+  void now0;
+}
+
+async function scatterCelebrate(){
+  const now=performance.now();
+  board.forEach((col,c)=>col.forEach((cl,r)=>{if(cl.s===0){cl.hi=now;const p=cellXY(c,r);burst(p[0],p[1],24,'#ffd34d');}}));
+  dimOn=true;
+  await sleep(1500);
+  dimOn=false;
+}
+
+async function runFreeSpins(){
+  inFS=true;fsLeft=FS_AWARD;fsMult=0;fsTotal=0;
+  await banner('FREE SPINS',String(FS_AWARD),'Pearl multipliers stack for the whole feature',3200);
+  while(fsLeft>0){
+    fsLeft--;
+    const out=playSpin(true);
+    stopFx();playBuf('spin',1);
+    const w=await animateOutcome(out,true);
+    if(w>0){fsTotal+=w;balance+=w;updateUI();}
+    setWin(fsTotal,'Feature win');
+    if(out.scat>=3){
+      fsLeft+=FS_RETRIG;
+      await scatterCelebrate();
+      await banner('EXTRA FREE SPINS','+'+FS_RETRIG,'',2000);
+    }
+    await sleep(T(280));
+  }
+  fsTotal=Math.min(fsTotal,MAX_WIN*bet);
+  if(fsTotal>=bet*10)await bigWin(fsTotal);
+  await banner('FEATURE COMPLETE',numFmt(fsTotal),'Total multiplier '+fsMult+'x',3000);
+  inFS=false;fsMult=0;
+  return fsTotal;
+}
+
+function banner(title,big,sub,dur){
+  return new Promise(res=>{
+    const o={kind:'banner',t0:performance.now(),title,big,sub,dur};
+    const end=()=>{if(overlay===o){overlay=null;res();}};
+    o.skip=()=>{if(performance.now()-o.t0>450)end();};
+    overlay=o;setTimeout(end,dur);
+  });
+}
+function bigWin(amount){
+  return new Promise(res=>{
+    const x=amount/bet;
+    const tier=x>=50?'EPIC WIN':x>=25?'MEGA WIN':'BIG WIN';
+    const dur=x>=50?5200:x>=25?4400:3600;
+    const o={kind:'big',t0:performance.now(),amount,tier,dur};
+    const end=()=>{if(overlay===o){overlay=null;res();}};
+    o.skip=()=>{if(performance.now()-o.t0<dur-900){o.t0=performance.now()-(dur-900);}else end();};
+    overlay=o;setTimeout(function chk(){if(overlay!==o)return;if(performance.now()-o.t0>=o.dur)end();else setTimeout(chk,100);},dur);
+  });
+}
+
+// ── FX helpers ─────────────────────────────────────────────
+function burst(x,y,n,col){
+  for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=60+Math.random()*260;
+    parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-60,life:0,max:.5+Math.random()*.6,col,r:1.5+Math.random()*3.5});}
+}
+function mkBolt(x1,y1,x2,y2){
+  let pts=[[x1,y1],[x2,y2]];
+  for(let k=0;k<5;k++){
+    const np=[pts[0]];const amp=Math.hypot(x2-x1,y2-y1)*.18/Math.pow(1.7,k);
+    for(let i=1;i<pts.length;i++){
+      const [ax,ay]=pts[i-1],[bx,by]=pts[i];
+      const mx=(ax+bx)/2,my=(ay+by)/2,dx=by-ay,dy=ax-bx,d=Math.hypot(dx,dy)||1,o=(Math.random()-.5)*amp;
+      np.push([mx+dx/d*o,my+dy/d*o],[bx,by]);
+    }
+    pts=np;
+  }
+  return {pts,t0:performance.now(),dur:380};
+}
+(function initBubbles(){for(let i=0;i<40;i++)bubbles.push({x:Math.random(),y:Math.random(),r:1+Math.random()*3.2,s:.02+Math.random()*.05,w:Math.random()*6});})();
+
+// ── Drawing ────────────────────────────────────────────────
+function drawCover(im,x,y,w,h){
+  if(!im||!im.width)return;
+  const s=Math.max(w/im.width,h/im.height),dw=im.width*s,dh=im.height*s;
+  ctx.drawImage(im,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
+}
+function fit(im,cx,cy,size){
+  if(!im||!im.width)return;
+  const s=size/Math.max(im.width,im.height);
+  ctx.drawImage(im,cx-im.width*s/2,cy-im.height*s/2,im.width*s,im.height*s);
+}
+// draws numbers with the gold bitmap digits; h = digit height, y = vertical centre.
+// characters without a glyph fall back to the gold Cinzel text.
+const numFmt=v=>(Math.round(v*100)/100).toFixed(2);
+function numText(str,x,y,h,align){
+  str=String(str);
+  if(!IMG.n0||!IMG.n0.width){goldText(str,x,y,Math.round(h*1.3),align);return;}
+  const gl=[],gap=-h*.035;let tw=0;
+  for(const ch of str){
+    let g;
+    if(ch>='0'&&ch<='9'){const im=IMG['n'+ch];g={im,w:im.width*h/im.height,h};}
+    else if(ch==='x'){const im=IMG.nx,gh=h*.62;g={im,w:im.width*gh/im.height,h:gh};}
+    else if(ch==='.'){const im=IMG.ndot,gh=h*.27;g={im,w:im.width*gh/im.height,h:gh,pad:h*.04};}
+    else{ctx.font='900 '+Math.round(h*1.1)+'px Cinzel, Georgia, serif';g={txt:ch,w:ctx.measureText(ch).width+h*.08,h};}
+    gl.push(g);tw+=g.w+(g.pad||0)*2;
+  }
+  tw+=gap*(gl.length-1);
+  let cx=align==='left'?x:align==='right'?x-tw:x-tw/2;const bot=y+h/2;
+  for(const g of gl){
+    cx+=g.pad||0;
+    if(g.im)ctx.drawImage(g.im,cx,bot-g.h,g.w,g.h);
+    else goldText(g.txt,cx+g.w/2,y,Math.round(h*1.1));
+    cx+=g.w+(g.pad||0)+gap;
+  }
+}
+// multiplier label "Nx": ready-made art for 2..10, bitmap digits above that
+function multText(m,x,y,h){
+  const im=IMG['m'+m];
+  if(im&&im.width){const hh=h*1.18,w=im.width*hh/im.height;ctx.drawImage(im,x-w/2,y-hh/2,w,hh);}
+  else numText(m+'x',x,y,h);
+}
+function goldText(txt,x,y,size,align){
+  ctx.save();ctx.font='900 '+size+'px Cinzel, Georgia, serif';ctx.textAlign=align||'center';ctx.textBaseline='middle';
+  ctx.lineJoin='round';ctx.lineWidth=Math.max(3,size*.14);ctx.strokeStyle='#0a1d4d';ctx.strokeText(txt,x,y);
+  const g=ctx.createLinearGradient(0,y-size*.55,0,y+size*.5);
+  g.addColorStop(0,'#fffbe0');g.addColorStop(.45,'#ffd65c');g.addColorStop(1,'#c47a12');
+  ctx.fillStyle=g;ctx.fillText(txt,x,y);ctx.restore();
+}
+function rrect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+function drawOrb(x,y,size,m,ts){
+  const r=size/2;
+  const col=m>=50?['#fff4c2','#ffb81c','#8a4a00']:m>=20?['#ffd0d8','#ff3d63','#6a0820']:m>=8?['#f1d4ff','#b04dff','#3a0a6a']:['#dff4ff','#3fa6ff','#0a2f7a'];
+  ctx.save();
+  ctx.globalCompositeOperation='lighter';
+  const halo=ctx.createRadialGradient(x,y,r*.6,x,y,r*1.5);halo.addColorStop(0,col[1]+'88');halo.addColorStop(1,col[1]+'00');
+  ctx.fillStyle=halo;ctx.beginPath();ctx.arc(x,y,r*1.5,0,7);ctx.fill();
+  ctx.globalCompositeOperation='source-over';
+  const g=ctx.createRadialGradient(x-r*.35,y-r*.4,r*.1,x,y,r);
+  g.addColorStop(0,col[0]);g.addColorStop(.55,col[1]);g.addColorStop(1,col[2]);
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();
+  ctx.lineWidth=Math.max(2,r*.09);ctx.strokeStyle='#ffe08a';ctx.stroke();
+  // rotating sparkle ring
+  ctx.strokeStyle='rgba(255,255,255,.55)';ctx.lineWidth=Math.max(1,r*.04);
+  ctx.beginPath();ctx.arc(x,y,r*1.12,ts/500,ts/500+1.6);ctx.stroke();
+  ctx.beginPath();ctx.arc(x,y,r*1.12,ts/500+Math.PI,ts/500+Math.PI+1.6);ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,.7)';ctx.beginPath();ctx.ellipse(x-r*.32,y-r*.42,r*.28,r*.14,-.6,0,7);ctx.fill();
+  ctx.restore();
+  multText(m,x,y+r*.04,r*(m>=100?.62:m>=10?.72:.86));
+}
+
+function drawCell(cl,c,ts){
+  const [x]=cellXY(c,0);
+  const y=L.iy+L.ch*(cellY(cl,ts)+.5);
+  let s=L.sz,alpha=1;
+  if(cl.dying){const t=(ts-cl.dying)/T(300);if(t>=1)return;s*=1+.35*t;alpha=1-t;}
+  else if(cl.hi){s*=1+.07*Math.sin((ts-cl.hi)/85)+.05;}
+  else if(dimOn)alpha=.38;
+  ctx.globalAlpha=alpha;
+  if(cl.s===-1){drawOrb(x,y,s*.84,cl.m,ts);}
+  else{
+    const sym=SYMS[cl.s];
+    if(cl.hi&&!cl.dying){
+      ctx.save();ctx.globalCompositeOperation='lighter';
+      const g=ctx.createRadialGradient(x,y,0,x,y,s*.62);g.addColorStop(0,sym.glow+'aa');g.addColorStop(1,sym.glow+'00');
+      ctx.fillStyle=g;ctx.fillRect(x-s,y-s,s*2,s*2);ctx.restore();
+    }
+    if(cl.s===0&&!cl.hi){const p=.5+.5*Math.sin(ts/400+c);ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=alpha*.35*p;
+      const g=ctx.createRadialGradient(x,y,0,x,y,s*.7);g.addColorStop(0,'#ffd34d');g.addColorStop(1,'#ffd34d00');ctx.fillStyle=g;ctx.fillRect(x-s,y-s,s*2,s*2);ctx.restore();}
+    fit(IMG[sym.k],x,y,s*(cl.s<=2?.96:.9));
+  }
+  ctx.globalAlpha=1;
+}
+
+function drawRays(ts){
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  for(let i=0;i<5;i++){
+    const x=W*(.12+i*.2)+Math.sin(ts/3000+i*1.7)*W*.04,w=W*(.05+.03*Math.sin(ts/2100+i));
+    const g=ctx.createLinearGradient(0,0,0,H*.9);
+    const a=.07+.04*Math.sin(ts/1700+i*2);
+    g.addColorStop(0,'rgba(170,225,255,'+a+')');g.addColorStop(1,'rgba(170,225,255,0)');
+    ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(x-w*.3,0);ctx.lineTo(x+w*.3,0);ctx.lineTo(x+w*1.6+W*.08,H*.9);ctx.lineTo(x-w*.4+W*.08,H*.9);ctx.closePath();ctx.fill();
+  }
+  ctx.restore();
+}
+function drawBubbles(ts,dt){
+  ctx.save();ctx.strokeStyle='rgba(200,240,255,.45)';ctx.fillStyle='rgba(220,245,255,.12)';ctx.lineWidth=1;
+  for(const b of bubbles){
+    b.y-=b.s*dt;if(b.y<-.05){b.y=1.05;b.x=Math.random();}
+    const x=b.x*W+Math.sin(ts/800+b.w)*6,y=b.y*H;
+    ctx.beginPath();ctx.arc(x,y,b.r,0,7);ctx.fill();ctx.stroke();
+  }
+  ctx.restore();
+}
+function drawPoseidon(ts){
+  const im=IMG.pos;if(!im.width)return;
+  ctx.save();
+  if(inFS){ctx.shadowColor='rgba(120,200,255,.8)';ctx.shadowBlur=30;}
+  if(SP.ok){try{drawSpinePoseidon(ts);}catch(e){SP.ok=false;console.warn('spine draw failed',e);}}
+  if(!SP.ok){const b=Math.sin(ts/900)*6;ctx.drawImage(im,L.px,L.py+b,L.pw,L.ph);}
+  ctx.restore();
+  // trident tip glow
+  const [tx,ty]=tipXY(ts);
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  const r=L.ph*.06*(1+.25*Math.sin(ts/260));
+  const g=ctx.createRadialGradient(tx,ty,0,tx,ty,r);g.addColorStop(0,'rgba(190,235,255,.9)');g.addColorStop(1,'rgba(120,200,255,0)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(tx,ty,r,0,7);ctx.fill();ctx.restore();
+}
+function drawLogo(ts){
+  const im=IMG.logo;if(!im.width)return;
+  const s=1+.015*Math.sin(ts/900),w=L.lw*s,h=w*im.height/im.width;
+  const cx=L.lx+L.lw/2,cy=L.ly+L.lw*im.height/im.width/2;
+  ctx.drawImage(im,cx-w/2,cy-h/2,w,h);
+  // sweeping shine
+  const t=(ts%5200)/5200;if(t<.35){
+    ctx.save();ctx.beginPath();ctx.rect(cx-w/2,cy-h/2,w,h);ctx.clip();ctx.globalCompositeOperation='lighter';
+    const sx=cx-w/2+(t/.35)*w*1.4-w*.2;const g=ctx.createLinearGradient(sx-60,0,sx+60,0);
+    g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.5,'rgba(255,250,220,.22)');g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=g;ctx.fillRect(cx-w/2,cy-h/2,w,h);ctx.restore();
+  }
+}
+function drawBoard(ts){
+  ctx.save();rrect(L.ix-2,L.iy-2,L.iw+4,L.ih+4,8);
+  const g=ctx.createLinearGradient(0,L.iy,0,L.iy+L.ih);g.addColorStop(0,'rgba(4,16,52,.82)');g.addColorStop(1,'rgba(2,8,30,.9)');
+  ctx.fillStyle=g;ctx.fill();ctx.restore();
+  if(board){
+    ctx.save();ctx.beginPath();ctx.rect(L.ix,L.iy-2,L.iw,L.ih+4);ctx.clip();
+    // non-winners first, winners on top
+    for(let pass=0;pass<2;pass++)board.forEach((col,c)=>col.forEach(cl=>{if(!!(cl.hi||cl.dying)===!!pass)drawCell(cl,c,ts);}));
+    ctx.restore();
+  }
+  if(IMG.frame.width)ctx.drawImage(IMG.frame,L.fx,L.fy,L.fw,L.fh);
+}
+function drawBuy(ts){
+  const b=L.buy;
+  ctx.save();
+  if(inFS){
+    // free spins panel replaces the buy button
+    const w=b.compact?Math.max(b.w,150):b.w,h=b.compact?b.h:b.h;
+    rrect(b.x,b.y,w,h,12);ctx.fillStyle='rgba(6,20,60,.85)';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#d9a63a';ctx.stroke();
+    ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';
+    if(b.compact){
+      ctx.font='800 '+Math.round(h*.24)+'px Inter';ctx.fillText('SPINS LEFT '+fsLeft,b.x+w/2,b.y+h*.3);
+      multText(fsMult||0,b.x+w/2,b.y+h*.68,h*.36);
+    }else{
+      ctx.font='800 '+Math.round(w*.08)+'px Inter';ctx.fillText('FREE SPINS',b.x+w/2,b.y+h*.15);
+      numText(fsLeft,b.x+w/2,b.y+h*.34,h*.22);
+      ctx.fillStyle='#fff';ctx.font='800 '+Math.round(w*.08)+'px Inter';ctx.fillText('MULTIPLIER',b.x+w/2,b.y+h*.58);
+      multText(fsMult||0,b.x+w/2,b.y+h*.79,h*.2);
+    }
+    ctx.restore();return;
+  }
+  const off=busy||auto;
+  ctx.globalAlpha=off?.5:1;
+  const p=off?0:.5+.5*Math.sin(ts/500);
+  ctx.shadowColor='rgba(255,207,74,'+(.35+.4*p)+')';ctx.shadowBlur=18;
+  rrect(b.x,b.y,b.w,b.h,12);
+  const g=ctx.createLinearGradient(0,b.y,0,b.y+b.h);g.addColorStop(0,'#1a4fb8');g.addColorStop(1,'#0a2263');
+  ctx.fillStyle=g;ctx.fill();ctx.shadowBlur=0;ctx.lineWidth=2.5;ctx.strokeStyle='#ffd65c';ctx.stroke();
+  ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';
+  if(b.compact){
+    ctx.font='900 '+Math.round(b.h*.27)+'px Inter';ctx.fillText('BUY FREE SPINS',b.x+b.w/2,b.y+b.h*.32);
+    ctx.fillStyle='#ffd65c';ctx.font='900 '+Math.round(b.h*.3)+'px Inter';ctx.fillText(fmt(bet*100),b.x+b.w/2,b.y+b.h*.7);
+  }else{
+    ctx.font='900 '+Math.round(b.w*.1)+'px Inter';ctx.fillText('BUY',b.x+b.w/2,b.y+b.h*.2);
+    ctx.fillText('FREE SPINS',b.x+b.w/2,b.y+b.h*.36);
+    numText(numFmt(bet*100),b.x+b.w/2,b.y+b.h*.67,b.w*.15);
+  }
+  ctx.restore();
+}
+function drawBolts(ts){
+  bolts=bolts.filter(b=>ts-b.t0<b.dur);
+  for(const b of bolts){
+    const a=1-(ts-b.t0)/b.dur;
+    ctx.save();ctx.globalCompositeOperation='lighter';ctx.lineJoin='round';
+    [[14,'rgba(90,170,255,'+(.35*a)+')'],[6,'rgba(160,220,255,'+(.7*a)+')'],[2.2,'rgba(255,255,255,'+a+')']].forEach(([w,c])=>{
+      ctx.lineWidth=w;ctx.strokeStyle=c;ctx.beginPath();b.pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.stroke();});
+    ctx.restore();
+  }
+}
+function drawParticles(dt){
+  ctx.save();ctx.globalCompositeOperation='lighter';
+  parts=parts.filter(p=>(p.life+=dt)<p.max);
+  for(const p of parts){p.vy+=320*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;const a=1-p.life/p.max;
+    ctx.fillStyle=p.col;ctx.globalAlpha=a;ctx.beginPath();ctx.arc(p.x,p.y,p.r*(.5+a*.5),0,7);ctx.fill();}
+  ctx.restore();
+}
+function drawFloats(ts){
+  floats=floats.filter(f=>ts-f.t0<f.dur);
+  for(const f of floats){
+    const t=(ts-f.t0)/f.dur;ctx.globalAlpha=t<.8?1:1-(t-.8)/.2;
+    numText(f.txt,f.x,f.y-t*30,Math.max(20,L.sz*.36)*(t<.12?.6+t/.12*.4:1));
+    ctx.globalAlpha=1;
+  }
+}
+function drawMultShow(ts){
+  if(!multShow)return;
+  const t=(ts-multShow.t0)/T(1100);const s=t<.2?easeOutBack(t/.2):1;
+  ctx.save();ctx.globalAlpha=t>.8?1-(t-.8)/.2:1;
+  multText(multShow.m,L.ix+L.iw/2,L.iy+L.ih/2,L.ih*.3*s);ctx.restore();
+}
+function drawOverlay(ts){
+  const o=overlay;if(!o)return;
+  const t=ts-o.t0;const fade=Math.min(1,t/250);
+  ctx.save();ctx.fillStyle='rgba(1,6,24,'+(.72*fade)+')';ctx.fillRect(0,0,W,H);
+  const cx=W/2,cy=H/2,base=Math.min(W*.11,H*.13);
+  if(o.kind==='banner'){
+    const s=t<400?easeOutBack(t/400):1;
+    goldText(o.title,cx,cy-base*.95,Math.round(base*.55*s));
+    if(/^[0-9x.+]+$/.test(o.big))numText(o.big,cx,cy,base*.85*s);else goldText(o.big,cx,cy,Math.round(base*.95*s));
+    if(o.sub){ctx.fillStyle='rgba(255,255,255,.85)';ctx.font='700 '+Math.round(base*.24)+'px Inter';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(o.sub,cx,cy+base*.85);}
+    ctx.fillStyle='rgba(255,255,255,'+(.4+.3*Math.sin(ts/300))+')';ctx.font='800 12px Inter';ctx.fillText('TAP TO CONTINUE',cx,cy+base*1.45);
+  }else{
+    const cu=clamp(t/(o.dur-900),0,1);const amt=o.amount*(1-Math.pow(1-cu,2.2));
+    const s=t<500?easeOutBack(t/500):1+.03*Math.sin(ts/180);
+    // light burst
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(ts/3000);ctx.globalCompositeOperation='lighter';
+    for(let i=0;i<14;i++){ctx.rotate(Math.PI/7);ctx.fillStyle='rgba(255,210,90,'+(.06*fade)+')';ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(-base*.4,-Math.max(W,H));ctx.lineTo(base*.4,-Math.max(W,H));ctx.fill();}
+    ctx.restore();
+    goldText(o.tier,cx,cy-base*.7,Math.round(base*1.0*s));
+    numText(numFmt(amt),cx,cy+base*.5,base*.75);
+    if(Math.random()<.5)burst(cx+(Math.random()-.5)*W*.6,cy+(Math.random()-.5)*H*.4,3,Math.random()<.5?'#ffd65c':'#8fd4ff');
+  }
+  ctx.restore();
+}
+
+function draw(ts){
+  const dt=Math.min(.05,(ts-(lastTs||ts))/1000);lastTs=ts;
+  ctx.clearRect(0,0,W,H);
+  drawCover(IMG.bg,0,0,W,H);
+  ctx.fillStyle='rgba(0,5,22,.5)';ctx.fillRect(0,0,W,H);
+  if(inFS){ctx.fillStyle='rgba(20,0,60,.28)';ctx.fillRect(0,0,W,H);}
+  drawRays(ts);
+  drawBubbles(ts,dt);
+  drawPoseidon(ts);
+  drawLogo(ts);
+  drawBoard(ts);
+  drawBuy(ts);
+  drawBolts(ts);
+  drawFloats(ts);
+  drawMultShow(ts);
+  drawParticles(dt);
+  if(flash>0){ctx.fillStyle='rgba(200,235,255,'+flash*.5+')';ctx.fillRect(0,0,W,H);flash=Math.max(0,flash-dt*3);}
+  drawOverlay(ts);
+  requestAnimationFrame(draw);
+}
+
+// ── UI ─────────────────────────────────────────────────────
+function updateUI(){document.getElementById('vBal').textContent=fmt(balance);document.getElementById('vBet').textContent=fmt(bet);}
+function setWin(v,lbl){document.getElementById('vWin').textContent=fmt(v);document.getElementById('vWinLbl').textContent=lbl||'Win';}
+function setSpinUI(on){document.getElementById('sb').classList.toggle('spinning',on);}
+function chBet(d){if(busy||inFS)return;betIdx=clamp(betIdx+d,0,BETS.length-1);bet=BETS[betIdx];updateUI();}
+function toggleAuto(){auto=!auto;document.getElementById('abtn').classList.toggle('on',auto);if(auto&&!busy&&!inFS)handleSpin();}
+function toggleTurbo(){turboToggled=!turboToggled;Turbo=turboToggled;document.getElementById('turbo-btn').classList.toggle('on',Turbo);}
+function toggleMute(){muted=!muted;try{localStorage.setItem('rop_mute',muted?'1':'0');}catch(e){}
+  document.getElementById('mbtn').classList.toggle('on',!muted);if(muted)stopAmbient();else startAmbient();}
+let toastT=0;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);}
+
+// ── Audio (synthesised, no files) ──────────────────────────
+let AC=null;
+function getAC(){
+  if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+  if(AC&&AC.state==='suspended')AC.resume();
+  return AC;
+}
+// sample-based sfx, decoded up front so the hit lands with no delay
+// spin / symbol stop / win sounds + music are the Saga of Valhalla set
+// only three sounds: Valhalla spin + reel stop, and the thunder on a win
+const SFXF={thunderWin:'assets/sfx/thunder-win.m4a',spin:'assets/sfx/spin.m4a',stop:'assets/sfx/stop.m4a'},SFXB={};
+function loadSfxFiles(){
+  const ac=getAC();if(!ac)return;
+  for(const k in SFXF)fetch(SFXF[k]).then(r=>r.arrayBuffer()).then(b=>ac.decodeAudioData(b)).then(buf=>{SFXB[k]=buf;}).catch(()=>{});
+}
+function playBuf(k,vol){
+  const ac=getAC(),b=SFXB[k];if(!ac||!b||muted)return false;
+  const s=ac.createBufferSource(),g=ac.createGain();g.gain.value=vol;s.buffer=b;s.connect(g).connect(ac.destination);s.start();
+  liveFx.add(s);s.onended=()=>liveFx.delete(s);
+  return true;
+}
+// one sound per event: anything still ringing is cut when a new spin or big win starts
+const liveFx=new Set();
+function stopFx(){for(const s of liveFx){try{s.stop();}catch(e){}}liveFx.clear();}
+// cinematic lightning + thunder on a win: duck the music under the strike, then bring it back
+let duckT=0,lastThunder=0;
+function duckMusic(ms){if(!mAudio)return;mAudio.volume=.14;clearTimeout(duckT);duckT=setTimeout(()=>{if(mAudio)mAudio.volume=.42;},ms);}
+function winThunder(){
+  const now=performance.now();if(now-lastThunder<2500)return; // don't stack the 6s hit in turbo
+  if(!playBuf('thunderWin',1))return;
+  lastThunder=now;
+  duckMusic(3600);
+}
+let mAudio=null;
+function startAmbient(){
+  if(muted)return;
+  if(!mAudio){mAudio=new Audio('assets/music-main.mp3');mAudio.loop=true;mAudio.volume=.42;mAudio.preload='auto';}
+  const p=mAudio.play();if(p&&p.catch)p.catch(()=>{});
+}
+function stopAmbient(){if(mAudio)mAudio.pause();}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stopAmbient();else if(!document.getElementById('splash'))startAmbient();});
+
+// ── Boot ───────────────────────────────────────────────────
+function buildPaytable(){
+  const el=document.getElementById('pt-grid');
+  SYMS.slice(1).forEach(s=>{
+    el.insertAdjacentHTML('beforeend',`<div class="pt"><img src="assets/${s.k}.webp" alt=""><div>12+ <b>${s.pay[2]}x</b><br>10-11 <b>${s.pay[1]}x</b><br>8-9 <b>${s.pay[0]}x</b></div></div>`);
+  });
+  el.insertAdjacentHTML('beforeend',`<div class="pt"><img src="assets/scatter.webp" alt=""><div>6 <b>100x</b><br>5 <b>5x</b><br>4 <b>3x</b> + 10 FS</div></div>`);
+}
+function onPlay(){
+  const sp=document.getElementById('splash');sp.style.opacity='0';setTimeout(()=>sp.remove(),600);
+  getAC();startAmbient();loadSfxFiles();
+}
+window.addEventListener('resize',resize);
+document.getElementById('play-btn').addEventListener('click',e=>{e.stopPropagation();onPlay();});
+document.getElementById('splash').addEventListener('click',()=>{if(document.getElementById('play-btn').style.display==='block')onPlay();});
+document.getElementById('menu-btn').onclick=()=>document.getElementById('side-menu-overlay').classList.add('show');
+document.getElementById('menu-close-btn').onclick=()=>document.getElementById('side-menu-overlay').classList.remove('show');
+document.getElementById('side-menu-overlay').addEventListener('click',e=>{if(e.target.id==='side-menu-overlay')e.target.classList.remove('show');});
+document.getElementById('menu-info-row').onclick=()=>{document.getElementById('side-menu-overlay').classList.remove('show');document.getElementById('info').classList.add('show');};
+document.getElementById('info-close').onclick=()=>document.getElementById('info').classList.remove('show');
+document.getElementById('info').addEventListener('click',e=>{if(e.target.id==='info')e.target.classList.remove('show');});
+cv.addEventListener('pointerdown',e=>{
+  if(overlay&&overlay.skip){overlay.skip();return;}
+  const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,b=L.buy;
+  if(!inFS&&x>=b.x&&x<=b.x+b.w&&y>=b.y&&y<=b.y+b.h)buyFeature();
+});
+window.addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();if(!e.repeat&&!document.getElementById('splash'))handleSpin();}
+});
+document.getElementById('mbtn').classList.toggle('on',!muted);
+buildPaytable();
+resize();updateUI();
+board=mkBoard(newGrid(false).map((col,c)=>col.map((x,r)=>({...x,fy:r}))),performance.now(),false);
+// make sure the idle board shows no instant win highlights — it's just decoration
+initSpine();
+preload();
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>
