@@ -21,6 +21,16 @@
     </image:image>
   </url>
   <url>
+    <loc>https://zinzinstudios.com/games/ascent-tower-of-gods/</loc>
+    <lastmod>2026-11-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://zinzinstudios.com/assets/ascent-tower-of-gods.jpg</image:loc>
+      <image:title>Ascent: Tower of Gods — tower-stacking crash game art by ZinZin Studios</image:title>
+    </image:image>
+  </url>
+  <url>
     <loc>https://zinzinstudios.com/games/circus-maximus/</loc>
     <lastmod>2026-09-07</lastmod>
     <changefreq>monthly</changefreq>
@@ -191,6 +201,12 @@
   <url>
     <loc>https://zinzinstudios.com/sugar-papi/</loc>
     <lastmod>2026-09-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://zinzinstudios.com/ascent/</loc>
+    <lastmod>2026-11-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

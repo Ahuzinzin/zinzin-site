@@ -60,6 +60,11 @@
       "permanent": true
     },
     {
+      "source": "/ascent",
+      "destination": "/ascent/",
+      "permanent": true
+    },
+    {
       "source": "/circus-maximus",
       "destination": "/circus-maximus/",
       "permanent": true

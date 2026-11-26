@@ -697,6 +697,22 @@ footer{position:relative;overflow-x:clip;overflow-y:visible;background:var(--s1)
       </div>
     </div>
   
+    <div class="gc" onclick="openModal(15)">
+      <div class="gc-img">
+        <img src="assets/ascent-tower-of-gods.jpg" alt="Ascent: Tower of Gods — tower-stacking crash game art by ZinZin Studios" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        <span class="gc-badge gold">New</span>
+        <div class="gc-foot">
+          <span class="gc-cat">crash</span>
+          <a class="gc-name" href="/games/ascent-tower-of-gods/" onclick="event.stopPropagation()">Ascent: Tower of Gods</a>
+        </div>
+      </div>
+    </div>
+
     <div class="gc" onclick="openModal(14)">
       <div class="gc-img">
         <img src="assets/olympus-spin.jpg" alt="Olympus Spin — Greek mythology instant game art by ZinZin Studios" loading="lazy">
@@ -1038,6 +1054,7 @@ footer{position:relative;overflow-x:clip;overflow-y:visible;background:var(--s1)
     </div>
     <div class="ft-col">
       <h4>Games</h4>
+      <a href="ascent/" target="_blank">Ascent: Tower of Gods</a>
       <a href="bullet_hole/" target="_blank">Bullet Hole</a>
       <a href="saga_of_valhalla/" target="_blank">Saga of Valhalla</a>
       <a href="quack_rush_crash/" target="_blank">Quack Rush</a>
@@ -1189,6 +1206,23 @@ const games=[
       {icon:"🌊",title:"Tumbling reels",desc:"Winning gems shatter and new ones fall in for chain wins"},
       {icon:"💎",title:"Pay anywhere",desc:"8+ matching symbols anywhere on the grid pay"},
       {icon:"🐚",title:"Stacking free spins",desc:"4 scatters award 10 spins with a multiplier that never resets"}
+    ]
+  },
+  {
+    id:15,name:"Ascent: Tower of Gods",slug:"ascent-tower-of-gods",category:"crash",
+    image:"assets/ascent-tower-of-gods.jpg",
+    heroPos:"50% 35%",
+    demoUrl:"ascent/",
+    badge:"New",badgeClass:"gold",
+    short:"Build your way to the gods.",
+    desc:"Ascent: Tower of Gods drops players into a vertical city built in layers. A crane swings each new floor into place — scrap shacks in the toxic undercity, potion markets, steampunk foundries, iron lift stations, gilded mansions and finally the marble temples of the gods. Every floor that lands pushes the multiplier higher and the sky changes as you climb. Cash out before a floor slips and the tower comes down.",
+    tags:["Crash","Tower Stacking","Multiplier","Fantasy City"],
+    specs:[{val:"30 Floors",lbl:"6 City Layers"},{val:"RTP 96%",lbl:"Return to Player"},{val:"Up to 10,000x",lbl:"Max Win"},{val:"3 Levels",lbl:"Easy / Medium / Hard"}],
+    features:[
+      {icon:"🏗️",title:"Stack to win",desc:"Every floor that lands raises the multiplier; a miss topples the tower"},
+      {icon:"🌇",title:"Six city layers",desc:"From the toxic undercity to the city of the gods, the sky changes as you climb"},
+      {icon:"💰",title:"Cash out any time",desc:"Bank your multiplier after any floor, or push for one more"},
+      {icon:"⚙️",title:"Three risk levels",desc:"Easy, Medium and Hard change the odds and the top multiplier"}
     ]
   },
   {

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ascent: Tower of Gods — Demo | ZinZin Studios</title>
+<meta name="description" content="Play the Ascent: Tower of Gods demo by ZinZin Studios. Stack floors from the undercity to the city of the gods and cash out before the tower falls.">
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Inter:ital,wght@0,500;0,700;0,800;1,800;1,900&display=swap" rel="stylesheet">
+<style>
+/* VOICE: shipped iGaming tower-crash game, simple and readable
+   IDEA: the game cabinet itself — 1920x1080 stage scaled to fit, UI from the Tower Cash Figma file
+   PICTURE: stacked front-view floors climbing from the undercity to the city of gods
+   COLOUR and TYPE: dark UI panel, yellow cashout, green GO, cyan ladder; Lilita One + Inter
+   LAYOUT: logo top-left, ladder left, tower centre, bottom control panel */
+html,body{margin:0;height:100%;background:#06080d;overflow:hidden;font-family:Inter,system-ui,sans-serif}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center;overflow:hidden;background:#0d2a22}
+canvas{position:absolute;inset:0;width:1920px;height:1080px;cursor:grab;touch-action:none}canvas.drag{cursor:grabbing}
+
+.logo{position:absolute;left:22px;top:16px;width:420px;height:auto;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
+.live{position:absolute;left:34px;top:166px;font:600 14px/1.5 Inter,sans-serif;color:#fff;text-shadow:0 1px 2px #000}
+.live i{display:inline-block;width:9px;height:9px;border-radius:50%;background:#22c55e;margin-right:6px}
+.demo{position:absolute;left:50%;top:16px;transform:translateX(-50%);font:700 13px Inter,sans-serif;color:#1b1300;background:#ffd23f;border-radius:999px;padding:6px 14px}
+.menu{position:absolute;right:23px;top:14px;width:60px;height:60px;border-radius:50%;background:#111827;border:2px solid #ffffff40;display:grid;place-items:center;cursor:pointer}
+.snd{right:95px}.snd svg{width:28px;height:28px}
+.menu span{display:block;width:26px;height:3px;background:#fff;border-radius:2px;box-shadow:0 -8px 0 #fff,0 8px 0 #fff}
+.ladder{position:absolute;left:391px;top:250px;width:140px;height:560px}
+.lbtn{position:absolute;left:47px;width:46px;height:46px;border-radius:50%;background:#9ca3af;border:3px solid #e5e7eb;display:grid;place-items:center;color:#fff;font:800 22px Inter;box-sizing:border-box}
+.lwin{position:absolute;left:0;right:0;top:50px;bottom:50px;overflow:hidden}
+.track,.lfill{position:absolute;left:62px;width:16px;border-radius:8px;box-sizing:border-box}
+.track{top:0;bottom:0;background:#0f172a99;border:2px solid #ffffff33}
+.lfill{bottom:0;height:0;background:linear-gradient(#5ce1ff,#22c55e);box-shadow:0 0 14px #5ce1ffaa;transition:height .5s cubic-bezier(.3,1.3,.5,1)}
+.rl{position:absolute;left:0;top:0;width:140px;height:0;transition:transform .5s cubic-bezier(.3,1,.4,1)}
+.st{position:absolute;left:0;width:140px;height:0}
+.st i{position:absolute;left:61px;top:-9px;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid #0f172a;box-sizing:border-box;transition:.3s}
+.st b{position:absolute;left:70px;top:-14px;transform:translate(-50%,-100%);min-width:76px;padding:0 8px;box-sizing:border-box;white-space:nowrap;height:34px;border-radius:9px;background:#f1f5f9;color:#1f2937;font:italic 900 20px/34px Inter,sans-serif;text-align:center;box-shadow:0 3px 0 #0003;transition:background .3s,color .3s}
+.st.done i{background:#22c55e;border-color:#fff}
+.st.done b{background:#bbf7d0;color:#14532d}
+.st.now i{background:#22c55e;border-color:#fff;box-shadow:0 0 0 6px #22c55e55}
+.st.now b{background:#ffd23f;animation:pop .45s ease-out}
+@keyframes pop{0%{transform:translate(-50%,-100%) scale(1)}45%{transform:translate(-50%,-100%) scale(1.3)}100%{transform:translate(-50%,-100%) scale(1)}}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
+#cash.bump{animation:bump .35s ease-out}
+.panel{position:absolute;left:370px;top:938px;width:1180px;height:116px;box-sizing:border-box;background:#0d1117;border-radius:14px;display:flex;align-items:center;gap:19px;padding:0 18px;box-shadow:0 10px 30px #0008}
+.box{height:80px;border-radius:10px;background:#1b2130;display:flex;align-items:center;justify-content:space-between;padding:0 14px 0 20px;box-sizing:border-box;color:#fff}
+.box .l{font:700 15px Inter;color:#9aa4b2;letter-spacing:.5px}.box .v{font:800 21px Inter;color:#fff;margin-top:4px;white-space:nowrap}
+.arr{display:flex;flex-direction:column;gap:4px}
+.arr button{width:36px;height:30px;border:0;background:none;color:#fff;font:800 20px/1 Inter;cursor:pointer;border-radius:6px}
+.arr button:hover:not(:disabled){background:#ffffff14}
+button:disabled{opacity:.35;cursor:not-allowed}
+#cash{width:249px;height:80px;border:0;border-radius:10px;background:#ffd43b;color:#111;font:800 17px/1.3 Inter;cursor:pointer}
+#cash:disabled{background:#262c3a;color:#6b7280;opacity:1}
+#cash b{display:block;font-size:22px}
+#go{width:106px;height:106px;flex:none;border-radius:50%;border:0;background:radial-gradient(circle at 40% 35%,#4ade80,#16a34a 70%);color:#fff;font:800 30px Inter;cursor:pointer;box-shadow:inset 0 -6px 0 #15803d,0 6px 0 #0f5d2c;margin-top:-6px}
+#go:active:not(:disabled){transform:translateY(3px)}
+button:focus-visible{outline:3px solid #7ee8ff;outline-offset:2px}
+.pop{position:absolute;left:50%;top:420px;width:560px;height:230px;transform:translate(-50%,-50%) scale(.6);opacity:0;pointer-events:none;box-sizing:border-box;border-radius:18px;background:#0b1118;border:4px solid #22c55e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:.25s;box-shadow:0 20px 60px #000a}
+.pop.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.pop h2{margin:0;font:800 52px Inter;color:#22c55e}
+.pop p{margin:0;font:800 38px Inter;color:#f5c842}
+.splash{position:absolute;inset:0;z-index:20;background:#0d2a22 url(img/splash.webp) center/cover no-repeat;transition:opacity .6s}
+.splash.out{opacity:0;pointer-events:none}
+.splash::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,12,20,.55) 0%,rgba(8,12,20,.25) 45%,rgba(8,12,20,0) 65%)}
+.sp-in{position:absolute;left:120px;top:150px;width:760px;display:flex;flex-direction:column;align-items:center;gap:34px}
+.sp-logo{width:760px;filter:drop-shadow(0 12px 24px rgba(0,0,0,.5));animation:sp-float 4s ease-in-out infinite}
+@keyframes sp-float{50%{transform:translateY(-10px)}}
+.sp-tag{font:800 34px Inter,sans-serif;color:#fff;text-shadow:0 3px 10px rgba(0,0,0,.6)}
+.sp-bar{width:520px;height:18px;border-radius:9px;background:#0f172acc;border:2px solid #ffffff44;overflow:hidden}
+.sp-bar b{display:block;height:100%;width:0;background:linear-gradient(90deg,#5ce1ff,#22c55e);transition:width .2s}
+.sp-play{display:none;width:300px;height:96px;border:0;border-radius:48px;background:radial-gradient(circle at 40% 35%,#4ade80,#16a34a 70%);box-shadow:inset 0 -7px 0 #15803d,0 8px 0 #0f5d2c,0 0 40px #22c55e88;color:#fff;font:900 40px Inter,sans-serif;letter-spacing:2px;cursor:pointer;animation:sp-pulse 1.6s ease-in-out infinite}
+.sp-play:active{transform:translateY(4px)}
+@keyframes sp-pulse{50%{box-shadow:inset 0 -7px 0 #15803d,0 8px 0 #0f5d2c,0 0 70px #22c55ecc}}
+.sp-note{position:absolute;left:0;right:0;bottom:26px;text-align:center;font:600 18px Inter,sans-serif;color:#ffffffcc;text-shadow:0 2px 6px #000}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="cv" width="1920" height="1080" aria-label="Game screen"></canvas>
+  <img class="logo" src="img/logo.webp" alt="Ascent — Tower of Gods">
+  <div class="live"><i></i>Live wins: <span id="lw">+$41.20</span><br>Online: 2,290</div>
+  <div class="demo">DEMO — NO REAL MONEY</div>
+  <div class="menu" aria-label="Menu" role="img"><span></span></div>
+  <button class="menu snd" id="snd" aria-label="Sound on"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z" fill="#fff"></path><path id="sw1" d="M16 9a4 4 0 0 1 0 6"></path><path id="sw2" d="M18.5 6.5a8 8 0 0 1 0 11"></path><path id="sx" d="M16 9l6 6M22 9l-6 6" style="display:none"></path></svg></button>
+  <div class="ladder" id="ladder">
+    <div class="lbtn" style="top:0">︿</div>
+    <div class="lwin"><div class="track"></div><div class="lfill" id="lf"></div><div class="rl" id="rl"></div></div>
+    <div class="lbtn" style="bottom:0">﹀</div>
+  </div>
+  <div class="pop" id="pop"><h2 id="popT">YOU WIN!</h2><p id="popV">+ $0.00</p></div>
+  <div class="panel">
+    <div class="box" style="width:217px"><div><div class="l">BALANCE</div><div class="v" id="bal">$1000.00</div></div></div>
+    <div class="box" style="width:201px"><div><div class="l">DIFFICULTY</div><div class="v" id="dif">MEDIUM</div></div><div class="arr"><button id="du" aria-label="Harder">︿</button><button id="dd" aria-label="Easier">﹀</button></div></div>
+    <button id="cash" disabled>CASHOUT<b id="cashv">$ 0.00</b></button>
+    <div class="box" style="width:189px"><div><div class="l">BET</div><div class="v" id="bet">$ 1.00</div></div><div class="arr"><button id="bu" aria-label="Raise bet">︿</button><button id="bd" aria-label="Lower bet">﹀</button></div></div>
+    <button id="go">GO</button>
+  </div>
+  <div class="splash" id="splash">
+    <div class="sp-in">
+      <img class="sp-logo" src="img/logo.webp" alt="Ascent — Tower of Gods">
+      <div class="sp-tag">Build your way to the gods.</div>
+      <div class="sp-bar" id="spbar"><b id="spfill"></b></div>
+      <button class="sp-play" id="spplay">PLAY</button>
+    </div>
+    <div class="sp-note">18+ · Demo only — no real money · ZinZin Studios</div>
+  </div>
+</div>
+<script>
+{
+const stage=document.getElementById('stage'),cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+let SC=1;const fit=()=>{const s=Math.min(innerWidth/1920,innerHeight/1080);SC=s;stage.style.transform=`translate(-50%,-50%) scale(${s})`};
+addEventListener('resize',fit);fit();
+const $=id=>document.getElementById(id);
+
+/* assets */
+const IMG={},srcs={hook:'img/hook.webp',bird:'img/bird.webp',airship:'img/airship.webp',balloon:'img/balloon.webp',spirit:'img/spirit.webp'};
+for(let i=0;i<5;i++)srcs['bg'+i]=`img/bg${i}.webp`;
+for(let L=1;L<=6;L++)for(let v=1;v<=5;v++)srcs[`L${L}_${v}`]=`img/L${L}_${v}.webp`;
+const total=Object.keys(srcs).length;let left=total;
+for(const k in srcs){const im=new Image();im.onload=im.onerror=()=>{left--;$('spfill').style.width=(100*(total-left)/total)+'%';if(left===0)ready()};im.src=srcs[k];IMG[k]=im}
+
+/* audio: sfx through Web Audio, music as a looping element; both start on the first key or click */
+const AC=window.AudioContext||window.webkitAudioContext;let ac=null,muted=false;const buf={};
+try{muted=localStorage.getItem('asc_mute')==='1'}catch(e){}
+const SFX=['release','land1','land2','land3','wobble','fall','cash','click','zone','win'];
+const music=new Audio('sfx/music.mp3');music.loop=true;music.volume=.3;
+function audioInit(){
+  if(ac||!AC)return;ac=new AC();
+  for(const n of SFX)fetch('sfx/'+n+'.mp3').then(r=>r.arrayBuffer()).then(b=>ac.decodeAudioData(b)).then(d=>{buf[n]=d}).catch(()=>{});
+  if(!muted)music.play().catch(()=>{});
+}
+function sfx(n,vol=1){
+  if(muted||!ac||!buf[n])return;
+  const s=ac.createBufferSource(),g=ac.createGain();g.gain.value=vol;s.buffer=buf[n];s.connect(g);g.connect(ac.destination);s.start();
+}
+/* lose sound made in code: three soft descending notes with a low thump under the first */
+function loseSound(){
+  if(muted||!ac)return;
+  const t0=ac.currentTime+.02,out=ac.createGain();out.gain.value=.5;out.connect(ac.destination);
+  const note=(f,t,d)=>{const o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.setValueAtTime(f,t);o.frequency.exponentialRampToValueAtTime(f*.97,t+d);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.8,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(out);o.start(t);o.stop(t+d+.05)};
+  note(392,t0,.22);note(330,t0+.2,.22);note(262,t0+.4,.55);
+  const k=ac.createOscillator(),kg=ac.createGain();k.type='sine';k.frequency.setValueAtTime(140,t0);k.frequency.exponentialRampToValueAtTime(50,t0+.25);
+  kg.gain.setValueAtTime(.7,t0);kg.gain.exponentialRampToValueAtTime(.001,t0+.3);k.connect(kg);kg.connect(out);k.start(t0);k.stop(t0+.35);
+}
+function sndIcon(){$('sx').style.display=muted?'':'none';$('sw1').style.display=$('sw2').style.display=muted?'none':'';$('snd').setAttribute('aria-label',muted?'Sound off':'Sound on')}
+addEventListener('pointerdown',audioInit,{once:true});addEventListener('keydown',audioInit,{once:true});
+
+/* rules */
+const MODES=[['EASY',.95],['MEDIUM',.8],['HARD',.6]],RTP=.96,MAXF=30,CAP=10000;
+const BETS=[.1,.2,.5,1,2,5,10,20,50,100];
+const FW=240,FH=176,BASE=900,HX=960;
+const S={view:0,drag:null,hold:0,fly:null,resetT:0,ladDefer:false,bird:null,nextBird:4,dust:[],mp:9,hang:1,bal:1000,bi:3,mi:1,phase:'idle',floors:[],t:0,cam:0,drop:null,fall:null,wob:0,shake:0,pops:[],order:null,popT:0};
+const p=()=>MODES[S.mi][1];
+/* floor 1 is the free foundation: it always lands and pays nothing extra.
+   Every floor after it is a risky step with success chance p, so after n floors
+   the multiplier is RTP / p^(n-1) and any cash-out returns RTP on average. */
+const mult=n=>n<=1?1:Math.min(CAP,Math.floor(RTP/Math.pow(p(),n-1)*100)/100);
+const money=v=>'$'+v.toFixed(2);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const imgFor=k=>{const L=Math.ceil(k/5);return IMG[`L${L}_${S.order[L-1][(k-1)%5]}`]};
+
+/* ground image with a soft top fade so it melts into the sky */
+let ground;
+function ready(){
+  ground=document.createElement('canvas');ground.width=1920;ground.height=1080;
+  const g=ground.getContext('2d');g.drawImage(IMG.bg0,0,0,1920,1080);
+  g.globalCompositeOperation='destination-in';const gr=g.createLinearGradient(0,0,0,420);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(1,'#000');g.fillStyle=gr;g.fillRect(0,0,1920,1080);
+  S.order=[0,1,2,3,4,5].map(()=>shuffle([1,2,3,4,5]));
+  buildLadder();ui();setTimeout(()=>{$('spbar').style.display='none';$('spplay').style.display='block'},300);requestAnimationFrame(loop);
+}
+
+/* ladder: one stop per floor; the fill climbs to the reached stop, then the stops slide down */
+const LS=[];let shift=0,ladT=null,lastCash='';
+function buildLadder(){
+  const rl=$('rl');
+  for(let k=1;k<=MAXF;k++){const d=document.createElement('div');d.className='st';d.style.top=(430-(k-1)*92)+'px';d.append(document.createElement('i'),document.createElement('b'));rl.append(d);LS.push(d)}
+}
+function ladder(n,live){
+  LS.forEach((d,i)=>{const k=i+1;d.lastChild.textContent='x'+mult(k).toFixed(2);d.classList.toggle('done',live&&k<n);d.classList.toggle('now',live&&k===n)});
+  const want=Math.max(0,n-2)*92,h=sh=>live&&n>0?30+(n-1)*92-sh:0;
+  clearTimeout(ladT);
+  if(live&&want>shift){$('lf').style.height=h(shift)+'px';ladT=setTimeout(()=>{shift=want;$('rl').style.transform=`translateY(${shift}px)`;$('lf').style.height=h(shift)+'px'},520)}
+  else{shift=want;$('rl').style.transform=`translateY(${shift}px)`;$('lf').style.height=h(shift)+'px'}
+}
+
+/* UI */
+function ui(){
+  const n=S.floors.length,live=S.phase!=='idle';
+  $('bal').textContent=money(S.bal);$('bet').textContent='$ '+BETS[S.bi].toFixed(2);$('dif').textContent=MODES[S.mi][0];
+  for(const id of['du','dd','bu','bd'])$(id).disabled=live;
+  $('du').disabled||= S.mi===2;$('dd').disabled||= S.mi===0;$('bu').disabled||= S.bi===BETS.length-1;$('bd').disabled||= S.bi===0;
+  const can=S.phase==='ready'&&n>1,cashAmt=(can?BETS[S.bi]*mult(n):0).toFixed(2);$('cash').disabled=!can;$('cashv').textContent='$ '+cashAmt;
+  $('go').disabled=!(S.phase==='idle'||S.phase==='ready')||(S.phase==='idle'&&BETS[S.bi]>S.bal);
+  if(S.ladDefer){S.ladDefer=false;setTimeout(()=>ladder(S.floors.length,S.phase!=='idle'),850)}else ladder(n,live);
+  if(can&&cashAmt!==lastCash){const c=$('cash');c.classList.remove('bump');void c.offsetWidth;c.classList.add('bump')}lastCash=cashAmt;
+}
+function popup(title,val,col){
+  const el=$('pop');$('popT').textContent=title;$('popT').style.color=col;$('popV').textContent=val;el.style.borderColor=col;
+  el.classList.add('on');S.popT=2.2;
+}
+function float(txt,col){S.pops.push({txt,col,t:0})}
+
+/* actions */
+function go(){
+  S.hold=0;S.resetT=0;
+  if(S.phase==='idle'){
+    const b=BETS[S.bi];if(b>S.bal)return;
+    S.bal-=b;S.floors=[];S.fall=null;S.order=S.order.map(o=>shuffle(o));S.phase='ready';S.hang=0;$('pop').classList.remove('on');
+  }
+  if(S.phase!=='ready')return;
+  const n=S.floors.length,ok=n===0||Math.random()<p(),sg=Math.random()<.5?-1:1,r=Math.random(),near=ok&&n>0&&r<.2;
+  const prev=n?S.floors[n-1].x:0;
+  const off=n===0?0:ok?(near?.3+Math.random()*.1:Math.random()*.16)*FW*sg:(.62+Math.random()*.25)*FW*sg;
+  const tx=ok?prev+off-prev*.3:prev+off;
+  S.drop={x0:hookX()-HX,r0:hookR(),tx,t:0,ok,near,sg,img:imgFor(n+1)};
+  sfx('release',.8);S.phase='dropping';ui();
+}
+function cashout(){
+  if(S.phase!=='ready'||S.floors.length<2)return;
+  const m=mult(S.floors.length),w=BETS[S.bi]*m;S.bal+=w;S.phase='idle';
+  S.resetT=1.8;sfx('cash');popup('CASHED OUT!','+ '+money(w),'#f5c842');ui();
+}
+function land(){
+  const d=S.drop;S.drop=null;
+  if(d.ok){
+    S.floors.push({x:d.tx,img:d.img});const n=S.floors.length;
+    sfx('land'+(1+(Math.random()*3|0)),.9);
+    if(d.near){S.wob=1;float('CLOSE ONE!','#ff4f7b');sfx('wobble',.8)}
+    if(n>1&&(n-1)%5===0)setTimeout(()=>sfx('zone',.7),250);
+    S.shake=.25;S.phase='ready';S.hang=0;dust(d.tx,(n-1)*FH);S.fly={m:mult(n),t:0,x:d.tx,w:n*FH-FH/2,n};S.ladDefer=true;
+    if(n>=MAXF||mult(n)>=CAP){const w=BETS[S.bi]*mult(n);S.bal+=w;S.phase='idle';S.resetT=2.2;sfx('win');popup('YOU WIN!','+ '+money(w),'#22c55e')}
+  }else{
+    sfx('fall');S.fall={x:d.tx,y:towerTopW()+FH/2,vx:d.sg*260,vy:120,r:0,vr:d.sg*2.6,img:d.img};
+    S.wob=1.3;S.shake=.5;S.phase='falling';S.endT=1.3;
+  }
+  ui();
+}
+function dust(x,y){for(let i=0;i<16;i++){const sd=i%2?1:-1;S.dust.push({x:x+sd*(FW/2-20),y:y+10+Math.random()*30,vx:sd*(140+Math.random()*200),vy:Math.random()*50,r:16+Math.random()*16,t:0})}}
+const towerTopW=()=>S.floors.length*FH;
+const hookX=()=>HX+Math.sin(S.t*1.7)*270;
+const hookR=()=>Math.cos(S.t*1.7)*.16;
+
+/* render */
+const SKY=[[1,0],[2,9],[3,17],[4,25]];
+function drawCover(im,y,alpha){
+  if(!im.width)return;ctx.globalAlpha=alpha;const sc=1.12,w=1920*sc,h=1080*sc;ctx.drawImage(im,(1920-w)/2,y-(h-1080)/2,w,h);ctx.globalAlpha=1;
+}
+function sky(CAM){
+  const f=CAM/FH;let i=0;while(i<SKY.length-1&&f>=SKY[i+1][1])i++;
+  const [a,fa]=SKY[i],nxt=SKY[i+1];
+  const drift=k=>Math.max(-50,Math.min(50,(f-SKY[k][1])*8-20));
+  drawCover(IMG['bg'+a],drift(i),1);
+  if(nxt){const span=nxt[1]-fa,start=nxt[1]-3,al=Math.max(0,Math.min(1,(f-start)/3));if(al>0)drawCover(IMG['bg'+nxt[0]],drift(i+1),al)}
+  if(f<8)ctx.drawImage(ground,0,CAM);
+}
+/* sky flyers by altitude: Circus Maximus seagull (6x5 sheet of 200x183), balloon, airship, golden spirit bird */
+const FLY=[{k:'gull',lo:2.5,hi:14,sc:[.5,.85],v:[180,260]},{k:'balloon',lo:6,hi:19,sc:[.45,.65],v:[40,70]},{k:'airship',lo:10,hi:25,sc:[.45,.7],v:[60,95]},{k:'spirit',lo:20,hi:99,sc:[.35,.55],v:[150,220]}];
+function birdStep(dt){
+  const f=S.cam/FH;
+  if(!S.bird&&S.t>S.nextBird){const ok=FLY.filter(o=>f>=o.lo&&f<o.hi);
+    if(ok.length){const o=ok[Math.random()*ok.length|0],dir=Math.random()<.7?-1:1,r=Math.random(),sc=o.sc[0]+(o.sc[1]-o.sc[0])*r;
+      S.bird={k:o.k,dir,sc,x:dir<0?2150:-230,y:120+Math.random()*340,v:o.v[0]+(o.v[1]-o.v[0])*r,t:0}}else S.nextBird=S.t+2}
+  const b=S.bird;if(!b)return;
+  b.t+=dt;b.x+=b.dir*b.v*dt;const y=b.y+Math.sin(b.t*(b.k==='gull'?2.2:1.1))*(b.k==='balloon'?8:14);
+  ctx.save();ctx.translate(b.x,y);if(b.dir>0)ctx.scale(-1,1);
+  if(b.k==='gull'){const fr=(b.t*22|0)%30,w=200*b.sc,h=183*b.sc;ctx.drawImage(IMG.bird,(fr%6)*200,(fr/6|0)*183,200,183,-w/2,-h/2,w,h)}
+  else{const im=IMG[b.k];if(im.width){const w=im.width*b.sc,h=im.height*b.sc;ctx.rotate(Math.sin(b.t*1.3)*.04);ctx.drawImage(im,-w/2,-h/2,w,h)}}
+  ctx.restore();
+  if(b.x<-300||b.x>2220){S.bird=null;S.nextBird=S.t+5+Math.random()*8}
+}
+function floorImg(img,cx,top,rot){
+  ctx.save();ctx.translate(cx,top+FH/2);ctx.rotate(rot||0);
+  ctx.shadowColor='rgba(0,0,0,.35)';ctx.shadowBlur=10;ctx.shadowOffsetX=5;ctx.shadowOffsetY=7;
+  ctx.drawImage(img,-FW/2,-FH/2,FW,FH);ctx.restore();
+}
+function bigText(txt,x,y,size,fill){
+  ctx.font=`italic 900 ${size}px Inter,sans-serif`;ctx.textAlign='center';ctx.lineJoin='round';
+  ctx.lineWidth=size*.12;ctx.strokeStyle='#1b1d2b';ctx.strokeText(txt,x,y);ctx.fillStyle=fill;ctx.fillText(txt,x,y);
+}
+let last=performance.now();
+function loop(now){
+  const dt=Math.min(.05,(now-last)/1000);last=now;S.t+=dt;
+  const n=S.floors.length,tgt=Math.max(0,n*FH-380);S.cam+=(tgt-S.cam)*Math.min(1,dt*3.2);
+  S.wob=Math.max(0,S.wob-dt*.9);S.shake=Math.max(0,S.shake-dt);
+  if(S.resetT>0){S.resetT-=dt;if(S.resetT<=0&&S.phase==='idle'){S.floors=[];ui()}}
+  if(!S.drag){if(S.hold>0)S.hold-=dt;else S.view+=(0-S.view)*Math.min(1,dt*3)}
+  S.view=Math.max(0,Math.min(S.view,S.cam));const CAM=S.cam-S.view;
+  ctx.save();if(S.shake)ctx.translate((Math.random()-.5)*14*S.shake,(Math.random()-.5)*10*S.shake);
+  sky(CAM);
+  const sy=w=>BASE-w+CAM;
+  birdStep(dt);
+  /* tower */
+  const ang=S.wob*.03*Math.sin(S.t*14);
+  ctx.save();ctx.translate(HX,sy(0));ctx.rotate(ang);ctx.translate(-HX,-sy(0));
+  S.floors.forEach((fl,i)=>floorImg(fl.img,HX+fl.x,sy((i+1)*FH),0));
+  ctx.restore();
+  /* multiplier over the top floor */
+  /* landing: glow behind the new floor, then its multiplier pops and flies to the ladder */
+  if(S.fly){const F=S.fly;F.t+=dt;const bx=HX+F.x,by=sy(F.w);
+    if(F.t<.6){const g=ctx.createRadialGradient(bx,by,10,bx,by,280),al=.75*(1-F.t/.6);g.addColorStop(0,`rgba(255,245,200,${al})`);g.addColorStop(1,'rgba(255,245,200,0)');ctx.fillStyle=g;ctx.fillRect(bx-300,by-300,600,600)}
+    const tx=461,ty=F.n>=2?607:699;let x,y,sc,al=1;
+    if(F.t<.55){const k=F.t/.55;x=bx+150;y=by-30;sc=k<.4?1.25*(k/.4):1.25-.25*((k-.4)/.6)}
+    else{const k=Math.min(1,(F.t-.55)/.45),e=k*k*(3-2*k);x=bx+150+(tx-bx-150)*e;y=by-30+(ty-by+30)*e;sc=1-.7*e;al=1-.6*e}
+    ctx.save();ctx.globalAlpha=al;ctx.translate(x,y);ctx.scale(sc,sc);bigText('X'+F.m.toFixed(2),0,0,96,'#ffd23f');ctx.restore();
+    if(F.t>=1)S.fly=null}
+  S.dust=S.dust.filter(q=>(q.t+=dt)<.8);
+  for(const q of S.dust){q.x+=q.vx*dt;q.y+=q.vy*dt;q.vx*=.92;const a=1-q.t/.8,R=q.r*(1+q.t*2.2),px=HX+q.x,py=sy(q.y),g=ctx.createRadialGradient(px,py,0,px,py,R);g.addColorStop(0,`rgba(255,255,255,${a*.95})`);g.addColorStop(.6,`rgba(240,240,245,${a*.6})`);g.addColorStop(1,'rgba(240,240,245,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(px,py,R,0,7);ctx.fill()}
+  /* hook + hanging or dropping floor */
+  if(S.phase==='ready'||S.phase==='dropping'){
+    let bx,btop,rot,rx;
+    if(S.drop){const d=S.drop;d.t=Math.min(1,d.t+dt/.5);const e=d.t*d.t;rx=d.x0;bx=HX+d.x0+(d.tx-d.x0)*d.t;
+      const y0=366-FH,yT=sy((n+1)*FH);btop=y0+(yT-y0)*e;rot=d.r0*(1-d.t);if(d.t>=1)land()}
+    else{S.hang=Math.min(1,S.hang+dt/.45);rx=hookX()-HX;bx=hookX();btop=190-(1-(1-Math.pow(1-S.hang,3)))*300;rot=hookR()}
+    const hx=HX+rx,hw=110,hh=IMG.hook.height*hw/IMG.hook.width;
+    ctx.strokeStyle='#2a2a2a';ctx.lineWidth=5;ctx.beginPath();const hy=S.drop?20:btop+15-hh;ctx.moveTo(hx,-10);ctx.lineTo(hx,hy+10);ctx.stroke();
+    ctx.drawImage(IMG.hook,hx-hw/2,hy,hw,hh);
+    if(btop!=null&&(S.drop||S.phase==='ready'))floorImg(S.drop?S.drop.img:imgFor(n+1),bx,btop,rot);
+  }
+  if(S.fall){const f=S.fall;f.vy-=1500*dt;f.x+=f.vx*dt;f.y+=f.vy*dt;f.r+=f.vr*dt;floorImg(f.img,HX+f.x,sy(f.y+FH/2),f.r)}
+  if(S.phase==='falling'){S.endT-=dt;if(S.endT<=0){S.phase='idle';S.fall=null;S.resetT=1.6;loseSound();popup('YOU LOST!','- '+money(BETS[S.bi]),'#ef4444');ui()}}
+  /* floating texts */
+  S.pops=S.pops.filter(q=>(q.t+=dt)<1.3);
+  for(const q of S.pops){ctx.globalAlpha=Math.min(1,(1.3-q.t)*2);bigText(q.txt,HX,sy(n*FH)-30-q.t*60,64,q.col);ctx.globalAlpha=1}
+  ctx.restore();
+  if(S.popT>0){S.popT-=dt;if(S.popT<=0)$('pop').classList.remove('on')}
+  requestAnimationFrame(loop);
+}
+
+/* splash: PLAY starts audio and fades the cover away */
+let splashOn=true;
+$('spplay').addEventListener('click',()=>{audioInit();sfx('click',.7);splashOn=false;$('splash').classList.add('out');setTimeout(()=>$('splash').remove(),700)});
+/* controls: grab the scene and drag up to look down the tower, or use the wheel; it eases back after release */
+cv.addEventListener('pointerdown',e=>{S.drag={y:e.clientY,v:S.view};cv.setPointerCapture(e.pointerId);cv.classList.add('drag')});
+cv.addEventListener('pointermove',e=>{if(S.drag)S.view=S.drag.v-(e.clientY-S.drag.y)/SC});
+const endDrag=()=>{if(S.drag){S.drag=null;S.hold=1.5;cv.classList.remove('drag')}};
+cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
+cv.addEventListener('wheel',e=>{e.preventDefault();S.view+=e.deltaY*1.2;S.hold=1.5},{passive:false});
+/* controls */
+$('go').addEventListener('click',go);
+$('cash').addEventListener('click',cashout);
+$('snd').addEventListener('click',()=>{muted=!muted;try{localStorage.setItem('asc_mute',muted?'1':'0')}catch(e){}if(muted)music.pause();else{audioInit();music.play().catch(()=>{})}sndIcon()});
+sndIcon();
+for(const id of['du','dd','bu','bd'])$(id).addEventListener('click',()=>sfx('click',.6));
+$('du').addEventListener('click',()=>{S.mi=Math.min(2,S.mi+1);ui()});
+$('dd').addEventListener('click',()=>{S.mi=Math.max(0,S.mi-1);ui()});
+$('bu').addEventListener('click',()=>{S.bi=Math.min(BETS.length-1,S.bi+1);ui()});
+$('bd').addEventListener('click',()=>{S.bi=Math.max(0,S.bi-1);ui()});
+addEventListener('keydown',e=>{if(splashOn){if(e.code==='Space'||e.code==='Enter'){e.preventDefault();$('spplay').style.display==='block'&&$('spplay').click()}return}if(e.code==='Space'){e.preventDefault();go()}if(e.key==='c'||e.key==='C')cashout()});
+}
+</script>
+</body>
+</html>
