@@ -21,7 +21,6 @@ canvas{position:absolute;inset:0;width:1920px;height:1080px;cursor:grab;touch-ac
 .logo{position:absolute;left:22px;top:16px;width:420px;height:auto;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
 .live{position:absolute;left:34px;top:166px;font:600 14px/1.5 Inter,sans-serif;color:#fff;text-shadow:0 1px 2px #000}
 .live i{display:inline-block;width:9px;height:9px;border-radius:50%;background:#22c55e;margin-right:6px}
-.demo{position:absolute;left:50%;top:16px;transform:translateX(-50%);font:700 13px Inter,sans-serif;color:#1b1300;background:#ffd23f;border-radius:999px;padding:6px 14px}
 .menu{position:absolute;right:23px;top:14px;width:60px;height:60px;border-radius:50%;background:#111827;border:2px solid #ffffff40;display:grid;place-items:center;cursor:pointer}
 .snd{right:95px}.snd svg{width:28px;height:28px}
 .menu span{display:block;width:26px;height:3px;background:#fff;border-radius:2px;box-shadow:0 -8px 0 #fff,0 8px 0 #fff}
@@ -79,7 +78,6 @@ button:focus-visible{outline:3px solid #7ee8ff;outline-offset:2px}
   <canvas id="cv" width="1920" height="1080" aria-label="Game screen"></canvas>
   <img class="logo" src="img/logo.webp" alt="Ascent — Tower of Gods">
   <div class="live"><i></i>Live wins: <span id="lw">+$41.20</span><br>Online: 2,290</div>
-  <div class="demo">DEMO — NO REAL MONEY</div>
   <div class="menu" aria-label="Menu" role="img"><span></span></div>
   <button class="menu snd" id="snd" aria-label="Sound on"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z" fill="#fff"></path><path id="sw1" d="M16 9a4 4 0 0 1 0 6"></path><path id="sw2" d="M18.5 6.5a8 8 0 0 1 0 11"></path><path id="sx" d="M16 9l6 6M22 9l-6 6" style="display:none"></path></svg></button>
   <div class="ladder" id="ladder">
@@ -102,7 +100,7 @@ button:focus-visible{outline:3px solid #7ee8ff;outline-offset:2px}
       <div class="sp-bar" id="spbar"><b id="spfill"></b></div>
       <button class="sp-play" id="spplay">PLAY</button>
     </div>
-    <div class="sp-note">18+ · Demo only — no real money · ZinZin Studios</div>
+    <div class="sp-note">18+ · ZinZin Studios</div>
   </div>
 </div>
 <script>
