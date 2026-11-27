@@ -681,6 +681,22 @@ footer{position:relative;overflow-x:clip;overflow-y:visible;background:var(--s1)
     </div>
   </div>
   <div class="games-grid" id="gamesGrid">
+    <div class="gc" onclick="openModal(16)">
+      <div class="gc-img">
+        <img src="assets/say-her-name.jpg" alt="Say Her Name — horror streamer slot art by ZinZin Studios" loading="lazy">
+        <div class="gc-ov">
+          <div class="gc-play">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          </div>
+        </div>
+        <span class="gc-badge gold">New</span>
+        <div class="gc-foot">
+          <span class="gc-cat">slot</span>
+          <a class="gc-name" href="/games/say-her-name/" onclick="event.stopPropagation()">Say Her Name</a>
+        </div>
+      </div>
+    </div>
+
     <div class="gc" onclick="openModal(6)">
       <div class="gc-img">
         <img src="assets/reign-of-poseidon.jpg" alt="Reign of Poseidon — underwater slot game art by ZinZin Studios" loading="lazy">
@@ -1054,6 +1070,7 @@ footer{position:relative;overflow-x:clip;overflow-y:visible;background:var(--s1)
     </div>
     <div class="ft-col">
       <h4>Games</h4>
+      <a href="say-her-name/" target="_blank">Say Her Name</a>
       <a href="ascent/" target="_blank">Ascent: Tower of Gods</a>
       <a href="bullet_hole/" target="_blank">Bullet Hole</a>
       <a href="saga_of_valhalla/" target="_blank">Saga of Valhalla</a>
@@ -1206,6 +1223,23 @@ const games=[
       {icon:"🌊",title:"Tumbling reels",desc:"Winning gems shatter and new ones fall in for chain wins"},
       {icon:"💎",title:"Pay anywhere",desc:"8+ matching symbols anywhere on the grid pay"},
       {icon:"🐚",title:"Stacking free spins",desc:"4 scatters award 10 spins with a multiplier that never resets"}
+    ]
+  },
+  {
+    id:16,name:"Say Her Name",slug:"say-her-name",category:"slot",
+    image:"assets/say-her-name.jpg",
+    heroPos:"50% 30%",
+    demoUrl:"say-her-name/",
+    badge:"New",badgeClass:"gold",
+    short:"Say it three times. She is already watching.",
+    desc:"Bloody Mary is live from a haunted neon bedroom, and her chat will not stop saying her name. Scatter mirrors light candles that stay lit between spins; light all three and she answers with 8 free spins and a multiplier that grows after every win. Between spins the stream glitches, the chat roasts and scares each other, and sometimes Mary herself drops into chat.",
+    tags:["Slot","Paylines","Free Spins","Horror","Streamer"],
+    specs:[{val:"5×4",lbl:"20 Paylines"},{val:"RTP 96%",lbl:"Return to Player"},{val:"50x",lbl:"Mirror Wild"},{val:"10,000x",lbl:"Max Win"}],
+    features:[
+      {icon:"🕯️",title:"Light three candles",desc:"Scatters light candles that stay lit between spins; three summon Mary"},
+      {icon:"💥",title:"Growing free spins",desc:"8 free spins with a multiplier that rises +1 after every win"},
+      {icon:"🪞",title:"50x mirror wild",desc:"The cracked mirror substitutes and multiplies its line win x50"},
+      {icon:"💬",title:"A chat that reacts",desc:"Live chat, stream glitches and Mary herself respond to every spin"}
     ]
   },
   {

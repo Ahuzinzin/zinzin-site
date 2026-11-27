@@ -60,6 +60,11 @@
       "permanent": true
     },
     {
+      "source": "/say-her-name",
+      "destination": "/say-her-name/",
+      "permanent": true
+    },
+    {
       "source": "/ascent",
       "destination": "/ascent/",
       "permanent": true
